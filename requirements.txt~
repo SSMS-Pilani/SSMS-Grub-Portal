@@ -1,7 +1,7 @@
 Django==1.9.2
 gunicorn==19.4.5
 psycopg2==2.6.1
-django-excel==0.0.4
+django-excel (0.0.4)
 pyexcel-xls
 pyexcel-xlsx
 python-social-auth
