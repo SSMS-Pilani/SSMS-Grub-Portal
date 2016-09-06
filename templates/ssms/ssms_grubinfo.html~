@@ -5,7 +5,7 @@
 {% block block1 %}
 	
 {% if user.is_superuser %}
-   <a href="/ssms/send/{{ grub.gm_id }}/">Send</a>
+
     {% if grub %}
 		    <h2 class="brand-before text-center">
                         {% ifequal i 2 %}
