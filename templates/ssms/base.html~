@@ -70,7 +70,7 @@ if it's not present, don't show loader */
 </head>
 
 <body data-spy="scroll" data-target=".navbar" data-offset="50">
-	<div class="se-pre-con"></div>
+	
     <div class="brand">SSMS</div>
     <div class="address-bar">Birla Institute Of Technology And Science,Pilani,Pilani Campus</div>
 
@@ -153,7 +153,7 @@ if it's not present, don't show loader */
                     <h3>Copyright &copy; SSMS Tech Team</h3>
 			<h4>BITS Pilani,Pilani Campus 2016</h4>
 			<hr>
-			<h5>Developed By: Rohit Lodha and Vivek Singhvi</h5>
+			
                 </div>
             </div>
         </div>
