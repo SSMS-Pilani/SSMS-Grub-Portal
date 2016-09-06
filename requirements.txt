@@ -6,4 +6,4 @@ pyexcel-xls
 pyexcel-xlsx
 python-social-auth
 whitenoise==2.0.6
-requests==2.9.1
+pillow
