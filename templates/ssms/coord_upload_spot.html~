@@ -1,0 +1,37 @@
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block block1 %}
+{% if user.is_staff %}
+	{% ifequal d 4 %}
+	        <h1></h1>
+	<hr>
+                    <h2 class="intro-text text-center">Upload Spot Signing excel
+                    </h2>
+                    <hr>
+                   
+        <form id="coord_upload"  role="form"  class="form-horizontal"  method="post"  enctype="multipart/form-data">  
+            {% csrf_token %}
+           {% for field in form %}
+		<div class="form-group">
+	<div class="text-danger ">{{ field.errors }}</div>
+      	<label class="control-label " >{{ field.label_tag }}</label>
+	      	<div >
+		{{ field }}
+		</div>
+      	</div>
+		{% endfor %}
+          <input class=" btn btn-lg btn-info" type="submit" name="submit" value="Add Excel" />
+        </form>
+	<br/>
+	{% else %}
+	Grub is yet to begin.
+	{% endifequal %}
+	
+{% else %}
+<h3>You are not allowed to view this page</h3>
+<h3>Login to View this page</h3>
+{% endif %}
+{% endblock %}

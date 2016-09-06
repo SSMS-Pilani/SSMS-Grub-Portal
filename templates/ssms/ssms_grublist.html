@@ -1,0 +1,88 @@
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block head_block %}<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css"> {% endblock %}
+
+{% block block1 %}
+{% if user.is_superuser %}
+		     <hr>
+                    <h1 class="intro-text text-center"><strong>Grubs</strong>
+                    </h1>
+                    <hr>
+<table id="example" class="table table-hover">
+<thead>
+	<tr>
+	    	<th>Name</th>
+	    	<th>Date</th>
+	    	<th>Deadline</th>
+		<th>Status</th>
+		<th>Registered By</th>
+	</tr>
+</thead>
+<tbody>
+	{% for i in grub %}
+	<tr>
+	<td><a href="/ssms/ssms/grub/{{ i.gm_id }}/">{{i.name}}</a></td>
+	<td>{{i.date}}</td>
+	<td>{{i.deadline}}</td>
+	<td>{{i.status}}</td>
+	<td>{{i.cg_id}}</td>
+	</tr>
+	 {% endfor %}  
+</tbody>
+</table>
+		     <hr>
+                    <h2 class="intro-text text-center"><strong>Grub Coords Registered</strong>
+                    </h2>
+                    <hr>
+<table id="example2" class="table table-hover">
+<thead>
+	<tr>
+	    	<th>Name</th>
+	    	<th>Assoc name</th>
+	    	<th>Bits id</th>
+		<th>Status</th>
+		<th>Change Status</th>
+		
+	</tr>
+</thead>
+<tbody>
+	{% for i in coord %}
+	<tr>
+	<td>{{i.user}}</td>
+	<td>{{i.assoc_name}}</td>
+	<td>{{i.cg_bitsid}}</td>
+	<td>{{i.status}}</td>
+	{% ifequal i.status "Active" %}
+	<td><a href="/ssms/ssms/coord-inactive/{{ i.cg_id }}/"><button class="btn  btn-danger " onclick="return confirm('Are you sure you want to Inactivate The coordinator {{ i.user }}?');">Inactivate</button> </a></td>
+	{% else %}
+	<td><a href="/ssms/ssms/coord-active/{{ i.cg_id }}/"><button class="btn  btn-success " onclick="return confirm('Are you sure you want to Activate The coordinator {{ i.user }}?');">Activate</button> </a></td>
+	{% endifequal %}
+	</tr>
+	 {% endfor %}  
+</tbody>
+</table>
+{% else %}
+<h3>You are not allowed to view this page</h3>
+<h3>Login to View this page</h3>
+{% endif %}
+{% endblock %}
+
+
+{% block script %}
+
+<script>
+	$(document).ready(function() {
+    $('#example').DataTable();
+} );
+	$(document).ready(function() {
+    $('#example2').DataTable();
+} );
+</script>
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+
+
+{% endblock %}

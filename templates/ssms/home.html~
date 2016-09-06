@@ -1,0 +1,16 @@
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block block1 %}
+	<h1>Please sign in to view contents</h1>
+	<div class="text-center">
+	<img src="{% static 'user-logo.png' %}" style="height:228px;">
+	<br/>
+	<li><a href="/soc/login/google-oauth2/?next=/" ><button type="button" class="btn btn-danger">Google+</button></a></li>
+	</div>
+	
+
+{% endblock %}
+

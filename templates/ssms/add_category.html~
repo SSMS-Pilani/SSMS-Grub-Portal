@@ -1,0 +1,18 @@
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}reg{% endblock %}
+
+{% block body_block %}
+	        <h1>Add Grub Details</h1>
+
+        <form id="category_form"  enctype="multipart/form-data" method="post" action="/ssms/add_category/" >
+
+            {% csrf_token %}
+		{{ form.as_p }}
+		</p>
+            <input type="submit" name="submit" value="Add Grub" />
+        </form>
+
+{% endblock %}

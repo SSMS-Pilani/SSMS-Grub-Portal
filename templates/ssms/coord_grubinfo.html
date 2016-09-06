@@ -1,0 +1,81 @@
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}{{ grub_name }}{% endblock %}
+
+{% block block1 %}
+	
+{% if user.is_staff %}
+   
+    {% if grub %}
+		    <h2 class="brand-before text-center">
+			{% ifequal i 2 %}
+			<small><strong>Veg + Non Veg</strong></small>
+			{% else %}
+                        <small><strong>{{ grub.meal }}</strong></small>
+			{% endifequal %}
+                    </h2>
+                    <h1 class="brand-name text-center">{{ grub.name }}</h1>
+                    <hr class="tagline-divider">
+			<h2 class="text-center">
+                        <small>On
+                            <strong>{{grub.date}}</strong>
+                        </small>
+                    	</h2>
+  {% ifequal i 0 %}
+<h4 class="text-center">Veg Menu</h4>
+<img class="img-responsive img-full" src="/media/{{meal.v_images }} " alt="">
+{% endifequal %}
+	{% ifequal i 1 %}
+<h4 class="text-center">Non Veg Menu</h4>
+		<li><img class="img-responsive img-full" src="/media/{{meal.n_images }} "  /></li>
+{% endifequal %}
+	{% ifequal i 2 %}
+		<div class="text-center">
+		<h4 class="text-center">Veg Menu</h4>
+		<li><img class="img-responsive img-full" src="/media/{{meal.veg_images }} "  /></li>
+		<hr>
+		<h4 class="text-center">Non Veg Menu</h4>
+		<li><img class="img-responsive img-full" src="/media/{{meal.non_veg_images }} "  /></li>
+		</div>
+{% endifequal %}
+	<h3>Cancellations starts on {{ grub.deadline2 }}<h3>
+	<h3 >Cancellations Deadline: {{grub.deadline}}</h3>
+	<h3  class="text-right"  >Status: {{grub.status}}</h3>
+	
+	{% ifequal i 0 %}
+		<h3>veg price: {{meal.v_price}}</h3>
+		<h3>veg venue: {{meal.v_venue}}</h3>
+	{% endifequal %}
+	{% ifequal i 1 %}
+		
+		<h3>Non veg price: {{meal.n_price}}</h3>
+		<h3>Non veg venue: {{meal.n_venue}}</h3>
+	{% endifequal %}
+	{% ifequal i 2 %}
+		
+	<h3>veg price: {{meal.veg_price}}</h3>
+	<h3>non-veg price: {{meal.non_veg_price}}</h3>
+	<h3>veg venue: {{meal.veg_venue}}</h3>
+	<h3>non-veg venue: {{meal.non_veg_venue}}</h3>
+	{% endifequal %}
+	
+	
+	<h3><a href="/ssms/stats/{{grub.gm_id}}/"><button class="btn btn-lg btn-info" >View Stats</button></a></h3>
+	{% ifequal e 4 %}
+	<h1 class="text-center text-danger">Grub is over</h1>
+	{% else %}
+	<h3 class="text-right"><a href="/ssms/coord/edit/{{grub.gm_id}}/"><button class="btn btn-lg btn-primary" >Edit</button></a></h3>
+	{% endifequal %}
+<ul>
+	
+    {% endif %}
+
+
+{% else %}
+<h3>You are not allowed to view this page</h3>
+<h3>Login to View this page</h3>
+{% endif %}
+{% endblock %}
+

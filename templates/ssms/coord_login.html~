@@ -1,0 +1,25 @@
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block head_block %}  <link href="http://getbootstrap.com/examples/signin/signin.css" rel="stylesheet">{% endblock %}
+{% block block1 %}
+        
+<h1 class="text-center text-danger">{{ invalid }}</h1>
+<form class="form-signin" role="form" method="post" action=".">
+{% csrf_token %}
+
+                    <hr>
+                    <h2 class="intro-text text-center">Grub Coord
+                        <strong>Log In</strong>
+                    </h2>
+                    <hr>
+Username: <input class="form-control" placeholder="Username" id="id_username" maxlength="254" name="username" type="text" required autofocus=""/>
+Password:<input type="password" class="form-control" placeholder="Password" id="id_password" name="password"  required />
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit" value="Submit" >Sign in</button>
+        </form>
+
+{% endblock %}
+

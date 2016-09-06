@@ -1,0 +1,67 @@
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block block1 %}
+{% if user.is_staff %}
+{% if done %}
+	<h3>Added!</h3>
+{% endif %}
+{% ifequal e 2 %}
+<hr>
+<h2 class="intro-text text-center">Add Student to {{ grub.name }}
+                    </h2>
+                    <hr>
+                   <h3 class="text-center text-danger">{{ invalid }}</h3>
+     
+	
+	
+<form role="form"  class="form-horizontal" method="post" action="/ssms/coord/register-students/{{ grub.gm_id }}/" enctype="multipart/form-data">
+	{% csrf_token %}
+    <div class="form-group">
+      <label class="control-label col-sm-2" >Student Id</label>
+      <div class="col-sm-5">
+        <input type="text" class="form-control" name="s_id" >
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" >Meal Type</label>
+      <div class="col-sm-5">
+		{% ifequal grub.meal "Veg" %}
+		<select name="mealtype" id="mealtype">
+  		<option id="field-veg" value="Veg">Veg</option>
+		</select>
+		{% endifequal %}
+		{% ifequal grub.meal "Non Veg" %}
+		<select name="mealtype" id="mealtype">
+  		<option id="field-non-veg" value="Non Veg">Non Veg</option>
+		</select>
+		{% endifequal %}
+		{% ifequal grub.meal "Both" %}
+		<select name="mealtype" id="mealtype">
+  		<option id="field-veg" value="Veg">Veg</option>
+  		<option id="field-non-veg" value="Non Veg">Non Veg</option>
+		</select>
+		{% endifequal %}
+      </div>
+      </div>
+
+    
+    <div class="form-group">        
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-lg btn-primary " name="submit" value="Add Student">Add Student</button>
+      </div>
+    </div>
+	You can register Students till {{ grub.deadline2 }}
+{% else %}
+ <h3>You cannot register now!</h3>
+<h4> Registration Deadline : {{ grub.deadline2 }}
+{% endifequal %}
+	</form>
+	
+{% else %}
+<h3>You are not allowed to view this page</h3>
+<h3>Login to View this page</h3>
+{% endif %}
+{% endblock %}

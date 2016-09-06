@@ -1,0 +1,62 @@
+{% extends 'ssms/base.html' %}
+{% load staticfiles %}
+
+
+{% block head_block %}<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css"> {% endblock %}
+
+{% block block1 %}
+{% if user.is_staff %}
+			<hr>
+                    <h1 class="intro-text text-center"><strong>{{grub.name}} Status</strong>
+                    </h1>
+                    <hr>
+<table id="example" class="table table-hover">
+<thead>
+	<tr>
+	    	<th>Name</th>
+	    	<th>BITS ID</th>
+	    	<th>Meal type</th>
+		<th>Bhawan</th>
+		<th>Room No.</th>
+		<th>Status</th>
+	</tr>
+</thead>
+<tbody>
+	{% for i in stud %}
+	<tr>
+	<td>{{i.name}}</td>
+	<td>{{i.student_id}}</td>
+	<td>{{i.meal}}</td>
+	<td>{{i.bhawan}}</td>
+	<td>{{i.room}}</td>
+	<td>{{i.status}}</td>
+	</tr>
+	 {% endfor %}  
+</tbody>
+</table>
+<br>
+<p><h2>Registered:{{reg}}</h2></p>
+
+<h2>Opted Out:{{out}}</h2>
+{% else %}
+<h2>You are not allowed to view this page</h2>
+<h2>Login to View this page</h2>
+{% endif %}
+{% endblock %}
+
+
+{% block script %}
+
+<script>
+	$(document).ready(function() {
+    $('#example').DataTable();
+} );
+	$(document).ready(function() {
+    $('#example2').DataTable();
+} );
+</script>
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+
+
+{% endblock %}

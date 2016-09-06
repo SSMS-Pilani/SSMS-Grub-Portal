@@ -1,0 +1,23 @@
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}{{ grub_name }}{% endblock %}
+
+{% block body_block %}
+    <h1>{{ grub_name }}</h1>
+    {% if grub %}
+        <h3>mealtype: {{ grub.meal }}</h3>
+	<img src="/media/{{ grub.images }} " height=500px />
+<ul class="list-unstyled">
+	<h3><li>date: {{grub.date}}</li></h3>
+	<h3><li>veg price: {{grub.veg_price}}</li></h3>
+	<h3><li>deadline: {{grub.date}}</li></h3>
+	<h3><li>veg venue: {{grub.veg_venue}}</li></h3>
+	<h3><li>non-veg price: {{grub.non_veg_price}}</li></h3>
+	<h3><li>non-veg venue: {{grub.non_veg_venue}}</li></h3>
+<ul>
+    {% endif %}
+
+{% endblock %}
+
