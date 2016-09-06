@@ -150,10 +150,10 @@ if it's not present, don't show loader */
         <div class="container" >
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h4>Copyright &copy; SSMS Tech Team</h4>
-			<h5>BITS Pilani,Pilani Campus 2016</h5>
+                    <h3>Copyright &copy; SSMS Tech Team</h3>
+			<h4>BITS Pilani,Pilani Campus 2016</h4>
 			<hr>
-			<h6>Developed By: Rohit Lodha and Vivek Singhvi</h6>
+			<h5>Developed By: Rohit Lodha and Vivek Singhvi</h5>
                 </div>
             </div>
         </div>
