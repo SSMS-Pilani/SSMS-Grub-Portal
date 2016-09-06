@@ -49,8 +49,8 @@ class Grub(models.Model):
 	status=models.CharField(choices=stype,max_length=128,default='Active')
 	excel = models.FileField(upload_to=content_album_name,blank=False)	
 	mails=models.CharField(choices=emtype,max_length=128,default='Not Sent',blank=False)
-        def __str__(self):
-                return self.name
+	def __str__(self):
+		return self.name
 
 
 
@@ -70,7 +70,7 @@ class Grub_Student(models.Model):
 	bhawan=models.CharField("Bhawan",max_length=32,default='VK')
 	class Meta:
 		unique_together = ('student_id', 'gm_id','status') ##add meal
-        def __str__(self):
+	def __str__(self):
                 return self.student_id
 
 
@@ -81,7 +81,7 @@ class Student(models.Model):
 	bhawan = models.CharField(max_length=32)
 	room_no = models.CharField("Room No.",max_length=4)
 	user_id=models.CharField("Bits Email Id",db_index=True,max_length=32,blank=False)
-        def __str__(self):
+	def __str__(self):
                 return self.user_id
 	
 	
