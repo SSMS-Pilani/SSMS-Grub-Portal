@@ -212,7 +212,7 @@ FILE_UPLOAD_HANDLERS = ("django_excel.ExcelMemoryFileUploadHandler",
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_BACKEND = 'post_office.EmailBackend'
+
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_PASSWORD = 'maybe587'
@@ -224,8 +224,4 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 
-#####
-CRON_CLASSES = [
-    "ssms.views.MyCronJob",
-]
 
