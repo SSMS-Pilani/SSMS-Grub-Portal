@@ -2,7 +2,8 @@ from django.conf.urls import patterns, url
 from ssms import views
 urlpatterns = [
 	url(r'^$', views.index, name='index'),
-	url(r'^send/$', views.send, name="send"),
+	url(r'^send/$', views.send, name="send"), # Cancellation/Registration mail
+	url(r'^send2/$', views.send2, name="send2"),  # Signed up mail 1-2 days before
 	url(r'^contact/$', views.contact, name='contact'),#Contact
 	url(r'^about/$', views.about, name='about'),#About
 	#url(r'^index/$', views.index, name='index'),#Home

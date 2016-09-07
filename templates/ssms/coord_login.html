@@ -3,7 +3,7 @@
 {% load staticfiles %}
 
 
-{% block head_block %}  <link href="http://getbootstrap.com/examples/signin/signin.css" rel="stylesheet">{% endblock %}
+{% block head_block %}  <link href="{% static 'css/signin.css' %}" rel="stylesheet">{% endblock %}
 {% block block1 %}
         
 <h1 class="text-center text-danger">{{ invalid }}</h1>

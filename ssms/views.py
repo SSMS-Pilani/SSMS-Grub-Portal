@@ -47,7 +47,7 @@ from django.core.mail import EmailMultiAlternatives
 
 
 def send(request):
-	grub=Grub.objects.filter(mails="Not Sent")
+	grub=Grub.objects.filter(status="Active",mails="Not Sent")
 	c=date.today()
 	d=timedelta(days=1)
 	f=c+d
@@ -60,7 +60,7 @@ def send(request):
 			print a
 			subject, from_email = str(i.name), 'ssms7907@gmail.com'
 			text_content = 'This is an important message.'
-			html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(i.name)+"</strong> that is to take place on <strong>"+ str(i.date)+"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=ssms/student/grub/"+str(i.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" +str(i.deadline)+"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>SSMS Tech Team</p></body>"
+			html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(i.name)+"</strong> that is to take place on <strong>"+ str(i.date)+"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://ancient-falls-37927.herokuapp.com/ssms/student/grub/"+str(i.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" +str(i.deadline)+"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>SSMS Tech Team</p></body>"
 			msg = EmailMultiAlternatives(subject, text_content, from_email, bcc = a)
 			msg.attach_alternative(html_content, "text/html")
 			msg.send(fail_silently=False)
@@ -73,32 +73,31 @@ def send(request):
 
 
 
-"""def send(request,gmid):
-	grub=Grub.objects.get(gm_id=gmid)
-	students=Grub_Student.objects.filter(gm_id=gmid)[:]
-	
-	link="/ssms/"
-	b="This is to inform you that you have been signed up for the "+str(grub.name)+" that is to take place on "+ str(grub.date)+"\n \n"+"In case you wish to cancel your signing, please visit SSMS Grub Portal, before 12 midnight," +str(grub.deadline)+". Any requests made after the deadline will not be entertained. \n \n"+"If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. \n"+"Thank you. \n"+ "SSMS Tech Team"
-	d=tuple()
-	datatuple=tuple()
-	for i in students:
-		d=(str(grub.name),b,'ssms7907@gmail.com',[str(i.user_id)+"@pilani.bits-pilani.ac.in"])
-		datatuple+=(d,)
-	send_mass_mail(datatuple, fail_silently=False)
-	return HttpResponse("Sent mass mail")
-	send_mail(str(grub.name),'You have been registered for '+str(grub.name)+'. Sign in to cancel' ,'ssms7907@gmail.com',a,fail_silently=False)
+def send2(request):
+    	grub=Grub.objects.filter(status="Active",mails="Sent")
+    	c=date.today()
+	d=timedelta(days=1)
+	f=c+d
+    	for i in grub:
+        	a=[]
+        	if (c==i.date or f==i.date):
+		    	students=Grub_Student.objects.filter(gm_id=i.gm_id)[:]
+		   	for j in students:
+		        	a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+		    	print a
+		    	subject, from_email = str(i.name), 'ssms7907@gmail.com'
+		    	text_content = 'This is an important message.'
+		   	html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+str(i.name)+"</strong> which is scheduled to happen on <strong>"+ str(i.date)+"</strong>. </p> <p>On spot signings will be available. Please carry your ID cards for the same. </p><p>SSMS will distribute the stubs to the students who have signed, by 5 PM. Those who have signed for the grub and do not receive the stub, please contact SSMS for the same.</p><p>Thank you.</p><p>SSMS Tech Team</p></body>"
+			msg = EmailMultiAlternatives(subject, text_content, from_email, bcc = a)
+            		msg.attach_alternative(html_content, "text/html")
+            		msg.send(fail_silently=False)
+            		i.mails="Sent"
+           		i.save()
+        	else:
+            		print("hello")
+	return HttpResponse("Sent python mail")
 	return HttpResponseRedirect("/ssms")
-def send(request,gmid):
-	grub=Grub.objects.get(gm_id=gmid)
-	students=Grub_Student.objects.filter(gm_id=gmid)[:]
-	a=[]
 	
-	for i in students:
-		a.append(str(i.user_id)+"@pilani.bits-pilani.ac.in")
-	print a
-	send_mail(str(grub.name),'You have been registered for '+str(grub.name)+'. Sign in to cancel' ,'ssms7907@gmail.com',a,fail_silently=False)
-	return HttpResponseRedirect("/ssms")"""
-####
 
 def index(request):
 	if not request.user.is_authenticated():
@@ -670,8 +669,9 @@ def student_upcoming_grubs(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def student_grub_register(request, gmid):
+	context_dict={}
+	context_dict['gmid'] = gmid
 	if request.user.is_authenticated() and not request.user.is_staff:
-		context_dict = {}
 	    	try:
 			grub = Grub.objects.get(gm_id=gmid,status="Active")
 			if (grub.meal=='Veg'):
@@ -697,6 +697,7 @@ def student_grub_register(request, gmid):
 			pass
 	    	return render(request, 'ssms/student_grubinfo.html', context_dict)
 	else :
+		return render(request, 'ssms/student_grubinfo.html', context_dict)
 		return HttpResponseRedirect("/soc/login/google-oauth2/?next=/ssms/student/grub/"+gmid)
 
 def student_grub_register2(request, gmid):           #register for veg

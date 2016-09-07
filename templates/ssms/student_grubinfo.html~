@@ -24,22 +24,22 @@
                         </small>
                     	</h2>
   {% ifequal i 0 %}
-<h5 class="text-center">Veg Menu</h5>
+<h4 class="text-center">Veg Menu</h4>
 <img class="img-responsive img-full" src="/media/{{meal.v_images }} " alt="">
 {% endifequal %}
 	{% ifequal i 1 %}
-<h5 class="text-center">Non Veg Menu</h5>
+<h4 class="text-center">Non Veg Menu</h4>
 		<img class="img-responsive img-full" src="/media/{{meal.n_images }} "  />
 {% endifequal %}
 	{% ifequal i 2 %}
 
 		<div class="text-center">
-		<h5 class="text-center">Veg Menu</h5>
-		<h5>Veg Menu</h5>
+		<h4 class="text-center">Veg Menu</h4>
+		<h4>Veg Menu</h4>
 		<img class="img-responsive img-full" src="/media/{{meal.veg_images }} "  />
 		<hr>
-		<h5 class="text-center">Non Veg Menu</h5>
-		<h5>Non Veg Menu</h5>
+		<h4 class="text-center">Non Veg Menu</h4>
+		<h4>Non Veg Menu</h4>
 		<img class="img-responsive img-full" src="/media/{{meal.non_veg_images }} "  />
 		</div>
 {% endifequal %}
@@ -124,8 +124,20 @@
 <h3> Grub does not exist or has been made inactive.</h3>
 {% endifequal %}
 {% else %}
+<div class="text-center">
 <h3>You are not allowed to view this page</h3>
 <h3>Login to View this page</h3>
+<hr>
+	<h2 class="intro-text text-center">Student Login</h2>
+	<hr>
+                    <hr class="visible-xs">
+	
+	<a href="/soc/login/google-oauth2/?next=/ssms/student/grub/{{ gmid }}/" ><img src="{% static 'user-logo.png' %}" style="height:228px;"></a>
+	<br/>
+	<a href="/soc/login/google-oauth2/?next=/ssms/student/grub/{{ gmid }}/"  ><button type="button" class="btn btn-lg btn-danger">Google+</button></a>
+	
+	<h4 class="text-center">*Login through BITS ID only</h4>
+</div>
 {% endif %}
 {% endblock %}
 

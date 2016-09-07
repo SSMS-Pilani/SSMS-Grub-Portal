@@ -124,8 +124,19 @@
 <h3> Grub does not exist or has been made inactive.</h3>
 {% endifequal %}
 {% else %}
-<h3>You are not allowed to view this page</h3>
+<div class="text-center">
 <h3>Login to View this page</h3>
+<hr>
+	<h2 class="intro-text text-center">Student Login</h2>
+	<hr>
+                    <hr class="visible-xs">
+	
+	<a href="/soc/login/google-oauth2/?next=/ssms/student/grub/{{ gmid }}/" ><img src="{% static 'user-logo.png' %}" style="height:228px;"></a>
+	<br/>
+	<a href="/soc/login/google-oauth2/?next=/ssms/student/grub/{{ gmid }}/"  ><button type="button" class="btn btn-lg btn-danger">Google+</button></a>
+	
+	<h4 class="text-center">*Login through BITS ID only</h4>
+</div>
 {% endif %}
 {% endblock %}
 
