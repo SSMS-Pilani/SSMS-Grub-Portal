@@ -35,7 +35,7 @@
 </tbody>
 </table>
 <br>
-<p><h2>Registered:{{reg}}</h2></p>
+<h2>Registered:{{reg}}</h2>
 
 <h2>Opted Out:{{out}}</h2>
 {% else %}
@@ -49,12 +49,19 @@
 
 <script>
 	$(document).ready(function() {
-    $('#example').DataTable();
+    $('#example').DataTable( {
+        "lengthMenu": [[10, 25, 50, 100, 200, 300, -1], [10, 25, 50, 100, 200, 300, "All"]]
+    } );
 } );
 	$(document).ready(function() {
-    $('#example2').DataTable();
+    $('#example2').DataTable( {
+        "lengthMenu": [[10, 25, 50, 100, 200, 300, -1], [10, 25, 50, 100, 200, 300, "All"]]
+    } );
 } );
 </script>
+
+
+
 <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
 

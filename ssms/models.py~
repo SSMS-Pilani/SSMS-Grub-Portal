@@ -88,7 +88,7 @@ class Student(models.Model):
 class Veg(models.Model):
 	gm_id = models.ForeignKey(Grub,verbose_name="Grub Id")
 	v_id=  models.UUIDField("Veg Grub ID",primary_key=True, default=uuid.uuid4, editable=False)
-	v_venue = models.CharField("Veg Venue",choices=venue.place,max_length=16,blank=False)
+	v_venue = models.CharField("Veg Location",choices=venue.place,max_length=16,blank=False)
 	v_price = models.IntegerField("Veg Price",default=0,null=False)
 	v_images = models.ImageField("Veg Meal image",upload_to=content_album_name2, blank=False)
 	def __str__(self):
@@ -96,7 +96,7 @@ class Veg(models.Model):
 class NonVeg(models.Model):
 	gm_id = models.ForeignKey(Grub,verbose_name="Grub Id")
 	n_id=  models.UUIDField("Non Veg Grub ID",primary_key=True, default=uuid.uuid4, editable=False)
-	n_venue = models.CharField("Non Veg Venue",choices=venue.place,max_length=16,blank=False)
+	n_venue = models.CharField("Non Veg Location",choices=venue.place,max_length=16,blank=False)
 	n_price = models.IntegerField("Non Veg Price",default=0,null=False)
 	n_images = models.ImageField("Non Veg Meal image",upload_to=content_album_name2, blank=False)	
 	def __str__(self):
@@ -105,8 +105,8 @@ class NonVeg(models.Model):
 class Both(models.Model):
 	gm_id = models.ForeignKey(Grub,verbose_name="Grub Id")
 	b_id=  models.UUIDField("Veg+Non Veg Grub Id",primary_key=True, default=uuid.uuid4, editable=False)
-	veg_venue = models.CharField("Veg Venue",choices=venue.place,max_length=16,blank=False)
-	non_veg_venue = models.CharField("Non Veg Venue",choices=venue.place,max_length=16,blank=False)
+	veg_venue = models.CharField("Veg Location",choices=venue.place,max_length=16,blank=False)
+	non_veg_venue = models.CharField("Non Veg Location",choices=venue.place,max_length=16,blank=False)
 	veg_price = models.IntegerField("Veg Price",default=0,null=False)
 	non_veg_price = models.IntegerField("Non Veg price",default=0,null=False)
 	veg_images = models.ImageField("Veg Meal Image",upload_to=content_album_name2, blank=False)

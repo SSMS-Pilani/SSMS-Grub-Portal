@@ -16,6 +16,7 @@ import django_excel as excel
 from datetime import datetime,date,timedelta
 from django.core.mail import send_mail,send_mass_mail
 from django.views.decorators.cache import cache_control
+import xlsxwriter
 ####
 #from django_cron import CronJobBase, Schedule
 
@@ -292,18 +293,45 @@ def ssms_coord_inactive(request,cgid):
 	else :
 		return HttpResponseRedirect('/ssms/ssms/login/')
 
+import os
 
 def export_data(request, gmid):
 	if request.user.is_staff:
-		query_sets = Grub_Student.objects.filter(gm_id=gmid,status="Signed Up")
+	
+		c = Grub_Student.objects.filter(gm_id=gmid,status="Signed Up")
 		a= Grub.objects.get(gm_id=gmid)
-		column_names = ['user_id','name', 'student_id', 'meal','bhawan','room']
-		return excel.make_response_from_query_sets(
-		    query_sets,
-		    column_names,
-		    'xls',
-		    file_name=a.name
-		)
+		
+		b=[]		
+		for stu in c:
+			b.append([stu.user_id,stu.name, stu.student_id, stu.meal,stu.bhawan,stu.room])
+		print(b)
+		workbook = xlsxwriter.Workbook('media/'+a.name+'/'+a.name+'_grublist.xlsx')
+		worksheet = workbook.add_worksheet()
+		worksheet.set_column('A:A', 15)
+		worksheet.set_column('B:B', 25)
+		worksheet.set_column('C:C', 20)
+		worksheet.set_column('D:D', 15)
+		worksheet.set_column('E:E', 15)
+		worksheet.set_column('F:F', 15)
+		bold = workbook.add_format({'bold': 1})
+		worksheet.write('A1', 'User ID', bold)
+		worksheet.write('B1', 'Name', bold)
+		worksheet.write('C1', 'BITS ID', bold)
+		worksheet.write('D1', 'Meal Type', bold)
+		worksheet.write('E1', 'Bhawan', bold)
+		worksheet.write('F1', 'Room No.', bold)
+		row = 1
+		col = 0
+		for i in b:
+			worksheet.write_string  (row, col,i[0] )
+			worksheet.write_string(row, col + 1, i[1] )
+			worksheet.write_string  (row, col + 2,i[2] )
+			worksheet.write_string  (row, col+3,i[3] )
+			worksheet.write_string(row, col + 4, i[4] )
+			worksheet.write_string  (row, col + 5,i[5] )
+			row += 1
+		workbook.close()
+		return HttpResponseRedirect('media/'+a.name+'/'+a.name+'_grublist.xlsx')
 	else :
 		return HttpResponseRedirect('/ssms/')
 
@@ -375,7 +403,7 @@ def coord_grub_register(request):
 			elif form.is_valid() and  form2.is_valid():
 				a=form.save(commit=False)
 				a.meal=request.POST.get('mealtype')
-				a.date=request.POST.get('date')
+				a.date=request.POST.get('grubdate')
 				a.reg_date=datetime.now()
 				d=Grub_Coord.objects.get(user=request.user)
 				a.cg_id=d
@@ -400,7 +428,7 @@ def coord_grub_register(request):
 			elif form.is_valid() and  form3.is_valid():
 				a=form.save(commit=False)
 				a.meal=request.POST.get('mealtype')
-				a.date=request.POST.get('date')
+				a.date=request.POST.get('grubdate')
 				a.reg_date=datetime.now()
 				d=Grub_Coord.objects.get(user=request.user)
 				a.cg_id=d
