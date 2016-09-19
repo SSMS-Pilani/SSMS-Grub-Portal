@@ -41,6 +41,58 @@
                             <td>Expert Member, SSMS</td>
                             <td>+91 9035657451</td>
 			</tr>
+						<tr>
+				<td><a>Nikhita Anand</a></td>
+                            <td>Mess Representative, MB Mess</td>
+                            <td>+91 9521696222</td>
+			</tr>
+			<tr>
+                            <td><a>Harsh Nijhawan</a></td>
+                            <td>Mess Representative, SV Mess</td>
+                            <td>+91 7737139355</td>
+			</tr>
+			<tr>
+				<td><a>Vishal Patil</a></td>
+                            <td>Mess Representative, KG Mess</td>
+                            <td>+91 7733975679</td>
+	</tr>
+<tr>
+                            <td><a>Divyansh Paharia</a></td>
+                            <td>Mess Representative, MAL Mess
+</td>
+                            <td>+91 8233232432</td>
+			</tr>
+<tr>	
+				<td><a>Arnab Chakraborty</a></td>
+                            <td>Mess Representative, VKB Mess</td>
+                            <td>+91 9649861046</td>
+			</tr>
+			<tr>
+                            <td><a>Vandit Gandotra</a></td>
+                            <td>Mess Representative, RPA Mess</td>
+                            <td>+91 9649859146</td>
+			</tr>
+			<tr>
+				<td><a>Rohit Valluri</a></td>
+                            <td>Mess Representative, CVR Mess</td>
+                            <td>
++91 8520004466
+</td>
+	</tr>
+
+<tr>
+			<td><a>Saikrishna Kondameed</a></td>
+                            <td> RB Mess
+</td>
+                            <td>+91 9461371881</td>
+</tr>
+<tr>
+                            <td><a>Akash Singh</a></td>
+                            <td> SR Mess
+</td>
+                            <td>+91 9468923617</td>
+		
+</tr>
 			</tbody>
                     </table>
 		</div>
@@ -147,89 +199,14 @@
 	</div>
   </div>
 </div>
-		<div class="panel panel-default">
-		<div class="panel-heading">
-      
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapse4">
-        <h4 class="panel-title">Mess Representative </h4></a>
-     
-    </div>
-    <div id="collapse4" class="panel-collapse collapse">
-<div class="panel-body">
-<table  class="table table-bordered ">				
-                        
-                      <thead>
-                         <tr>
-                            <th>Name</th>
-                            <th>Post</th>
-                            <th>Contact</th>
-                         </tr>
-                      </thead>
-                      <tbody>
-			<tr>
-				<td><a>Nikhita Anand</a></td>
-                            <td> MB Mess</td>
-                            <td>+91 9521696222</td>
-			</tr>
-			<tr>
-                            <td><a>Harsh Nijhawan</a></td>
-                            <td> SV Mess</td>
-                            <td>+91 7737139355</td>
-			</tr>
-			<tr>
-				<td><a>Vishal Patil</a></td>
-                            <td> KG Mess</td>
-                            <td>+91 7733975679</td>
-	</tr>
-<tr>
-                            <td><a>Divyansh Paharia</a></td>
-                            <td> MAL Mess
-</td>
-                            <td>+91 8233232432</td>
-			</tr>
-<tr>	
-				<td><a>Arnab Chakraborty</a></td>
-                            <td> VKB Mess</td>
-                            <td>+91 9649861046</td>
-			</tr>
-			<tr>
-                            <td><a>Vandit Gandotra</a></td>
-                            <td> RPA Mess</td>
-                            <td>+91 9649859146</td>
-			</tr>
-			<tr>
-				<td><a>Rohit Valluri</a></td>
-                            <td>CVR Mess</td>
-                            <td>
-+91 8520004466
-</td>
-	</tr>
-
-<tr>
-			<td><a>Saikrishna Kondameed</a></td>
-                            <td> RB Mess
-</td>
-                            <td>+91 9461371881</td>
-</tr>
-<tr>
-                            <td><a>Akash Singh</a></td>
-                            <td> SR Mess
-</td>
-                            <td>+91 9468923617</td>
 		
-</tr>
-</tbody>
-                    </table>
 
-</div>
-</div>
-</div>
 <div class="panel panel-default">
 		<div class="panel-heading">
-      <h4 class="panel-title">
+      
         <a data-toggle="collapse" data-parent="#accordion" href="#collapse5">
-        SSMS Tech Team</a>
-      </h4>
+        <h4 class="panel-title">SSMS Tech Team</h4></a>
+      
     </div>
     <div id="collapse5" class="panel-collapse collapse">
 <div class="panel-body">

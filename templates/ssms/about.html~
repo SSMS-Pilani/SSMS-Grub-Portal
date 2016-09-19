@@ -1,8 +1,10 @@
 {% extends 'ssms/base.html' %}
 
 {% load staticfiles %}
-
-
+	
+{% block head_block %}
+ <link href="https://fonts.googleapis.com/css?family=Baloo+Bhaina" rel="stylesheet"> 
+ {% endblock %}
 
 {% block block1 %}
 <div class="container">
@@ -23,7 +25,7 @@
 
                
                     <hr/>
-                    <center style="margin:5px"><h3>Technical Head</h3>
+                    <center style="margin:5px"><h3 style="font-family:'Baloo Bhaina', cursive;" >Technical Head</h3>
 			<hr>
                     <h4>Mayank Vikhona</h4>
 			<hr/>
