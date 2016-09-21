@@ -45,7 +45,7 @@
 	<div class="text-center">
 	<a href="/soc/login/google-oauth2/?next=/" ><img src="{% static 'user-logo.png' %}" style="height:228px;"></a>
 	<br/>
-	<a href="/soc/login/google-oauth2/?next=/" role="dialog" ><button type="button" class="btn btn-lg btn-danger">Google+</button></a>
+	<a href="/soc/login/google-oauth2/?next=/"  ><button type="button" class="btn btn-lg btn-danger">Google+</button></a>
 	</div>
 	<h4 class="text-center">*Login through BITS ID only</h4>
                     
