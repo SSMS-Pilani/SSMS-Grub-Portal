@@ -19,7 +19,56 @@
 		
 		<a href="/ssms/coord/view/{{ g.gm_id }}/"  class="col-lg-3"><button type="submit" class="btn btn-lg btn-success " name="grub" value="View Grub">View  Grub</button></a>
 		<a href="/ssms/coord/register-students/{{ g.gm_id }}/"  class="col-lg-3"><button type="submit" class="btn btn-lg btn-info " name="reg stu" value="Reg Stu">Register student </button></a>
-		<a href="/ssms/export/{{ g.gm_id }}/" class="col-lg-3"><button type="button" class="btn btn-lg btn-danger" >Download Excel</button></a>
+		<a class="col-lg-3"><button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#search{{ g.name }}">Download Excel</button></a>
+		<div id="search{{ g.name }}" class="modal fade" role="dialog">
+  <div class="modal-dialog ">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+	<div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title text-center">{{ g.name }}</h4>
+	
+      </div>
+      <div class="modal-body">
+        <form role="form"  class="form-horizontal" method="post" action="/ssms/export/{{ g.gm_id }}/" >
+{% csrf_token %}
+Bhawan:
+<select  name="bhawan">
+
+<option value="All">All</option>
+<option value="MR">MR</option>
+  <option value="RM">RM</option>
+  <option value="BD">BD</option>
+  <option value="RP">RP</option>
+	 <option value="AK">AK</option>
+
+ <option value="BG">BG</option>
+	  <option value="VK">VK</option>
+  <option value="ML">ML</option>
+  <option value="MLE">MLE</option>
+ 
+  <option value="GN">GN</option>
+  
+
+  <option value="KR">KR</option>
+ 
+  <option value="SK">SK</option>
+	<option value="VY">VY</option>
+  <option value="DS">DS</option>
+
+</select>
+<br>
+<br>
+
+<input type="submit" class="btn btn-lg btn-success btn-block "  value="Submit" onClick="return confirm('This list is temporary. It is bound to change.');">
+</form>
+      </div>
+      
+    </div>
+
+  </div>
+</div>
 		<hr>
 	<br/>
 		{% endfor %}

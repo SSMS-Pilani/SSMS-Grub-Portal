@@ -59,20 +59,79 @@
 	<h3>veg venue: {{meal.veg_venue}}</h3>
 	<h3>non-veg venue: {{meal.non_veg_venue}}</h3>
 	{% endifequal %}
-	<h3 class="col-md-3"><a href="/ssms/export/{{ grub.gm_id }}/"><button type="button" class="btn btn-lg btn-success"><strong>Download List</strong></button></a></h3>
+	
 	{% ifequal e 4 %}
 	<h1>Grub is over</h1>
-	<h3 class="col-md-3"><a href="/ssms/stats/{{grub.gm_id}}/"><button type="button" class="btn btn-lg btn-info"><strong>View Stats</strong></button></a></h3
+	<h3 class="col-md-3"><a href="/ssms/stats/{{grub.gm_id}}/"><button type="button" class="btn btn-lg btn-info"><strong>View Stats</strong></button></a></h3>
 	{% else %}
 	{% ifequal grub.status "Active" %}
 	<h3 class="col-md-3"><a href="/ssms/stats/{{grub.gm_id}}/"><button type="button" class="btn btn-lg btn-info"><strong>View Stats</strong></button></a></h3>
 	
-	<h3 class=" text-right"><a href="/ssms/coord/grub/{{grub.gm_id}}/inactive/"><button type="button" class="btn btn-lg btn-danger" onClick="return confirm('Are you sure you want to Inactivate the grub {{ grub.name }}?');">Inactivate</button></a></h3>
+	<h3 class=" text-right"><a href="/ssms/ssms/grub/{{grub.gm_id}}/inactive/"><button type="button" class="btn btn-lg btn-danger" onClick="return confirm('Are you sure you want to Inactivate the grub {{ grub.name }}?');">Inactivate</button></a></h3>
 	{% else %}
-	<h3 class="text-right"><a href="/ssms/coord/grub/{{grub.gm_id}}/active/"><button type="button" class="btn btn-lg btn-success" onClick="return confirm('Are you sure you want to Activate the grub {{ grub.name }}?');">Activate</button></a></h3>
+	<h3 class="text-right"><a href="/ssms/ssms/grub/{{grub.gm_id}}/active/"><button type="button" class="btn btn-lg btn-success" onClick="return confirm('Are you sure you want to Activate the grub {{ grub.name }}?');">Activate</button></a></h3>
 	{% endifequal %}
-<ul>
 	{% endifequal %}
+	<h3 class="col-md-3"><button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#search{{ grub.name }}"><strong>Download List</strong></button></h3>
+
+
+
+<div id="search{{ grub.name }}" class="modal fade" role="dialog">
+<div class="modal-dialog ">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+	<div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title text-center">{{ grub.name }}</h4>
+<hr>
+      </div>
+      <div class="modal-body">
+        <form role="form"  class="form-horizontal" method="post" action="/ssms/export/{{ grub.gm_id }}/" >
+{% csrf_token %}
+Bhawan:
+<select  name="bhawan">
+
+<option value="All">All</option>
+<option value="MR">MR</option>
+  <option value="RM">RM</option>
+  <option value="BD">BD</option>
+  <option value="RP">RP</option>
+	 <option value="AK">AK</option>
+
+ <option value="BG">BG</option>
+	  <option value="VK">VK</option>
+  <option value="ML">ML</option>
+  <option value="MLE">MLE</option>
+ 
+  <option value="GN">GN</option>
+  
+
+  <option value="KR">KR</option>
+ 
+  <option value="SK">SK</option>
+	<option value="VY">VY</option>
+  <option value="DS">DS</option>
+
+</select>
+<br>
+<br>
+
+<input type="submit" class="btn btn-lg btn-success btn-block "  value="Submit" onClick="return confirm('This list is temporary. It is bound to change.');">
+</form>
+      </div>
+      
+    </div>
+
+  </div>
+</div>
+
+
+
+
+
+
+
     {% endif %}
 
 

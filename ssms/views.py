@@ -55,7 +55,7 @@ def send(request):
 	for i in grub:
 		a=[]
 		if (c==i.deadline2 or f==i.deadline2):
-			students=Grub_Student.objects.filter(gm_id=i.gm_id)[:]
+			students=Grub_Student.objects.filter(gm_id=i.gm_id,status="Signed Up")[:]
 			for j in students:
 				a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
 			print a
@@ -82,7 +82,7 @@ def send2(request):
     	for i in grub:
         	a=[]
         	if (c==i.date or f==i.date):
-		    	students=Grub_Student.objects.filter(gm_id=i.gm_id)[:]
+		    	students=Grub_Student.objects.filter(gm_id=i.gm_id,status="Signed Up")[:]
 		   	for j in students:
 		        	a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
 		    	print a
@@ -298,47 +298,51 @@ import os
 def export_data(request, gmid):
 	if request.user.is_staff:
 		if request.method == "POST":
-			bh = request.POST.get('bhawan')
-			if bh=="All":
-				c = Grub_Student.objects.filter(gm_id=gmid,status="Signed Up")
-			else :
-				c = Grub_Student.objects.filter(gm_id=gmid,status="Signed Up",bhawan=bh)
-			a= Grub.objects.get(gm_id=gmid)
+			try :
+				grub =Grub.objects.get(gm_id=gmid)
+				bh = request.POST.get('bhawan')
+				if bh=="All":
+					c = Grub_Student.objects.filter(gm_id=gmid,status="Signed Up")
+				else :
+					c = Grub_Student.objects.filter(gm_id=gmid,status="Signed Up",bhawan=bh)
+				a= Grub.objects.get(gm_id=gmid)
 		
-			b=[]		
-			for stu in c:
-				b.append([stu.user_id,stu.name, stu.student_id, stu.meal,stu.bhawan,stu.room])
-			print(b)
-			workbook = xlsxwriter.Workbook('media/'+a.name+'/'+a.name+'_'+bh+'_grublist.xlsx')
-			worksheet = workbook.add_worksheet()
-			worksheet.set_column('A:A', 15)
-			worksheet.set_column('B:B', 25)
-			worksheet.set_column('C:C', 20)
-			worksheet.set_column('D:D', 15)
-			worksheet.set_column('E:E', 15)
-			worksheet.set_column('F:F', 15)
-			bold = workbook.add_format({'bold': 1})
-			worksheet.write('A1', 'User ID', bold)
-			worksheet.write('B1', 'Name', bold)
-			worksheet.write('C1', 'BITS ID', bold)
-			worksheet.write('D1', 'Meal Type', bold)
-			worksheet.write('E1', 'Bhawan', bold)
-			worksheet.write('F1', 'Room No.', bold)
-			row = 1
-			col = 0
-			for i in b:
-				worksheet.write_string  (row, col,i[0] )
-				worksheet.write_string(row, col + 1, i[1] )
-				worksheet.write_string  (row, col + 2,i[2] )
-				worksheet.write_string  (row, col+3,i[3] )
-				worksheet.write_string(row, col + 4, i[4] )
-				worksheet.write_string  (row, col + 5,i[5] )
-				row += 1
-			workbook.close()
-			return HttpResponseRedirect('media/'+a.name+'/'+a.name+'_'+bh+'_grublist.xlsx')
+				b=[]		
+				for stu in c:
+					b.append([stu.user_id,stu.name, stu.student_id, stu.meal,stu.bhawan,stu.room])
+				print(b)
+				workbook = xlsxwriter.Workbook('media/'+a.name+'/'+a.name+'_'+bh+'_grublist.xlsx')
+				worksheet = workbook.add_worksheet()
+				worksheet.set_column('A:A', 15)
+				worksheet.set_column('B:B', 25)
+				worksheet.set_column('C:C', 20)
+				worksheet.set_column('D:D', 15)
+				worksheet.set_column('E:E', 15)
+				worksheet.set_column('F:F', 15)
+				bold = workbook.add_format({'bold': 1})
+				worksheet.write('A1', 'User ID', bold)
+				worksheet.write('B1', 'Name', bold)
+				worksheet.write('C1', 'BITS ID', bold)
+				worksheet.write('D1', 'Meal Type', bold)
+				worksheet.write('E1', 'Bhawan', bold)
+				worksheet.write('F1', 'Room No.', bold)
+				row = 1
+				col = 0
+				for i in b:
+					worksheet.write_string  (row, col,i[0] )
+					worksheet.write_string(row, col + 1, i[1] )
+					worksheet.write_string  (row, col + 2,i[2] )
+					worksheet.write_string  (row, col+3,i[3] )
+					worksheet.write_string(row, col + 4, i[4] )
+					worksheet.write_string  (row, col + 5,i[5] )
+					row += 1
+				workbook.close()
+				return HttpResponseRedirect('media/'+a.name+'/'+a.name+'_'+bh+'_grublist.xlsx')
+			except Grub.DoesNotExist:
+				pass
+				return HttpResponseRedirect("/ssms")
 		else:
-			context_dict={"gmid":gmid}
-			return render(request, 'ssms/download.html', context_dict)
+			return HttpResponseRedirect("/ssms")
 
 	else :
 		return HttpResponseRedirect('/ssms/')
