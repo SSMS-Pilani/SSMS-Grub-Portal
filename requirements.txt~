@@ -11,4 +11,4 @@ xlsxwriter
 python-dev
 mysql-server
 libmysqlclient-dev
-django mysqlclient
+mysqlclient
