@@ -8,3 +8,5 @@ python-social-auth
 whitenoise==2.0.6
 pillow
 xlsxwriter
+MYSQL-python
+
