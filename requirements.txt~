@@ -8,7 +8,7 @@ python-social-auth
 whitenoise==2.0.6
 pillow
 xlsxwriter
-python-dev
+MySQL-python
 mysql-server
 libmysqlclient-dev
 mysqlclient
