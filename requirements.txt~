@@ -10,3 +10,4 @@ pillow
 xlsxwriter
 MYSQL-python
 mysqlclient
+python-dev
