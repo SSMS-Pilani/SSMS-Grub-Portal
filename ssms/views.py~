@@ -88,7 +88,7 @@ def send2(request):
 		    	print a
 		    	subject, from_email = str(i.name), 'ssms7907@gmail.com'
 		    	text_content = 'This is an important message.'
-		   	html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+str(i.name)+"</strong> which is scheduled to happen on <strong>"+ str(i.date)+"</strong>. </p> <p>On spot signings will be available. Please carry your ID cards for the same. </p><p>SSMS will distribute the stubs to the students who have signed, by 5 PM. Those who have signed for the grub and do not receive the stub, please contact SSMS for the same.</p><p>Thank you.</p><p>SSMS Tech Team</p></body>"
+		   	html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+str(i.name)+"</strong> which is scheduled to happen on <strong>"+ str(i.date)+"</strong>. </p> <p>On spot signings will be available. Please carry your ID cards for the same. </p><p>Students should collect the stub from the mess counter. Those who have signed for the grub and do not receive the stub, please contact SSMS for the same.</p><p>Thank you.</p><p>SSMS Tech Team</p></body>"
 			msg = EmailMultiAlternatives(subject, text_content, from_email, bcc = a)
             		msg.attach_alternative(html_content, "text/html")
             		msg.send(fail_silently=False)
@@ -829,12 +829,17 @@ def import_data(request):
 			if form.is_valid():
 				def choice_func(row):
 					a=row[0]
-					row[0]=a[0:8].lower()
+					if a[4]=="H" or a[4]=="P":
+						b=a[4]+a[0:4]+a[8:]
+					else :
+						b="f"+a[0:4]+a[8:]
+					row.append(b.lower())
+					
 				    	return row
 				request.FILES['file'].save_to_database(
 				model=Student,
 				initializer=choice_func,
-				mapdict=['user_id','bits_id','name','room_no','bhawan']
+				mapdict=['bits_id','name','bhawan','room_no','user_id',]
 			   	)
 				done=1
 				
