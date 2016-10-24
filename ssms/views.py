@@ -52,8 +52,10 @@ def send(request):
 	c=date.today()
 	d=timedelta(days=1)
 	f=c+d
+	b=[]
+	a=[]
 	for i in grub:
-		a=[]
+		
 		if (c==i.deadline2 or f==i.deadline2):
 			students=Grub_Student.objects.filter(gm_id=i.gm_id,status="Signed Up")[:]
 			for j in students:
@@ -67,9 +69,10 @@ def send(request):
 			msg.send(fail_silently=False)
 			i.mails="Sent"
 			i.save()
+			b.append("sent")
 		else:
-			print("hello")
-	return HttpResponse("Sent python mail")
+			return HttpResponse("Not sent python mail")
+	return HttpResponse("Sent python mail" + b + a)
 	return HttpResponseRedirect("/ssms")
 
 
