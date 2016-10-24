@@ -72,7 +72,7 @@ def send(request):
 			b.append("sent")
 		else:
 			return HttpResponse("Not sent python mail")
-	return HttpResponse("Sent python mail" + b + a)
+	return HttpResponse("Sent python mail" + b + len(a) + a)
 	return HttpResponseRedirect("/ssms")
 
 
