@@ -77,7 +77,7 @@
 	<h1><a href='/ssms/student/grub/{{ grub.gm_id }}/cancel/' >Cancel</a></h1>
 	<div class="text-right">
 	{% ifequal student.meal "Veg" %}
-		<h1><a href='/ssms/student/grub/{{ grub.gm_id }}/register/non_veg/' ><button class="btn btn-lg btn-danger" onClick="return confirm('Are you sure you want to Register For Non Veg in {{ grub.name }}?');">Register For Non Veg</button></a></h1>
+		
 	{% endifequal %}
 	{% ifequal student.meal "Non Veg" %}
 		<h1><a href='/ssms/student/grub/{{ grub.gm_id }}/register/veg/' ><button class="btn btn-lg btn-success" onClick="return confirm('Are you sure you want to Register For Veg in {{ grub.name }}?');">Register For Veg</button></a></h1>
@@ -107,12 +107,12 @@
 {% endifequal %}
 {% ifequal e 1 %}
 	<h1><a href='/ssms/student/grub/{{ grub.gm_id }}/register/veg/' ><button class="btn btn-lg btn-success" onClick="return confirm('Are you sure you want to Register For Veg in {{ grub.name }}?');">Register For Veg</button></a></h1>
-	<h1><a href='/ssms/student/grub/{{ grub.gm_id }}/register/non_veg/' ><button class="btn btn-lg btn-danger" onClick="return confirm('Are you sure you want to Register For Non Veg in {{ grub.name }}?');">Register For Non Veg</button></a></h1>
+	
 
 {% endifequal %}
 {% ifequal e 2 %}
 	<h1><a href='/ssms/student/grub/{{ grub.gm_id }}/register/veg/' ><button class="btn btn-lg btn-success" onClick="return confirm('Are you sure you want to Register For Veg in {{ grub.name }}?');">Register For Veg</button></a></h1>
-	<h1><a href='/ssms/student/grub/{{ grub.gm_id }}/register/non_veg/' ><button class="btn btn-lg btn-danger" onClick="return confirm('Are you sure you want to Register For Non Veg in {{ grub.name }}?');">Register For Non Veg</button></a></h1>
+	
 
 {% endifequal %}
 </div>
