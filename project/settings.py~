@@ -84,7 +84,9 @@ DATABASES = {
 	'ENGINE' : 'django.db.backends.sqlite3',
 	'NAME' : 'my.db',
 	}
-	"""
+	
+}
+"""
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'dr8aqo5iubm3t',
 	'USER' : 'jejbloegqrfbph',
@@ -93,8 +95,6 @@ DATABASES = {
 	'PORT' : '5432',
 	
     }"""
-}
-
 """"""
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
