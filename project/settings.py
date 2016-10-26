@@ -25,7 +25,7 @@ STATIC_PATH = os.path.join(BASE_DIR,'static')
 SECRET_KEY = 'y%(fr2hk01$g5fdi@!iuwu@nid)un_hy$-deyh%403poa6+l2c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -143,7 +143,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_ROOT = os.path.join(STATIC_PATH,'media')
 MEDIA_URL = '/media/'
 
 
