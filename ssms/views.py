@@ -61,6 +61,7 @@ def send(request):
 			for j in students:
 				a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
 			print a
+			return HttpResponse(a)
 			subject, from_email = str(i.name), 'ssms7907@gmail.com'
 			text_content = 'This is an important message.'
 			html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(i.name)+"</strong> that is to take place on <strong>"+ str(i.date)+"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://ancient-falls-37927.herokuapp.com/ssms/student/grub/"+str(i.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" +str(i.deadline)+"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>SSMS Tech Team</p></body>"
