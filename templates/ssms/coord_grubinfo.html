@@ -25,7 +25,7 @@
                     	</h2>
   {% ifequal i 0 %}
 <h4 class="text-center">Veg Menu</h4>
-<img class="img-responsive img-full" src="/media/{{meal.v_images }} " alt="">
+<img class="img-responsive img-full" src="{{ meal.v_images.url }} " alt="">
 {% endifequal %}
 	{% ifequal i 1 %}
 <h4 class="text-center">Non Veg Menu</h4>

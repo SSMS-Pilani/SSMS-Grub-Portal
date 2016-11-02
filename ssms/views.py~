@@ -62,7 +62,7 @@ def send(request):
 				a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
 			print a
 			b=len(a)
-			return HttpResponse(a+"no.="+b)
+			return HttpResponse(b)
 			subject, from_email = str(i.name), 'ssms7907@gmail.com'
 			text_content = 'This is an important message.'
 			html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(i.name)+"</strong> that is to take place on <strong>"+ str(i.date)+"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://ancient-falls-37927.herokuapp.com/ssms/student/grub/"+str(i.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" +str(i.deadline)+"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>SSMS Tech Team</p></body>"
@@ -316,7 +316,7 @@ def export_data(request, gmid):
 				for stu in c:
 					b.append([stu.user_id,stu.name, stu.student_id, stu.meal,stu.bhawan,stu.room])
 				print(b)
-				workbook = xlsxwriter.Workbook('media/'+a.name+'/'+a.name+'_'+bh+'_grublist.xlsx')
+				workbook = xlsxwriter.Workbook('media/'+a.name+'_'+bh+'_grublist.xlsx')
 				worksheet = workbook.add_worksheet()
 				worksheet.set_column('A:A', 15)
 				worksheet.set_column('B:B', 25)

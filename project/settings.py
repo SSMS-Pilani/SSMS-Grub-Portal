@@ -144,7 +144,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 
-#MEDIA_ROOT = os.path.join(STATIC_PATH,'media')
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 #MEDIA_URL = '/media/'
 
 
@@ -235,7 +235,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # aws
 
-AWS_STORAGE_BUCKET_NAME = 'ssmsbitspilani'
+AWS_STORAGE_BUCKET_NAME = 'ssmsbits2'
 AWS_ACCESS_KEY_ID = 'AKIAIJWK6AO2HZ6UMVLQ'
 AWS_SECRET_ACCESS_KEY = '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'
 
@@ -244,8 +244,12 @@ AWS_SECRET_ACCESS_KEY = 'dHmOwqwxZ3i+PLwR1zm6jROLclf4uKAJEcheERDI'
 # This controls how the `static` template tag from `staticfiles` gets expanded, if you're using it.
 # We also use it in the next setting.
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_DEFAULT_ACL = ''
+#STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
 
-
+# Tell the staticfiles app to use S3Boto storage when writing the collected static files (when
+# you run `collectstatic`).
+#STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 
 

@@ -24,19 +24,19 @@
                         </small>
                     	</h2>
   {% ifequal i 0 %}
-<h5 class="text-center">Veg Menu</h5>
+<h4 class="text-center">Veg Menu</h4>
 <img class="img-responsive img-full" src="/media/{{meal.v_images }} " alt="">
 {% endifequal %}
 	{% ifequal i 1 %}
-<h5 class="text-center">Non Veg Menu</h5>
+<h4 class="text-center">Non Veg Menu</h4>
 		<li><img class="img-responsive img-full" src="/media/{{meal.n_images }} "  /></li>
 {% endifequal %}
 	{% ifequal i 2 %}
 		<div class="text-center">
-		<h5 class="text-center">Veg Menu</h5>
+		<h4 class="text-center">Veg Menu</h4>
 		<li><img class="img-responsive img-full" src="/media/{{meal.veg_images }} "  /></li>
 		<hr>
-		<h5 class="text-center">Non Veg Menu</h5>
+		<h4 class="text-center">Non Veg Menu</h4>
 		<li><img class="img-responsive img-full" src="/media/{{meal.non_veg_images }} "  /></li>
 		</div>
 {% endifequal %}

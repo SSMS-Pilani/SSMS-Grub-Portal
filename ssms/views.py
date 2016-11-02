@@ -316,7 +316,7 @@ def export_data(request, gmid):
 				for stu in c:
 					b.append([stu.user_id,stu.name, stu.student_id, stu.meal,stu.bhawan,stu.room])
 				print(b)
-				workbook = xlsxwriter.Workbook('media/'+a.name+'/'+a.name+'_'+bh+'_grublist.xlsx')
+				workbook = xlsxwriter.Workbook('media/'+a.name+'_'+bh+'_grublist.xlsx')
 				worksheet = workbook.add_worksheet()
 				worksheet.set_column('A:A', 15)
 				worksheet.set_column('B:B', 25)
@@ -342,7 +342,7 @@ def export_data(request, gmid):
 					worksheet.write_string  (row, col + 5,i[5] )
 					row += 1
 				workbook.close()
-				return HttpResponseRedirect('media/'+a.name+'/'+a.name+'_'+bh+'_grublist.xlsx')
+				return HttpResponseRedirect('media/'+a.name+'_'+bh+'_grublist.xlsx')
 			except Grub.DoesNotExist:
 				pass
 				return HttpResponseRedirect("/ssms")
