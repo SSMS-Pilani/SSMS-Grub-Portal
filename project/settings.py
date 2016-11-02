@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	'ssms',
 	'social.apps.django_app.default',
-	'storages',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -83,7 +82,7 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     'default': {
 	'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    'NAME': 'dr8aqo5iubm3t',
+        'NAME': 'dr8aqo5iubm3t',
 	'USER' : 'jejbloegqrfbph',
 	'PASSWORD' : 'qr_vxBeNnpe7jAy43DwdArVYiB',
 	'HOST' : 'ec2-54-243-201-3.compute-1.amazonaws.com',
@@ -144,10 +143,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 
-#MEDIA_ROOT = os.path.join(STATIC_PATH,'media')
-#MEDIA_URL = '/media/'
-
-
+MEDIA_ROOT = os.path.join(STATIC_PATH,'media')
+MEDIA_URL = '/media/'
 
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
@@ -233,21 +230,5 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
-# aws
-
-AWS_STORAGE_BUCKET_NAME = 'ssmsbitspilani'
-AWS_ACCESS_KEY_ID = 'AKIAIJWK6AO2HZ6UMVLQ'
-AWS_SECRET_ACCESS_KEY = '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'
-
-# Tell django-storages that when coming up with the URL for an item in S3 storage, keep
-# it simple - just use this domain plus the path. (If this isn't set, things get complicated).
-# This controls how the `static` template tag from `staticfiles` gets expanded, if you're using it.
-# We also use it in the next setting.
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 
 
-
-
-
-MEDIA_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
