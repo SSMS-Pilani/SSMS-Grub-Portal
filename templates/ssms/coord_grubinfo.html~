@@ -25,19 +25,19 @@
                     	</h2>
   {% ifequal i 0 %}
 <h4 class="text-center">Veg Menu</h4>
-<img class="img-responsive img-full" src="/media/{{meal.v_images }} " alt="">
+<img class="img-responsive img-full" src="{{ meal.v_images.url }} " alt="">
 {% endifequal %}
 	{% ifequal i 1 %}
 <h4 class="text-center">Non Veg Menu</h4>
-		<li><img class="img-responsive img-full" src="/media/{{meal.n_images }} "  /></li>
+		<li><img class="img-responsive img-full" src="{{meal.n_images.url }} "  /></li>
 {% endifequal %}
 	{% ifequal i 2 %}
 		<div class="text-center">
 		<h4 class="text-center">Veg Menu</h4>
-		<li><img class="img-responsive img-full" src="/media/{{meal.veg_images }} "  /></li>
+		<li><img class="img-responsive img-full" src="{{meal.veg_images.url }} "  /></li>
 		<hr>
 		<h4 class="text-center">Non Veg Menu</h4>
-		<li><img class="img-responsive img-full" src="/media/{{meal.non_veg_images }} "  /></li>
+		<li><img class="img-responsive img-full" src="{{meal.non_veg_images.url }} "  /></li>
 		</div>
 {% endifequal %}
 	<h3>Cancellations starts on {{ grub.deadline2 }}<h3>

@@ -82,42 +82,18 @@
 
 <tr>
 			<td><a>Saikrishna Kondameed</a></td>
-                            <td> RB Mess
+                            <td>Mess Representative, RB Mess
 </td>
                             <td>+91 9461371881</td>
 </tr>
 <tr>
                             <td><a>Akash Singh</a></td>
-                            <td> SR Mess
+                            <td>Mess Representative, SR Mess
 </td>
                             <td>+91 9468923617</td>
 		
 </tr>
-			</tbody>
-                    </table>
-		</div>
-		 </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
-        <h4 class="panel-title">AMC</h4></a>
-      
-    </div>
-    <div id="collapse2" class="panel-collapse collapse">
-<div class="panel-body">
-			<table class="table table-bordered">
-                      
-                      <thead>
-                         <tr>
-                            <th>Name</th>
-                            <th>Post</th>
-                            <th>Contact</th>
-                         </tr>
-                      </thead>
-                      <tbody>
-			<tr>
+<tr>
 				<td><a>Anshumala Balu</a></td>
                             <td>Advisory and Monitoring Committee Member, SSMS</td>
                             <td>+91 9828622081</td>
@@ -138,10 +114,19 @@
                             <td>+91 9913553363</td>
 </tr>
 <tr>
-</tbody>
+			</tbody>
                     </table>
-	</div>
+		</div>
 		 </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+        <h4 class="panel-title">AMC</h4></a>
+      
+    </div>
+    
   </div>
 
 		<div class="panel panel-default">

@@ -34,6 +34,7 @@ urlpatterns = [
 	url(r'^stats/(?P<gmid>[-\w]+)/$', views.ssms_student_table, name="stats"),
 	url(r'^import/', views.import_data, name="import"),
 	url(r'^coord/edit/(?P<gmid>[-\w]+)/$', views.coord_grub_edit, name='grub_edit'), 
+	#url(r'^(?P<inv>\w+)/$',views.invalid,name="invalid"),
 	#url(r'^coord/upload-spot-signing/(?P<gmid>[-\w]+)/$', views.coord_upload_spot, name='upload spot signing'),
 	]
 

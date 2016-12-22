@@ -24,6 +24,8 @@
 </thead>
 <tbody>
 	{% for i in grub %}
+	{% if i.date|timesince >= "1 day" %}
+	{% else %}
 	<tr>
 	<td><a href="/ssms/student/grub/{{ i.gm_id }}/">{{i.name}}</a></td>
 	<td>{{i.date}}</td>
@@ -31,6 +33,7 @@
 	<td>{{i.meal}}</td>
 	<td>{{i.status}}</td>
 	</tr>
+	{% endif %}
 	{% endfor %}  
 </tbody>
 </table>

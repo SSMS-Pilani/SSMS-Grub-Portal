@@ -6,7 +6,7 @@
 {% block block1 %}
 {% if user.is_staff %}
 {% if done %}
-	<h3 class="text-center text-success">Student has been Added!</h3>
+	<h3 class="text-center text-success">Student has been added!</h3>
 {% endif %}
 {% ifequal e 2 %}
 <hr>
@@ -24,6 +24,7 @@
       <div class="col-sm-5">
         <input type="text" class="form-control" name="student_id" >
       </div>
+       <h3>( Eg: 2015A7PS040 , No "P" required)</h3>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-2" >Meal Type</label>

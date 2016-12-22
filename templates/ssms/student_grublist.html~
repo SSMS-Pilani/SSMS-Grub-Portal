@@ -24,6 +24,8 @@
 </thead>
 <tbody>
 	{% for i in grub %}
+	{% if i.date|timesince >= "1 min" %}
+	{% else %}
 	<tr>
 	<td><a href="/ssms/student/grub/{{ i.gm_id }}/">{{i.name}}</a></td>
 	<td>{{i.date}}</td>
@@ -31,6 +33,7 @@
 	<td>{{i.meal}}</td>
 	<td>{{i.status}}</td>
 	</tr>
+	{% endif %}
 	{% endfor %}  
 </tbody>
 </table>
@@ -44,16 +47,15 @@
 {% block script %}
 
 <script>
-	$(document).ready(function() {
-    $('#example').DataTable({
-	"order": [[ 1, "desc" ]],
+	$(document).ready(function({
         "lengthMenu": [[10, 25, 50, 100, 200, 300, -1], [10, 25, 50, 100, 200, 300, "All"]]
-    } );
+    } ) {
+    $('#example').DataTable();
 } );
-	$(document).ready(function() {
-    $('#example2').DataTable({
+	$(document).ready(function({
         "lengthMenu": [[10, 25, 50, 100, 200, 300, -1], [10, 25, 50, 100, 200, 300, "All"]]
-    } );
+    } ) {
+    $('#example2').DataTable();
 } );
 </script>
 <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>

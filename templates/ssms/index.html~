@@ -19,8 +19,8 @@
 		
 		<a href="/ssms/coord/view/{{ g.gm_id }}/"  class="col-lg-3"><button type="submit" class="btn btn-lg btn-success " name="grub" value="View Grub">View  Grub</button></a>
 		<a href="/ssms/coord/register-students/{{ g.gm_id }}/"  class="col-lg-3"><button type="submit" class="btn btn-lg btn-info " name="reg stu" value="Reg Stu">Register student </button></a>
-		<a class="col-lg-3"><button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#search{{ g.name }}">Download Excel</button></a>
-		<div id="search{{ g.name }}" class="modal fade" role="dialog">
+		<a class="col-lg-3"><button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#search{{ g.gm_id }}">Download Excel</button></a>
+		<div id="search{{ g.gm_id }}" class="modal fade" role="dialog">
   <div class="modal-dialog ">
 
     <!-- Modal content-->
@@ -55,6 +55,8 @@ Bhawan:
  
   <option value="SK">SK</option>
 	<option value="VY">VY</option>
+	<option value="DS">CVR</option>
+	<option value="DS">SR</option>
   <option value="DS">DS</option>
 
 </select>
@@ -96,7 +98,7 @@ Bhawan:
 	<br/>
 	<a href="/soc/login/google-oauth2/?next=/"  ><button type="button" class="btn btn-lg btn-danger">BITS MAIL</button></a>
 	</div>
-	<h4 class="text-center">*Login through BITS ID only</h4>
+	<h4 class="text-center">*Login through BITS MAIL only</h4>
                     
 	{% endif %}
 	

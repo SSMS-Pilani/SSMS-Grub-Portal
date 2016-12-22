@@ -53,58 +53,77 @@ def send(request):
 	d=timedelta(days=1)
 	f=c+d
 	b=[]
-	a=[]
 	for i in grub:
 		
+		d = datetime.strptime(str(i.date), '%Y-%m-%d')
+		e = date.strftime(d, "%d %B %Y")
+		v = datetime.strptime(str(i.deadline), '%Y-%m-%d')
+		h = date.strftime(v, "%d %B %Y")
 		if (c==i.deadline2 or f==i.deadline2):
-			students=Grub_Student.objects.filter(gm_id=i.gm_id,status="Signed Up")[:]
-			for j in students:
-				a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
-			print a
-			b=len(a)
-			return HttpResponse(b)
-			subject, from_email = str(i.name), 'ssms7907@gmail.com'
-			text_content = 'This is an important message.'
-			html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(i.name)+"</strong> that is to take place on <strong>"+ str(i.date)+"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://ancient-falls-37927.herokuapp.com/ssms/student/grub/"+str(i.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" +str(i.deadline)+"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>SSMS Tech Team</p></body>"
-			msg = EmailMultiAlternatives(subject, text_content, from_email, bcc = a)
-			msg.attach_alternative(html_content, "text/html")
-			msg.send(fail_silently=False)
+			abcd=Grub_Student.objects.filter(gm_id=i.gm_id,status="Signed Up")
+			#return HttpResponse(abcd)
+			k=len(abcd)//99
+			#return HttpResponse(i.name,k)
+			for q in range(k+1):
+				a=[]
+				students=abcd[q*99:(q+1)*99] #by vivek
+				for j in students:
+					a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+					j.mail = "Sent"
+					j.save()
+				print a
+				
+				subject, from_email = str(i.name), 'ssms.pilani@gmail.com'
+				text_content = 'This is an important message.'
+				html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(i.name)+"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/"+str(i.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
+				msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
+				msg.attach_alternative(html_content, "text/html")
+				msg.send(fail_silently=False)
+				b.append("Sent mail for " + str(i.name) + " to " + str(len(a)) +str(a))
 			i.mails="Sent"
 			i.save()
-			b.append("sent")
-		else:
-			return HttpResponse("Not sent python mail")
-	return HttpResponse("Sent python mail" + str(b) + str(len(a)) + str(a))
-	return HttpResponseRedirect("/ssms")
-
-
+			
+	return HttpResponse("Sent python mail" + str(b) )
+	#return HttpResponseRedirect("/ssms")
 
 def send2(request):
-    	grub=Grub.objects.filter(status="Active",mails="Sent")
-    	c=date.today()
+	grub=Grub.objects.filter(status="Active",mails="Sent")
+	c=date.today()
 	d=timedelta(days=1)
 	f=c+d
-    	for i in grub:
-        	a=[]
-        	if (c==i.date or f==i.date):
-		    	students=Grub_Student.objects.filter(gm_id=i.gm_id,status="Signed Up")[:]
-		   	for j in students:
-		        	a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
-		    	print a
-		    	subject, from_email = str(i.name), 'ssms7907@gmail.com'
-		    	text_content = 'This is an important message.'
-		   	html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+str(i.name)+"</strong> which is scheduled to happen on <strong>"+ str(i.date)+"</strong>. </p> <p>On spot signings will be available. Please carry your ID cards for the same. </p><p>Students should collect the stub from the mess counter. Those who have signed for the grub and do not receive the stub, please contact SSMS for the same.</p><p>Thank you.</p><p>SSMS Tech Team</p></body>"
-			msg = EmailMultiAlternatives(subject, text_content, from_email, bcc = a)
-            		msg.attach_alternative(html_content, "text/html")
-            		msg.send(fail_silently=False)
-            		i.mails="Sent"
-           		i.save()
-        	else:
-            		print("hello")
-	return HttpResponse("Sent python mail")
-	return HttpResponseRedirect("/ssms")
+	b=[]
+	for i in grub :
+		d = datetime.strptime(str(i.date), '%Y-%m-%d')
+		e = date.strftime(d, "%d %B %Y")
+		if (c==i.date or f==i.date):
+			abcd=Grub_Student.objects.filter(gm_id=i.gm_id,status="Signed Up")
+			k=len(abcd)//99
+			#return HttpResponse(len(abcd))
+			#return HttpResponse(i.name,k)
+			for q in range(k+1):
+				a=[]
+				students=abcd[q*99:(q+1)*99] #by vivek
+				for j in students:
+					a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+					j.mail = "Sent"
+					j.save()
+				print a
+				subject, from_email = str(i.name) + " (Reminder)", 'ssms.pilani@gmail.com'
+				text_content = 'This is an important message.'
+				html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+str(i.name)+"</strong> which is scheduled to happen on <strong>"+ e +"</strong>. </p> <p>On spot signings will be available. Please carry your ID cards for the same. </p><p>Student should collect the stub from the mess counter. Those who have signed for the grub and do not receive the stub, please contact SSMS for the same.</p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
+				msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
+				msg.attach_alternative(html_content, "text/html")
+				msg.send(fail_silently=False)
+				b.append("Sent mail for " + str(i.name) + " to " + str(len(a)) +str(a))
+			i.mails="Sent"
+			i.save()
+			
+	return HttpResponse("Sent python mail" + str(b) )
 	
+	    
 
+	
+	
 def index(request):
 	if not request.user.is_authenticated():
 		return render(request, 'ssms/index.html')
@@ -704,6 +723,7 @@ def student_login(request):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def student_upcoming_grubs(request):
 	if request.user.is_authenticated() and not request.user.is_staff:
+		c = date.today()
 		grub_list=Grub.objects.filter(status="Active").order_by('-date')[:]
 		context_dict={"grub":grub_list}
 		return render(request, 'ssms/student_grublist.html',context_dict)
@@ -854,7 +874,8 @@ def import_data(request):
 	else :
 		return HttpResponseRedirect("/ssms/ssms/login/")
 	
-
+#def invalid(request,inv):
+#	return HttpResponse("done")
 
 
 

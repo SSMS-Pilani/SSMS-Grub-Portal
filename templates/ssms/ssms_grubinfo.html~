@@ -23,20 +23,19 @@
                     	</h2>
   {% ifequal i 0 %}
 <h4 class="text-center">Veg Menu</h4>
-<img class="img-responsive img-full" src="/media/{{meal.v_images }} " alt="">
+<img class="img-responsive img-full" src="{{ meal.v_images.url }} " alt="">
 {% endifequal %}
 	{% ifequal i 1 %}
 <h4 class="text-center">Non Veg Menu</h4>
-		<li><img class="img-responsive img-full" src="/media/{{meal.n_images }} "  /></li>
+		<img class="img-responsive img-full" src="{{meal.n_images.url }} "  />
 {% endifequal %}
 	{% ifequal i 2 %}
-
 		<div class="text-center">
 		<h4 class="text-center">Veg Menu</h4>
-		<li><img class="img-responsive img-full" src="/media/{{meal.veg_images }} "  /></li>
+		<img class="img-responsive img-full" src="{{meal.veg_images.url }} "  />
 		<hr>
 		<h4 class="text-center">Non Veg Menu</h4>
-		<li><img class="img-responsive img-full" src="/media/{{meal.non_veg_images }} "  /></li>
+		<img class="img-responsive img-full" src="{{meal.non_veg_images.url }} "  />
 		</div>
 {% endifequal %}
 	<h3>Cancellations starts on {{ grub.deadline2 }}<h3>
@@ -72,11 +71,11 @@
 	<h3 class="text-right"><a href="/ssms/ssms/grub/{{grub.gm_id}}/active/"><button type="button" class="btn btn-lg btn-success" onClick="return confirm('Are you sure you want to Activate the grub {{ grub.name }}?');">Activate</button></a></h3>
 	{% endifequal %}
 	{% endifequal %}
-	<h3 class="col-md-3"><button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#search{{ grub.name }}"><strong>Download List</strong></button></h3>
+	<h3 class="col-md-3"><button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#search{{ grub.gm_id }}"><strong>Download List</strong></button></h3>
 
 
 
-<div id="search{{ grub.name }}" class="modal fade" role="dialog">
+<div id="search{{ grub.gm_id }}" class="modal fade" role="dialog">
 <div class="modal-dialog ">
 
     <!-- Modal content-->
@@ -84,7 +83,7 @@
 	<div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
         <h4 class="modal-title text-center">{{ grub.name }}</h4>
-<hr>
+
       </div>
       <div class="modal-body">
         <form role="form"  class="form-horizontal" method="post" action="/ssms/export/{{ grub.gm_id }}/" >
