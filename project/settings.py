@@ -22,7 +22,7 @@ STATIC_PATH = os.path.join(BASE_DIR,'static')
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'y%(fr2hk01$g5fdi@!iuwu@nid)un_hy$-deyh%403poa6+l2c'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -83,11 +83,11 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     'default': {
 	'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dr8aqo5iubm3t',
-	'USER' : 'jejbloegqrfbph',
-	'PASSWORD' : 'qr_vxBeNnpe7jAy43DwdArVYiB',
-	'HOST' : 'ec2-54-243-201-3.compute-1.amazonaws.com',
-	'PORT' : '5432',
+        'NAME': '',
+	'USER' : '',
+	'PASSWORD' : '',
+	'HOST' : '',
+	'PORT' : '',
 	
     }
 	
@@ -157,9 +157,9 @@ SESSION_COOKIE_NAME="SSMS"
 SESSION_EXPIRE_AT_BROWSER_CLOSE=True
 SESSION_COOKIE_AGE= 3600
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY= '721837486541-ntlp9s4qi4thaltg5881uqpld2bl291a'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'h7HTs9hmVemQovWa0bDRTF-8'
-SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = ['pilani.bits-pilani.ac.in']
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY= ''
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
+SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = ['']
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
 SOCIAL_AUTH_LOGIN_ERROR_URL="/ssms/"
@@ -225,8 +225,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_PASSWORD = 'maybe587'
-EMAIL_HOST_USER = 'ssms7907@gmail.com'
+EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_USER = ''
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -235,9 +235,9 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # aws
 
-AWS_STORAGE_BUCKET_NAME = 'ssmsbits2'
-AWS_ACCESS_KEY_ID = 'AKIAIJWK6AO2HZ6UMVLQ'
-AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = ''
+AWS_ACCESS_KEY_ID = ''
+AWS_SECRET_ACCESS_KEY = ''
 
 # Tell django-storages that when coming up with the URL for an item in S3 storage, keep
 # it simple - just use this domain plus the path. (If this isn't set, things get complicated).
