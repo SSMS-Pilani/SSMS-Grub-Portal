@@ -873,6 +873,26 @@ def import_data(request):
 	    	return render(request,'ssms/upload_form.html',{'form': form,'d':done})
 	else :
 		return HttpResponseRedirect("/ssms/ssms/login/")
+		
+		
+def export(request):
+	student = Student.objects.all()
+	b=[]
+	for i in student:
+		b.append(i.name)
+	workbook = xlsxwriter.Workbook('media/'+'uploaded_student_list.xlsx')
+	worksheet = workbook.add_worksheet()
+	worksheet.set_column('A:A', 20)	
+	bold = workbook.add_format({'bold': 1})
+	worksheet.write('A1', 'User ID', bold)
+	row = 1
+	col = 0
+	for i in b:
+		worksheet.write_string  (row, col,i )
+		row += 1
+	workbook.close()
+	return (b)
+	return HttpResponseRedirect('media/'+'uploaded_student_list.xlsx')
 	
 #def invalid(request,inv):
 #	return HttpResponse("done")
