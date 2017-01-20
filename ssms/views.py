@@ -60,24 +60,24 @@ def send(request):
 		v = datetime.strptime(str(i.deadline), '%Y-%m-%d')
 		h = date.strftime(v, "%d %B %Y")
 		if (c==i.deadline2 or f==i.deadline2):
-			abcd=Grub_Student.objects.filter(gm_id=i.gm_id,status="Signed Up")
+			abcd=Grub_Student.objects.filter(gm_id=i.gm_id,status="Signed Up",mail="Not Sent")
 			#return HttpResponse(abcd)
 			k=len(abcd)//99
 			#return HttpResponse(i.name,k)
 			for q in range(k+1):
 				a=[]
-				students=abcd[q*99:(q+1)*99] #by vivek
+				students=abcd[:] #by vivek #q*99 #(q+1)*99
 				for j in students:
 					a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
 					j.mail = "Sent"
 					j.save()
 				print a
-				
 				subject, from_email = str(i.name), 'ssms.pilani@gmail.com'
 				text_content = 'This is an important message.'
 				html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(i.name)+"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/"+str(i.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
 				msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
 				msg.attach_alternative(html_content, "text/html")
+				#return HttpResponse("Here")
 				msg.send(fail_silently=False)
 				b.append("Sent mail for " + str(i.name) + " to " + str(len(a)) +str(a))
 			i.mails="Sent"
