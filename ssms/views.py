@@ -60,24 +60,24 @@ def send(request):
 		v = datetime.strptime(str(i.deadline), '%Y-%m-%d')
 		h = date.strftime(v, "%d %B %Y")
 		if (c==i.deadline2 or f==i.deadline2):
-			abcd=Grub_Student.objects.filter(gm_id=i.gm_id,status="Signed Up",mail="Not Sent")
+			abcd=Grub_Student.objects.filter(gm_id=i.gm_id,status="Signed Up")
 			#return HttpResponse(abcd)
 			k=len(abcd)//99
 			#return HttpResponse(i.name,k)
 			for q in range(k+1):
 				a=[]
-				students=abcd[:] #by vivek #q*99 #(q+1)*99
+				students=abcd[q*99:(q+1)*99] #by vivek
 				for j in students:
 					a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
 					j.mail = "Sent"
 					j.save()
 				print a
+				
 				subject, from_email = str(i.name), 'ssms.pilani@gmail.com'
 				text_content = 'This is an important message.'
 				html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(i.name)+"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/"+str(i.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
 				msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
 				msg.attach_alternative(html_content, "text/html")
-				#return HttpResponse("Here")
 				msg.send(fail_silently=False)
 				b.append("Sent mail for " + str(i.name) + " to " + str(len(a)) +str(a))
 			i.mails="Sent"
@@ -525,12 +525,40 @@ def coord_upload(request,gmid):
 								if 'excel' in request.FILES :
 									def choice_func(row):
 										a=row[0]
-										row[0]=a[0:8].lower()
-										row[1]=row[1].upper()
-										if str(row[5]).lower()=="veg":
-											row[5]="Veg"
-										elif str(row[5]).lower()=="non veg":
-											row[5]="Non Veg"
+										a=str(a).upper()[:11]
+										try :
+											b=Student.objects.get(bits_id=str(a))
+											smailid=b.user_id
+											sname=b.name
+											sbhawan=b.bhawan
+											sroom=b.room_no
+											row.append(smailid)
+											row.append(sname)
+											row.append(sbhawan)
+											row.append(sroom)
+										except :
+											if a[4]=="H" or a[4]=="P":
+												smailid=a[4]+a[0:4]+a[8:11]
+												sname="User"
+												sbhawan="Not Specified"
+												sroom="Not Specified"
+												row.append(smailid)
+												row.append(sname)
+												row.append(sbhawan)
+												row.append(sroom)
+											else :
+												smailid="f"+a[0:4]+a[8:11]
+												sname="User"
+												sbhawan="Not Specified"
+												sroom="Not Specified"
+												row.append(smailid)
+												row.append(sname)
+												row.append(sbhawan)
+												row.append(sroom)
+										if str(row[1]).lower()=="veg":
+											row[1]="Veg"
+										elif str(row[1]).lower()=="non veg":
+											row[1]="Non Veg"
 										row.append("Signed Up")
 										row.append(d)
 									    	return row
@@ -538,7 +566,7 @@ def coord_upload(request,gmid):
 									files.save_to_database(
 									model=Grub_Student,
 									initializer=choice_func,
-									mapdict=['user_id', 'student_id','name', 'room','bhawan','meal','status','gm_id']
+									mapdict=[ 'student_id','meal','user_id','name','bhawan', 'room','status','gm_id']
 								    	)
 							    		photo.excel = files
 									photo.save()
@@ -779,7 +807,7 @@ def student_grub_register2(request, gmid):           #register for veg
 					b.status="Signed Up"
 					b.save()
 				except Grub_Student.DoesNotExist:
-					Grub_Student.objects.create(gm_id=a,user_id=str(request.user),student_id=d.bits_id,meal="Veg",status="Signed Up",room=d.room_no,bhawan=d.bhawan,name=d.name)
+					Grub_Student.objects.create(gm_id=a,user_id=str(request.user),student_id=str(d.bits_id)+"P",meal="Veg",status="Signed Up",room=d.room_no,bhawan=d.bhawan,name=d.name)
 				return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
 			else :
 				return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
@@ -802,7 +830,7 @@ def student_grub_register3(request, gmid):                 #register for non veg
 					b.status="Signed Up"
 					b.save()
 				except Grub_Student.DoesNotExist:
-					Grub_Student.objects.create(gm_id=a,user_id=str(request.user),student_id=d.bits_id,meal="Non Veg",status="Signed Up", room=d.room_no ,bhawan=d.bhawan,name=d.name)
+					Grub_Student.objects.create(gm_id=a,user_id=str(request.user),student_id=str(d.bits_id)+"P",meal="Non Veg",status="Signed Up", room=d.room_no ,bhawan=d.bhawan,name=d.name)
 	
 				return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
 			else :

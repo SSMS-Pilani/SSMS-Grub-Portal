@@ -525,12 +525,40 @@ def coord_upload(request,gmid):
 								if 'excel' in request.FILES :
 									def choice_func(row):
 										a=row[0]
-										row[0]=a[0:8].lower()
-										row[1]=row[1].upper()
-										if str(row[5]).lower()=="veg":
-											row[5]="Veg"
-										elif str(row[5]).lower()=="non veg":
-											row[5]="Non Veg"
+										a=str(a).upper()[:11]
+										try :
+											b=Student.objects.get(bits_id=str(a))
+											smailid=b.user_id
+											sname=b.name
+											sbhawan=b.bhawan
+											sroom=b.room_no
+											row.append(smailid)
+											row.append(sname)
+											row.append(sbhawan)
+											row.append(sroom)
+										except :
+											if a[4]=="H" or a[4]=="P":
+												smailid=a[4]+a[0:4]+a[8:11]
+												sname="User"
+												sbhawan="Not Specified"
+												sroom="Not Specified"
+												row.append(smailid)
+												row.append(sname)
+												row.append(sbhawan)
+												row.append(sroom)
+											else :
+												smailid="f"+a[0:4]+a[8:11]
+												sname="User"
+												sbhawan="Not Specified"
+												sroom="Not Specified"
+												row.append(smailid)
+												row.append(sname)
+												row.append(sbhawan)
+												row.append(sroom)
+										if str(row[1]).lower()=="veg":
+											row[1]="Veg"
+										elif str(row[1]).lower()=="non veg":
+											row[1]="Non Veg"
 										row.append("Signed Up")
 										row.append(d)
 									    	return row
@@ -538,7 +566,7 @@ def coord_upload(request,gmid):
 									files.save_to_database(
 									model=Grub_Student,
 									initializer=choice_func,
-									mapdict=['user_id', 'student_id','name', 'room','bhawan','meal','status','gm_id']
+									mapdict=[ 'student_id','meal','user_id','name','bhawan', 'room','status','gm_id']
 								    	)
 							    		photo.excel = files
 									photo.save()
@@ -779,7 +807,7 @@ def student_grub_register2(request, gmid):           #register for veg
 					b.status="Signed Up"
 					b.save()
 				except Grub_Student.DoesNotExist:
-					Grub_Student.objects.create(gm_id=a,user_id=str(request.user),student_id=d.bits_id,meal="Veg",status="Signed Up",room=d.room_no,bhawan=d.bhawan,name=d.name)
+					Grub_Student.objects.create(gm_id=a,user_id=str(request.user),student_id=str(d.bits_id)+"P",meal="Veg",status="Signed Up",room=d.room_no,bhawan=d.bhawan,name=d.name)
 				return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
 			else :
 				return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
@@ -873,6 +901,26 @@ def import_data(request):
 	    	return render(request,'ssms/upload_form.html',{'form': form,'d':done})
 	else :
 		return HttpResponseRedirect("/ssms/ssms/login/")
+		
+		
+def export(request):
+	student = Student.objects.all()
+	b=[]
+	for i in student:
+		b.append(i.name)
+	workbook = xlsxwriter.Workbook('media/'+'uploaded_student_list.xlsx')
+	worksheet = workbook.add_worksheet()
+	worksheet.set_column('A:A', 20)	
+	bold = workbook.add_format({'bold': 1})
+	worksheet.write('A1', 'User ID', bold)
+	row = 1
+	col = 0
+	for i in b:
+		worksheet.write_string  (row, col,i )
+		row += 1
+	workbook.close()
+	return (b)
+	return HttpResponseRedirect('media/'+'uploaded_student_list.xlsx')
 	
 #def invalid(request,inv):
 #	return HttpResponse("done")

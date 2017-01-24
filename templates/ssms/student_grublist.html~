@@ -24,7 +24,7 @@
 </thead>
 <tbody>
 	{% for i in grub %}
-	{% if i.date|timesince >= "1 min" %}
+	{% if i.date|timesince >= "1 day" %}
 	{% else %}
 	<tr>
 	<td><a href="/ssms/student/grub/{{ i.gm_id }}/">{{i.name}}</a></td>
