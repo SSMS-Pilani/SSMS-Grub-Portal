@@ -9,7 +9,7 @@
 {% block block1 %}
 {% if user.is_active %}
 				     <hr>
-                    <h1 class="intro-text text-center"><strong>Grubs</strong>
+                    <h1 class="intro-text text-center"><strong>Upcoming Grubs</strong>
                     </h1>
                     <hr>
 <table id="example" class="table table-hover">
@@ -23,13 +23,44 @@
 </thead>
 <tbody>
 	{% for i in grub %}
-	{% if i.date|timesince >= "1 day" %}
+	{% if i.date|timesince > "1 day" %}
 	{% else %}
 	<tr>
 	<td><a href="/ssms/student/grub/{{ i.gm_id }}/">{{i.name}}</a></td>
 	<td>{{i.date}}</td>
 	<td>{{i.deadline}}</td>
-	<td>{{i.meal}}</td>
+	{% ifequal i.meal "Both" %}<td>Veg+Non Veg</td>
+	{% else %}<td>{{i.meal}}</td>
+	{% endifequal %}
+	</tr>
+	{% endif %}
+	{% endfor %}  
+</tbody>
+</table>
+<hr>
+                    <h1 class="intro-text text-center"><strong>Past Grubs</strong>
+                    </h1>
+                    <hr>
+<table id="example" class="table table-hover">
+<thead>
+	<tr>
+	    	<th>Name</th>
+	    	<th>Date</th>
+	    	<th>Cancellation Deadline</th>
+		<th>Meal Type</th>
+	</tr>
+</thead>
+<tbody>
+	{% for i in grub %}
+	{% if i.date|timesince <= "1 day" %}
+	{% else %}
+	<tr>
+	<td><a href="/ssms/student/grub/{{ i.gm_id }}/">{{i.name}}</a></td>
+	<td>{{i.date}}</td>
+	<td>{{i.deadline}}</td>
+	{% ifequal i.meal "Both" %}<td>Veg+Non Veg</td>
+	{% else %}<td>{{i.meal}}</td>
+	{% endifequal %}
 	</tr>
 	{% endif %}
 	{% endfor %}  
