@@ -37,7 +37,7 @@ class Grub_Coord(models.Model):
 class Grub(models.Model):
 	mtype=(('Veg','Veg'),('Non Veg','Non Veg'),('Both','Both'))
 	stype=(('Active','Active'),('Inactive','Inactive'))
-	emtype=(('Sent','Sent'),('Not Sent','Not Sent'))
+	emtype=(('Sent','Sent'),('Not Sent','Not Sent'),('Sent2','Sent2'))
 	gm_id=  models.UUIDField("Grub UUID",primary_key=True, default=uuid.uuid4, editable=False)
 	name = models.CharField("Grub Name",max_length=32)
 	meal= models.CharField("Meal Type",choices=mtype,max_length=16,default='Veg')
@@ -113,4 +113,11 @@ class Both(models.Model):
 	non_veg_images = models.ImageField("Non Veg Image",upload_to=content_album_name2, blank=False)	
 	def __str__(self):
                 return self.gm_id.name
+
+
+class DateMailStatus(models.Model):
+	date = models.DateField(default=datetime.now,blank=False)
+	mails = models.IntegerField("Mails Sent",default = 0)
+	def __str__(self):
+		return self.date.strftime('%m/%d/%Y')
 

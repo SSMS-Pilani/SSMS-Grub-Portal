@@ -1,0 +1,78 @@
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+
+{% block block1 %}
+{% if user.is_superuser %}
+		     
+		     </h1>
+                     <h1 class="intro-text"><strong>Total Mails : 1000	&ensp; Mails sent today : {{datemail.mails}} &ensp; Mails left: {{mailsleft}}</strong>
+                    </h1>
+                    <hr>
+                    <h1 class="intro-text text-center"><strong>{{grub.name}}</strong>
+                    </h1>
+                     
+                    <hr>
+                   
+                    <h1 class="intro-text text-center"><strong>Total students registered: {{registered}} </strong>
+                    </h1>
+<h1><button class="btn btn-lg btn-success" id="sendmail1">Cancellation Mail</button></h1>
+<h1><button class="btn btn-lg btn-danger" id="sendmail2">Notification Mail</button></h1>
+
+
+{% else %}
+<h3>You are not allowed to view this page</h3>
+<h3>Login to View this page</h3>
+{% endif %}
+{% endblock %}
+{% block script %}
+  <script>
+    $("#sendmail1").click(function () {
+		console.log({{grub.name}})
+		$(this).text("Processing...");
+		 $(this).prop('disabled', true)
+      $.ajax({
+        url: '/ssms/ajax/ssms/grub/{{grub.gm_id}}/sendmail1/',
+        data: {
+          'grubid': {{grub.name}}
+        },
+        dataType: 'json',
+        success: function (response) {
+          if (response.is_taken) {
+            alert(response.is_taken);
+            $("#sendmail1").prop('disabled', false);
+	 		$("#sendmail1").text("Cancellation Mail");
+             
+          }
+        }
+        
+      });
+	
+    });
+    
+  </script>
+  <script>
+    $("#sendmail2").click(function () {
+		console.log({{grub.name}})
+		$(this).text("Processing...");
+		 $(this).prop('disabled', true)
+      $.ajax({
+        url: '/ssms/ajax/ssms/grub/{{grub.gm_id}}/sendmail2/',
+        data: {
+          'grubid': {{grub.name}}
+        },
+        dataType: 'json',
+        success: function (response) {
+          if (response.is_taken) {
+            alert(response.is_taken);
+             $("#sendmail1").prop('disabled', false);
+	 		$("#sendmail1").text("Notification Mail");
+          }
+        }
+        
+      });
+	
+    });
+  </script>
+
+{% endblock %}

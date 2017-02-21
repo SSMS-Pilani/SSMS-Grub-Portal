@@ -65,10 +65,12 @@
 	{% else %}
 	{% ifequal grub.status "Active" %}
 	<h3 class="col-md-3"><a href="/ssms/stats/{{grub.gm_id}}/"><button type="button" class="btn btn-lg btn-info"><strong>View Stats</strong></button></a></h3>
+	<h3 class="text-right"><a href="/ssms/ssms/grub/{{grub.gm_id}}/sendmail/"><button type="button" class="btn btn-lg btn-warning" >Send Mail</button></a></h3>
 	
 	<h3 class=" text-right"><a href="/ssms/ssms/grub/{{grub.gm_id}}/inactive/"><button type="button" class="btn btn-lg btn-danger" onClick="return confirm('Are you sure you want to Inactivate the grub {{ grub.name }}?');">Inactivate</button></a></h3>
 	{% else %}
 	<h3 class="text-right"><a href="/ssms/ssms/grub/{{grub.gm_id}}/active/"><button type="button" class="btn btn-lg btn-success" onClick="return confirm('Are you sure you want to Activate the grub {{ grub.name }}?');">Activate</button></a></h3>
+	
 	{% endifequal %}
 	{% endifequal %}
 	<h3 class="col-md-3"><button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#search{{ grub.gm_id }}"><strong>Download List</strong></button></h3>

@@ -35,6 +35,9 @@ urlpatterns = [
 	url(r'^import/', views.import_data, name="import"),
 	url(r'^coord/edit/(?P<gmid>[-\w]+)/$', views.coord_grub_edit, name='grub_edit'), 
 	url(r'^export2/',views.export,name="export2"),
+	url('^ssms/grub/(?P<gmid>[-\w]+)/sendmail/' , views.ssms_grub_sendmail, name="Grub send mail1") ,
+	url('^ajax/ssms/grub/(?P<gmid>[-\w]+)/sendmail1/' , views.ssms_grub_sendmail1, name="Grub send mail1") ,
+	url('^ajax/ssms/grub/(?P<gmid>[-\w]+)/sendmail2/' , views.ssms_grub_sendmail2, name="Grub send mail1") ,
 	#url(r'^(?P<inv>\w+)/$',views.invalid,name="invalid"),
 	#url(r'^coord/upload-spot-signing/(?P<gmid>[-\w]+)/$', views.coord_upload_spot, name='upload spot signing'),
 	]

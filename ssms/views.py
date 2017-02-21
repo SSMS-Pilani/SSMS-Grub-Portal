@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student
+from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus
 from ssms.forms import GrubForm,Grub_CoordUserForm,Grub_CoordUserProfileForm,ExcelUpload,VegForm,NonVegForm,BothForm,CoordStudentRegForm, GrubFormEdit , UploadFileForm
 from django.conf import settings
 #addddddd
@@ -66,7 +66,7 @@ def send(request):
 			#return HttpResponse(i.name,k)
 			for q in range(k+1):
 				a=[]
-				students=abcd[q*99:(q+1)*99] #by vivek
+				students=abcd[q*99:(q+1)*99] 
 				for j in students:
 					a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
 					j.mail = "Sent"
@@ -102,7 +102,7 @@ def send2(request):
 			#return HttpResponse(i.name,k)
 			for q in range(k+1):
 				a=[]
-				students=abcd[q*99:(q+1)*99] #by vivek
+				students=abcd[q*99:(q+1)*99] 
 				for j in students:
 					a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
 					j.mail = "Sent"
@@ -115,15 +115,134 @@ def send2(request):
 				msg.attach_alternative(html_content, "text/html")
 				msg.send(fail_silently=False)
 				b.append("Sent mail for " + str(i.name) + " to " + str(len(a)) +str(a))
-			i.mails="Sent"
+			i.mails="Sent2"
 			i.save()
 			
 	return HttpResponse("Sent python mail" + str(b) )
 	
 	    
+def ssms_grub_sendmail1(request,gmid):
+	grubid = request.GET.get('grubid')
+	datemail = DateMailStatus.objects.get(date=datetime.now())
+	print(gmid)
+	try:
+		grub = Grub.objects.get(name=str(grubid))
+		print(gmid)
+		d = datetime.strptime(str(grub.date), '%Y-%m-%d')
+		e = date.strftime(d, "%d %B %Y")
+		v = datetime.strptime(str(grub.deadline), '%Y-%m-%d')
+		h = date.strftime(v, "%d %B %Y")
+		abcd=Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",mail="Not Sent")
+		print e
+		print h
+		k=len(abcd)//99
+		count=0
+		for q in range(k+1):
+			a=[]
+			students=abcd[q*99:(q+1)*99] 
+			for j in students:
+				a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+				j.mail = "Sent"
+				j.save()
+			print a
+			subject, from_email = str(grub.name), 'ssms.pilani@gmail.com'
+			text_content = 'This is an important message.'
+			html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(grub.name)+"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/"+str(grub.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
+			msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
+			msg.attach_alternative(html_content, "text/html")
+			print a
+			try :
+				msg.send(fail_silently=False)
+				count=count + len(a)
+				datemail.mails = datemail.mails+len(a)
+				datemail.save()
+			except :
+				for j in students:
+					j.mail = "Not Sent"
+					j.save()
+				left = len(abcd)-count
+				data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send." }
+				return JsonResponse(data)
+		grub.mails="Sent"
+		grub.save()
+		print(gmid)
+		data = {'is_taken': "All the mails ("+ str(len(abcd)) +") were sent succesfully"}
+		return JsonResponse(data)
+	except :
+		print("here")
+		data = {'is_taken': "Internal Error"}
+		return JsonResponse(data)
 
+def ssms_grub_sendmail2(request,gmid):
+	grubid = request.GET.get('grubid')
+	datemail = DateMailStatus.objects.get(date=datetime.now())
+	print(gmid)
+	try:
+		grub = Grub.objects.get(name=str(grubid))
+		print(gmid)
+		d = datetime.strptime(str(grub.date), '%Y-%m-%d')
+		e = date.strftime(d, "%d %B %Y")
+		abcd=Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up")
+		print e
+		k=len(abcd)//99
+		count=0
+		for q in range(k+1):
+			a=[]
+			students=abcd[q*99:(q+1)*99] 
+			for j in students:
+				a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+				j.mail = "Sent2"
+				j.save()
+			print a
+			subject, from_email = str(grub.name) + " (Reminder)", 'ssms.pilani@gmail.com'
+			text_content = 'This is an important message.'
+			html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+str(grub.name)+"</strong> which is scheduled to happen on <strong>"+ e +"</strong>. </p> <p>On spot signings will be available. Please carry your ID cards for the same. </p><p>Student should collect the stub from the mess counter. Those who have signed for the grub and do not receive the stub, please contact SSMS for the same.</p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
+			msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
+			msg.attach_alternative(html_content, "text/html")
+			try :
+				msg.send(fail_silently=False)
+				count = count + len(a)
+				datemail.mails = datemail.mails+len(a)
+				datemail.save()
+			except :
+				for j in students:
+					j.mail = "Sent"
+					j.save()
+				left = len(abcd)-count
+				data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send." }
+				return JsonResponse(data)
+		grub.mails="Sent"
+		grub.save()
+		print(gmid)
+		data = {'is_taken': "All the mails ("+ str(len(abcd)) +") were sent succesfully"}
+		return JsonResponse(data)
+	except :
+		print("here")
+		data = {'is_taken': "Internal Error"}
+		return JsonResponse(data)
 	
-	
+	    
+def ssms_grub_sendmail(request,gmid):
+	context_dict={}
+	try:
+		grub = Grub.objects.get(gm_id=gmid)
+		context_dict["grub"]=grub
+		stud = Grub_Student.objects.filter(gm_id=gmid,status="Signed Up")
+		registered=len(stud)
+		context_dict["registered"]=registered
+		if(DateMailStatus.objects.filter(date=datetime.now()).exists()):
+			datemail = DateMailStatus.objects.get(date=datetime.now())
+			context_dict["datemail"]=datemail
+		else :
+			datemail = DateMailStatus.objects.create(date=datetime.now(),mails=0)
+			context_dict["datemail"]=datemail
+		mailsleft = 1000 - datemail.mails
+		context_dict["mailsleft"]=mailsleft
+	except:
+		pass	
+		return HttpResponseRedirect('/ssms/')
+	return render(request,'ssms/ssms_grub_sendmail.html',context_dict)
+		
 def index(request):
 	if not request.user.is_authenticated():
 		return render(request, 'ssms/index.html')
