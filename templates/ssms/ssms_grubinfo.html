@@ -120,7 +120,11 @@ Bhawan:
 <br>
 <br>
 
-<input type="submit" class="btn btn-lg btn-success btn-block "  value="Submit" onClick="return confirm('This list is temporary. It is bound to change.');">
+{% if grub.date|timesince <= "1 day" %}
+<input type="submit" class="btn btn-lg btn-success btn-block "  value="Submit"  onClick="return confirm('This list is temporary. It is bound to change.');">
+{% else %}
+<input type="submit" class="btn btn-lg btn-success btn-block "  value="Submit" >
+{% endif %}
 </form>
       </div>
       

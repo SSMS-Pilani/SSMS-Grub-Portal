@@ -55,15 +55,18 @@ Bhawan:
  
   <option value="SK">SK</option>
 	<option value="VY">VY</option>
-	<option value="DS">CVR</option>
-	<option value="DS">SR</option>
+	<option value="CVR">CVR</option>
+	<option value="SR">SR</option>
   <option value="DS">DS</option>
 
 </select>
 <br>
 <br>
+{% if g.date|timesince > "1 day" %}
+<input type="submit" class="btn btn-lg btn-success btn-block "  value="Submit"  onClick="return confirm('This list is temporary. It is bound to change.');">
+{% else %}
+<input type="submit" class="btn btn-lg btn-success btn-block "  value="Submit" >
 
-<input type="submit" class="btn btn-lg btn-success btn-block "  value="Submit" onClick="return confirm('This list is temporary. It is bound to change.');">
 </form>
       </div>
       
