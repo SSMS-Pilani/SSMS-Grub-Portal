@@ -1,0 +1,94 @@
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+
+
+{% block head_block %}<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css"> {% endblock %}
+
+
+{% block block1 %}
+{% if user.is_active %}
+				     <hr>
+                    <h1 class="intro-text text-center"><strong>Upcoming Grubs</strong>
+                    </h1>
+                    <hr>
+<table id="example" class="table table-hover">
+<thead>
+	<tr>
+	    	<th>Name</th>
+	    	<th>Date</th>
+	    	<th>Cancellation Deadline</th>
+		<th>Meal Type</th>
+	</tr>
+</thead>
+<tbody>
+	{% for i in grub %}
+	{% if i.date|timesince > "1 day" %}
+	{% else %}
+	<tr>
+	<td><a href="/ssms/student/grub/{{ i.gm_id }}/">{{i.name}}</a></td>
+	<td>{{i.date}}</td>
+	<td>{{i.deadline}}</td>
+	{% ifequal i.meal "Both" %}<td>Veg+Non Veg</td>
+	{% else %}<td>{{i.meal}}</td>
+	{% endifequal %}
+	</tr>
+	{% endif %}
+	{% endfor %}  
+</tbody>
+</table>
+<hr>
+                    <h1 class="intro-text text-center"><strong>Past Grubs</strong>
+                    </h1>
+                    <hr>
+<table id="example" class="table table-hover">
+<thead>
+	<tr>
+	    	<th>Name</th>
+	    	<th>Date</th>
+	    	<th>Cancellation Deadline</th>
+		<th>Meal Type</th>
+	</tr>
+</thead>
+<tbody>
+	{% for i in grub %}
+	{% if i.date|timesince <= "1 day" %}
+	{% else %}
+	<tr>
+	<td><a href="/ssms/student/grub/{{ i.gm_id }}/">{{i.name}}</a></td>
+	<td>{{i.date}}</td>
+	<td>{{i.deadline}}</td>
+	{% ifequal i.meal "Both" %}<td>Veg+Non Veg</td>
+	{% else %}<td>{{i.meal}}</td>
+	{% endifequal %}
+	</tr>
+	{% endif %}
+	{% endfor %}  
+</tbody>
+</table>
+{% else %}
+<h3>You are not allowed to view this page</h3>
+<h3>Login to View this page</h3>
+{% endif %}
+{% endblock %}
+
+
+{% block script %}
+
+<script>
+	$(document).ready(function({
+        "lengthMenu": [[10, 25, 50, 100, 200, 300, -1], [10, 25, 50, 100, 200, 300, "All"]]
+    } ) {
+    $('#example').DataTable();
+} );
+	$(document).ready(function({
+        "lengthMenu": [[10, 25, 50, 100, 200, 300, -1], [10, 25, 50, 100, 200, 300, "All"]]
+    } ) {
+    $('#example2').DataTable();
+} );
+</script>
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+
+
+{% endblock %}

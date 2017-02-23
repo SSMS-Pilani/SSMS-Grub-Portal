@@ -88,16 +88,6 @@ def send(request):
 
 def send2(request):
 	grub=Grub.objects.filter(status="Active",mails="Sent")
-	if (grub.meal=="Veg"):
-		veg = Veg.objects.get(gm_id=grub.gm_id)
-		meal = str(veg.v_venue)
-	elif (grub.meal=="Non Veg"):
-		veg = NonVeg.objects.get(gm_id=grub.gm_id)
-		meal = str(veg.n_venue)
-	else :
-		veg = Veg.objects.get(gm_id=grub.gm_id)
-		veg2 = NonVeg.objects.get(gm_id=grub.gm_id)
-		meal = str(veg.v_venue) + " and "  +str(veg2.n_venue)
 	c=date.today()
 	d=timedelta(days=1)
 	f=c+d
@@ -120,7 +110,7 @@ def send2(request):
 				print a
 				subject, from_email = str(i.name) + " (Reminder)", 'ssms.pilani@gmail.com'
 				text_content = 'This is an important message.'
-				html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+str(i.name)+"</strong> which will take place on <strong>"+ e +"</strong> at the <strong>"+meal+"</strong> Mess. </p> <p>Wristbands for the same are available at your mess counter, and you are requested to collect the same if you haven't already.</p><strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong><p>Limited on spot signings will be available. Please carry your ID cards for the same. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
+				html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+str(i.name)+"</strong> which is scheduled to happen on <strong>"+ e +"</strong>. </p> <p>On spot signings will be available. Please carry your ID cards for the same. </p><p>Student should collect the stub from the mess counter. Those who have signed for the grub and do not receive the stub, please contact SSMS for the same.</p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
 				msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
 				msg.attach_alternative(html_content, "text/html")
 				msg.send(fail_silently=False)
@@ -190,16 +180,6 @@ def ssms_grub_sendmail2(request,gmid):
 	try:
 		grub = Grub.objects.get(name=str(grubid))
 		print(gmid)
-		if (grub.meal=="Veg"):
-			veg = Veg.objects.get(gm_id=grub.gm_id)
-			meal = str(veg.v_venue)
-		elif (grub.meal=="Non Veg"):
-			veg = NonVeg.objects.get(gm_id=grub.gm_id)
-			meal = str(veg.n_venue)
-		else :
-			veg = Veg.objects.get(gm_id=grub.gm_id)
-			veg2 = NonVeg.objects.get(gm_id=grub.gm_id)
-			meal = str(veg.v_venue) + " and " + str(veg2.n_venue)
 		d = datetime.strptime(str(grub.date), '%Y-%m-%d')
 		e = date.strftime(d, "%d %B %Y")
 		abcd=Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up")
@@ -216,8 +196,7 @@ def ssms_grub_sendmail2(request,gmid):
 			print a
 			subject, from_email = str(grub.name) + " (Reminder)", 'ssms.pilani@gmail.com'
 			text_content = 'This is an important message.'
-			html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+str(grub.name)+"</strong> which will take place on <strong>"+ e +"</strong> at the <strong>"+meal+"</strong> Mess. </p> <p>Wristbands for the same are available at your mess counter, and you are requested to collect the same if you haven't already.</p><strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong><p>Limited on spot signings will be available. Please carry your ID cards for the same. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
-			print a
+			html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+str(grub.name)+"</strong> which is scheduled to happen on <strong>"+ e +"</strong>. </p> <p>On spot signings will be available. Please carry your ID cards for the same. </p><p>Student should collect the stub from the mess counter. Those who have signed for the grub and do not receive the stub, please contact SSMS for the same.</p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
 			msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
 			msg.attach_alternative(html_content, "text/html")
 			try :
