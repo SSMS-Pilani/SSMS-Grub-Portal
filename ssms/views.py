@@ -678,6 +678,11 @@ def coord_upload(request,gmid):
 											sname=b.name
 											sbhawan=b.bhawan
 											sroom=b.room_no
+											try :
+												gs=Grub_Student.objects.get(student_id=str(a),gm_id=gmid)
+												return None
+											except :
+												pass
 											row.append(smailid)
 											row.append(sname)
 											row.append(sbhawan)
