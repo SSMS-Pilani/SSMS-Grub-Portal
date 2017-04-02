@@ -1,0 +1,47 @@
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+{% block head_block %} 
+
+<link href="{% static 'dcalendar.picker.css' %}" rel="stylesheet" type="text/css">
+
+{% endblock %}
+
+{% block block1 %}
+{% if user.is_superuser %}
+<h2 class="intro-text text-center">Edit Grub Deadline
+                    </h2>
+                    <hr>
+<form id="user_form" role="form"  class="form-horizontal"  method="post" action="/ssms/ssms/grub/{{grub.gm_id}}/editdeadline/" enctype="multipart/form-data">
+        
+
+        {% csrf_token %}
+        <div class="form-group">
+	<label class="control-label col-sm-2" ><label for="id_deadline">Student Cancellation Deadline:</label></label>
+	      	<div class="col-sm-5">
+		<input class="form-control" id="id_deadline" name="deadline" type="text" value="{{grub.deadline|date:"Y-m-d"}}" />
+      	</div>
+      	</div>
+      	<div class="form-group">
+	<label class="control-label col-sm-2" ><label for="id_deadline">Student Register Deadline:</label></label>
+	      	<div class="col-sm-5">
+		<input class="form-control" id="id_deadline2" name="deadline2" type="text" value="{{grub.deadline2|date:"Y-m-d"}}" />
+      	</div>
+      	</div>
+            <input type="submit" class=" btn btn-lg btn-info " name="submit" value="Submit" />
+        </form>
+        
+{% else %}
+<h3>You are not allowed to view this page</h3>
+<h3>Login to View this page</h3>
+{% endif %}
+<script src="{% static 'dcalendar.picker.js' %}"></script>
+<script>
+$('#id_deadline').dcalendarpicker({
+format:'yyyy-mm-dd'
+});
+
+</script>
+
+{% endblock %}
+

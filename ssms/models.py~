@@ -48,15 +48,9 @@ class Grub(models.Model):
 	deadline2 = models.DateField(default=datetime.now,blank=False)
 	status=models.CharField(choices=stype,max_length=128,default='Active')
 	excel = models.FileField(upload_to=content_album_name,blank=False)	
-	mails= models.CharField(choices=emtype,max_length=128,default='Not Sent',blank=False)
+	mails=models.CharField(choices=emtype,max_length=128,default='Not Sent',blank=False)
 	def __str__(self):
 		return self.name
-
-	@property
-	def is_past_due(self):
-		if date.today() > self.date:
-		    return True
-		return False
 
 
 

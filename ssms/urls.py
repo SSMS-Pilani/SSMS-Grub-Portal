@@ -17,6 +17,7 @@ urlpatterns = [
 	url(r'^coord/upload/(?P<gmid>[-\w]+)/$', views.coord_upload, name='upload'),#upload list and all list related updates here
 	url(r'^coord/view/(?P<gmid>[-\w]+)/$',views.coord_view_grub,name="view registered grub"), 
 	url(r'^ssms/grub/(?P<gmid>[-\w]+)/$', views.ssms_grubinfo, name='grubs'),  #ssms view all grubs
+	url(r'^ssms/grub/(?P<gmid>[-\w]+)/editdeadline/$', views.ssms_grubeditdeadline, name='grubs edit deadline'),  #ssms edit deadline
 	url(r'^ssms/grublist/$', views.ssms_grub_list, name='grub_list'),  #Smms view List and all list related updates here
 	url(r'^ssms/grub/(?P<gmid>[-\w]+)/inactive/' , views.ssms_grub_inactive, name="Coord Grub Inactive") ,
 	url(r'^ssms/grub/(?P<gmid>[-\w]+)/active/' , views.ssms_grub_active, name="Coord Grub Active") ,

@@ -678,6 +678,11 @@ def coord_upload(request,gmid):
 											sname=b.name
 											sbhawan=b.bhawan
 											sroom=b.room_no
+											try :
+												gs=Grub_Student.objects.get(student_id=str(a),gm_id=gmid)
+												return None
+											except :
+												pass
 											row.append(smailid)
 											row.append(sname)
 											row.append(sbhawan)
@@ -913,6 +918,7 @@ def student_grub_register(request, gmid):
 	if request.user.is_authenticated() and not request.user.is_staff:
 	    	try:
 			grub = Grub.objects.get(gm_id=gmid,status="Active")
+			grubcoord = Grub_Coord.objects.get(cg_name=grub.cg_id)
 			if (grub.meal=='Veg'):
 				b=Veg.objects.get(gm_id=gmid)
 				i=0
@@ -929,6 +935,7 @@ def student_grub_register(request, gmid):
 				pass
 			e=datechecker(gmid)
 			context_dict['grub'] = grub
+			context_dict['grubcoord'] = grubcoord
 			context_dict['meal'] = b
 			context_dict['i'] = i
 			context_dict['e']=e

@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus
-from ssms.forms import GrubForm,Grub_CoordUserForm,Grub_CoordUserProfileForm,ExcelUpload,VegForm,NonVegForm,BothForm,CoordStudentRegForm, GrubFormEdit , UploadFileForm
+from ssms.forms import GrubForm,Grub_CoordUserForm,Grub_CoordUserProfileForm,GrubEditDeadlineForm,ExcelUpload,VegForm,NonVegForm,BothForm,CoordStudentRegForm, GrubFormEdit , UploadFileForm
 from django.conf import settings
 #addddddd
 from django import forms
@@ -378,6 +378,19 @@ def ssms_grubinfo(request,gmid):
 	else :
 		return HttpResponseRedirect('/ssms/ssms/login/')
 
+def ssms_grubeditdeadline(request,gmid):
+	if request.user.is_superuser:
+		if request.method == 'POST':
+			grub = Grub.objects.get(gm_id=gmid)
+			grub.deadline = request.POST["deadline"]
+			grub.deadline2 = request.POST["deadline2"]
+			grub.save()
+			return HttpResponseRedirect('/ssms/ssms/grub/'+gmid)
+		else:
+			grub = Grub.objects.get(gm_id=gmid)
+		return render(request,'ssms/ssms_grubeditdeadline.html',{'grub':grub} )
+	else :
+		return HttpResponseRedirect('/ssms/ssms/login/')
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -918,6 +931,7 @@ def student_grub_register(request, gmid):
 	if request.user.is_authenticated() and not request.user.is_staff:
 	    	try:
 			grub = Grub.objects.get(gm_id=gmid,status="Active")
+			grubcoord = Grub_Coord.objects.get(cg_name=grub.cg_id)
 			if (grub.meal=='Veg'):
 				b=Veg.objects.get(gm_id=gmid)
 				i=0
@@ -934,6 +948,7 @@ def student_grub_register(request, gmid):
 				pass
 			e=datechecker(gmid)
 			context_dict['grub'] = grub
+			context_dict['grubcoord'] = grubcoord
 			context_dict['meal'] = b
 			context_dict['i'] = i
 			context_dict['e']=e

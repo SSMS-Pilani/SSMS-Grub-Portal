@@ -78,7 +78,10 @@ class GrubFormEdit(forms.ModelForm):
 	        model = Grub
 	        fields = ('name',)
 
-
+class GrubEditDeadlineForm(forms.ModelForm):
+	class Meta:
+	        model = Grub
+	        fields = ('deadline','deadline2')
 
 class UploadFileForm(forms.Form):
 	file = forms.FileField()

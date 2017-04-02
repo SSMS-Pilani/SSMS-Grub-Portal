@@ -28,13 +28,13 @@
 {% block script %}
   <script>
     $("#sendmail1").click(function () {
-		console.log({{grub.name}})
+		console.log("{{grub.name}}")
 		$(this).text("Processing...");
 		 $(this).prop('disabled', true)
       $.ajax({
         url: '/ssms/ajax/ssms/grub/{{grub.gm_id}}/sendmail1/',
         data: {
-          'grubid': {{grub.name}}
+          'grubid': "{{grub.name}}"
         },
         dataType: 'json',
         success: function (response) {
@@ -53,13 +53,13 @@
   </script>
   <script>
     $("#sendmail2").click(function () {
-		console.log({{grub.name}})
+		console.log("{{grub.name}}")
 		$(this).text("Processing...");
 		 $(this).prop('disabled', true)
       $.ajax({
         url: '/ssms/ajax/ssms/grub/{{grub.gm_id}}/sendmail2/',
         data: {
-          'grubid': {{grub.name}}
+          'grubid': "{{grub.name}}"
         },
         dataType: 'json',
         success: function (response) {
