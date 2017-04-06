@@ -382,8 +382,10 @@ def ssms_grubeditdeadline(request,gmid):
 	if request.user.is_superuser:
 		if request.method == 'POST':
 			grub = Grub.objects.get(gm_id=gmid)
-			grub.deadline = request.POST["deadline"]
-			grub.deadline2 = request.POST["deadline2"]
+			if (request.POST["deadline"]!= ""):
+				grub.deadline = request.POST["deadline"]
+			if (request.POST["deadline2"]!= ""):
+				grub.deadline2 = request.POST["deadline2"]
 			grub.save()
 			return HttpResponseRedirect('/ssms/ssms/grub/'+gmid)
 		else:
