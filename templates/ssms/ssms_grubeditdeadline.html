@@ -13,28 +13,31 @@
                     </h2>
                     <hr>
                     
-                    <h3 class="text-center">Current Registration Deadline = {{grub.deadline2|date:"Y-m-d"}}</h3>
-                    <h3 class="text-center">Current Cancellation Deadline = {{grub.deadline|date:"Y-m-d"}}</h3>
+                    <h3 class="text-center">Current Cancellation Deadline Starts on {{grub.deadline2|date:"Y-m-d"}}</h3>
+                    <h3 class="text-center">Current Cancellation Deadline Ends on  {{grub.deadline|date:"Y-m-d"}}</h3>
 <form id="user_form" role="form"  class="form-horizontal"  method="post" action="/ssms/ssms/grub/{{grub.gm_id}}/editdeadline/" enctype="multipart/form-data">
         
 
         {% csrf_token %}
         <div class="form-group">
-	<label class="control-label col-sm-2" >Student Registeration Deadline:</label>
+	<label class="control-label col-sm-2" >Student Cancellation Deadline Begins:</label>
 	      	<div class="col-sm-5">
 		<input class="form-control" id="deadline" name="deadline2" type="text" />
       	</div>
       	</div>
       	<div class="form-group">
-	<label class="control-label col-sm-2" >Student Cancellation Deadline:</label>
+	<label class="control-label col-sm-2" >Student Cancellation Deadline Ends:</label>
 	      	<div class="col-sm-5">
 		<input class="form-control" id="deadline2" name="deadline" type="text"  />
       	</div>
       	</div>
             <input type="submit" class=" btn btn-lg btn-info " name="submit" value="Submit" />
         </form>
-        <h4> Registration deadline is the last date grub coord can register students</h4>
-        <h4> Cancellation deadline is the last date students can cancel their signing</h4>
+        <h4> Cancellation Deadline Starts is the first date students can cancel their signing</h4>
+        <h4> Cancellation Deadline Ends is the last date students can cancel their signing</h4>
+        <h4> Registration Deadline is the (Cancellation Deadline Starts-1) , last date for grub coord to upload/register students.</h4>
+        <h4> All the date format are in YYYY-MM-DD</h4>
+        <h4> All the deadline starts and ends at 12 midnight.</h4>
 {% else %}
 <h3>You are not allowed to view this page</h3>
 <h3>Login to View this page</h3>
