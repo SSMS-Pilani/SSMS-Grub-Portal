@@ -1,0 +1,354 @@
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+
+{% block block1 %}
+
+<style type="text/css">
+*{
+    padding: 0px;
+    margin-left: 2px;
+}
+
+.header{
+    background-color: #2D487F;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+
+}
+form{
+   }
+
+.quality {
+    float:left;
+}
+
+.quality:not(:checked) > input {
+    position:absolute;
+    top:-9999px;
+    clip:rect(0,0,0,0);
+}
+
+.quality:not(:checked) > label {
+    float:right;
+    width:1em;
+    padding:0 .1em;
+    overflow:hidden;
+    white-space:nowrap;
+    cursor:pointer;
+    font-size:200%;
+    line-height:1.2;
+    color:#ddd;
+    text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.quality:not(:checked) > label:before {
+    content: '★ ';
+}
+
+.quality > input:checked ~ label {
+    color: #f70;
+    text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.quality:not(:checked) > label:hover,
+.quality:not(:checked) > label:hover ~ label {
+    color: gold;
+    text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.quality > input:checked + label:hover,
+.quality > input:checked + label:hover ~ label,
+.quality > input:checked ~ label:hover,
+.quality > input:checked ~ label:hover ~ label,
+.quality > label:hover ~ input:checked ~ label {
+    color: #ea0;
+    text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.quality > label:active {
+    position:relative;
+    top:2px;
+    left:2px;
+}
+
+
+
+
+
+.hygiene {
+    float:left;
+}
+
+
+.hygiene:not(:checked) > input {
+    position:absolute;
+    top:-9999px;
+    clip:rect(0,0,0,0);
+}
+
+.hygiene:not(:checked) > label {
+    float:right;
+    width:1em;
+    padding:0 .1em;
+    overflow:hidden;
+    white-space:nowrap;
+    cursor:pointer;
+    font-size:200%;
+    line-height:1.2;
+    color:#ddd;
+    text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.hygiene:not(:checked) > label:before {
+    content: '★ ';
+}
+
+.hygiene > input:checked ~ label {
+    color: #f70;
+    text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.hygiene:not(:checked) > label:hover,
+.hygiene:not(:checked) > label:hover ~ label {
+    color: gold;
+    text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.hygiene > input:checked + label:hover,
+.hygiene > input:checked + label:hover ~ label,
+.hygiene > input:checked ~ label:hover,
+.hygiene > input:checked ~ label:hover ~ label,
+.hygiene > label:hover ~ input:checked ~ label {
+    color: #ea0;
+    text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.hygiene > label:active {
+    position:relative;
+    top:2px;
+    left:2px;
+}
+
+
+
+
+
+.taste {
+    float:left;
+}
+
+
+.taste:not(:checked) > input {
+    position:absolute;
+    top:-9999px;
+    clip:rect(0,0,0,0);
+}
+
+.taste:not(:checked) > label {
+    float:right;
+    width:1em;
+    padding:0 .1em;
+    overflow:hidden;
+    white-space:nowrap;
+    cursor:pointer;
+    font-size:200%;
+    line-height:1.2;
+    color:#ddd;
+    text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.taste:not(:checked) > label:before {
+    content: '★ ';
+}
+
+.taste > input:checked ~ label {
+    color: #f70;
+    text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.taste:not(:checked) > label:hover,
+.taste:not(:checked) > label:hover ~ label {
+    color: gold;
+    text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.taste > input:checked + label:hover,
+.taste > input:checked + label:hover ~ label,
+.taste > input:checked ~ label:hover,
+.taste > input:checked ~ label:hover ~ label,
+.taste > label:hover ~ input:checked ~ label {
+    color: #ea0;
+    text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.taste > label:active {
+    position:relative;
+    top:2px;
+    left:2px;
+}
+
+
+
+
+
+.rating {
+    float:left;
+}
+
+
+.rating:not(:checked) > input {
+    position:absolute;
+    top:-9999px;
+    clip:rect(0,0,0,0);
+}
+
+.rating:not(:checked) > label {
+    float:right;
+    width:1em;
+    padding:0 .1em;
+    overflow:hidden;
+    white-space:nowrap;
+    cursor:pointer;
+    font-size:200%;
+    line-height:1.2;
+    color:#ddd;
+    text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.rating:not(:checked) > label:before {
+    content: '★ ';
+}
+
+.rating > input:checked ~ label {
+    color: #f70;
+    text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.rating:not(:checked) > label:hover,
+.rating:not(:checked) > label:hover ~ label {
+    color: gold;
+    text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.rating > input:checked + label:hover,
+.rating > input:checked + label:hover ~ label,
+.rating > input:checked ~ label:hover,
+.rating > input:checked ~ label:hover ~ label,
+.rating > label:hover ~ input:checked ~ label {
+    color: #ea0;
+    text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+}
+
+.rating > label:active {
+    position:relative;
+    top:2px;
+    left:2px;
+}
+
+body {
+    background-size:cover;
+}
+
+</style>
+{% load static %}
+</head>
+<body background="{% static 'Feedback/images/a.png' %}">
+
+<form role="form" action="" method="post">
+{% for field in fb_form %}{% csrf_token %}
+    	{% ifnotequal field.name 'rating'  %}
+    	{% ifnotequal field.name 'quality'  %}
+    	{% ifnotequal field.name 'taste'  %}
+    	{% ifnotequal field.name 'hygiene'  %}
+    	{% ifnotequal field.name 'others'  %}
+    	{% ifnotequal field.name 'dish_most_liked'  %}
+            <span>{{ field.errors }}</span><br/>
+        <label >{{ field.label_tag }}
+        {{ field }}</label><br/>
+    {% endifnotequal %}
+    {% endifnotequal %}
+    {% endifnotequal %}    
+    {% endifnotequal %}
+    {% endifnotequal %}
+    {% endifnotequal %}
+{% endfor %}
+<br/>
+
+
+{% for field in fb_form %}{% csrf_token %}
+{% ifequal field.name 'quality'  %}
+<fieldset class="quality">
+    <legend>Quality</legend>
+    <input type="radio" id= "qualitystar5" name="quality" value="5" /><label for= "qualitystar5" title="Excellent">5 stars</label>
+    <input type="radio" id= "qualitystar4" name="quality" value="4" /><label for= "qualitystar4" title="Pretty good">4 stars</label>
+    <input type="radio" id= "qualitystar3" name="quality" value="3" /><label for= "qualitystar3" title="Good">3 stars</label>
+    <input type="radio" id= "qualitystar2" name="quality" value="2" /><label for= "qualitystar2" title="Average">2 stars</label>
+    <input type="radio" id= "qualitystar1" name="quality" value="1" /><label for= "qualitystar1" title="Sucks big time">1 star</label>
+</fieldset><br/><br/><br/><br/><span>{{ field.errors }}</span><br>
+{% endifequal %}
+{% endfor %}
+
+
+{% for field in fb_form %}{% csrf_token %}
+{% ifequal field.name 'hygiene'  %}
+<fieldset class="hygiene">
+    <legend>Hygiene</legend>
+    <input type="radio" id= "hygienestar5" name="hygiene" value="5" /><label for= "hygienestar5" title="Excellent">5 stars</label>
+    <input type="radio" id= "hygienestar4" name="hygiene" value="4" /><label for= "hygienestar4" title="Pretty good">4 stars</label>
+    <input type="radio" id= "hygienestar3" name="hygiene" value="3" /><label for= "hygienestar3" title="Good">3 stars</label>
+    <input type="radio" id= "hygienestar2" name="hygiene" value="2" /><label for= "hygienestar2" title="Average">2 stars</label>
+    <input type="radio" id= "hygienestar1" name="hygiene" value="1" /><label for= "hygienestar1" title="Sucks big time">1 star</label>
+</fieldset><br/><br/><br/><br/><span>{{ field.errors }}</span><br>
+{% endifequal %}
+{% endfor %}
+
+
+{% for field in fb_form %}{% csrf_token %}
+{% ifequal field.name 'taste'  %}
+<fieldset class="taste">
+    <legend>Taste</legend>
+    <input type="radio" id= "tastestar5" name="taste" value="5" /><label for= "tastestar5" title="Excellent">5 stars</label>
+    <input type="radio" id= "tastestar4" name="taste" value="4" /><label for= "tastestar4" title="Pretty good">4 stars</label>
+    <input type="radio" id= "tastestar3" name="taste" value="3" /><label for= "tastestar3" title="Good">3 stars</label>
+    <input type="radio" id= "tastestar2" name="taste" value="2" /><label for= "tastestar2" title="Average">2 stars</label>
+    <input type="radio" id= "tastestar1" name="taste" value="1" /><label for= "tastestar1" title="Sucks big time">1 star</label>
+</fieldset><span class="text-danger">{{ field.errors }}</span><br><br><br><br><br>
+{% endifequal %}
+{% endfor %}
+
+
+{% for field in fb_form %}{% csrf_token %}
+{% ifequal field.name 'rating'  %}
+<fieldset class="rating">
+    <legend>Rating</legend>
+    <input type="radio" id="ratingstar5" name="rating" value="5" /><label for= "ratingstar5" title="Excellent">5 stars</label>
+    <input type="radio" id= "ratingstar4" name="rating" value="4" /><label for= "ratingstar4" title="Pretty good">4 stars</label>
+    <input type="radio" id= "ratingstar3" name="rating" value="3" /><label for= "ratingstar3" title="Good">3 stars</label>
+    <input type="radio" id= "ratingstar2" name="rating" value="2" /><label for= "ratingstar2" title="Average">2 stars</label>
+    <input type="radio" id= "ratingstar1" name="rating" value="1" /><label for= "ratingstar1" title="Sucks big time">1 star</label>
+</fieldset><span class="text-danger">{{ field.errors }}</span><br><br><br><br>
+{% endifequal %}
+{% endfor %}
+
+
+{% for field in fb_form %}{% csrf_token %}
+        {% ifequal field.name 'dish_most_liked'  %}
+        <br/><label >{{ field.label_tag }}</label><br/>
+        {{ field }}
+ 		<span>{{ field.errors }}</span><br>
+{% endifequal %}
+
+{% ifequal field.name 'others'  %}
+        <label >{{ field.label_tag }}</label><br/>
+        {{ field }}
+ 		<span class="text-danger">{{ field.errors }}</span><br>
+{% endifequal %}
+{% endfor %}<br/>
+
+    <button type="submit" >Submit</button>
+    </form>
+{% endblock %}

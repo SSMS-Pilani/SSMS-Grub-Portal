@@ -39,6 +39,8 @@ urlpatterns = [
 	url('^ssms/grub/(?P<gmid>[-\w]+)/sendmail/' , views.ssms_grub_sendmail, name="Grub send mail1") ,
 	url('^ajax/ssms/grub/(?P<gmid>[-\w]+)/sendmail1/' , views.ssms_grub_sendmail1, name="Grub send mail1") ,
 	url('^ajax/ssms/grub/(?P<gmid>[-\w]+)/sendmail2/' , views.ssms_grub_sendmail2, name="Grub send mail1") ,
+	url(r'^menu/',views.menu,name="menu"),
+	url(r'^student/grub/(?P<gmid>[-\w]+)/feedback/$', views.student_grub_feedback, name='student grub feedback'),
 	#url(r'^(?P<inv>\w+)/$',views.invalid,name="invalid"),
 	#url(r'^coord/upload-spot-signing/(?P<gmid>[-\w]+)/$', views.coord_upload_spot, name='upload spot signing'),
 	]

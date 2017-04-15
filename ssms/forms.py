@@ -1,5 +1,5 @@
 from django import forms
-from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both
+from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,FB,time_choices
 from django.contrib.auth.models import User
 from django.contrib.admin import widgets 
 class Grub_CoordUserForm(forms.ModelForm):
@@ -98,6 +98,24 @@ class UploadFileForm(forms.Form):
 		
 	class meta:
 		('file',)
+
+class FeedbackForm(forms.ModelForm):
+	grub_time =  forms.CharField(label="Time you got in",required=True,widget=forms.Select(choices=time_choices))
+	quality = forms.CharField(label="Quality",widget=forms.widgets.TextInput(attrs={}))
+	hygiene = forms.CharField(label="Hygiene",widget=forms.widgets.TextInput(attrs={}))
+	taste = forms.CharField(label="Taste",widget=forms.widgets.TextInput(attrs={}))
+	dish_most_liked = forms.CharField(label="Most Liked Dish",required=False)
+	others = forms.CharField(label="Comments",required = False,widget=forms.widgets.TextInput(attrs={}))
+	rating = forms.CharField(label="Rating",required=True,widget=forms.widgets.TextInput(attrs={}))
+	def is_valid(self):
+		form = super(FeedbackForm,self).is_valid()
+		for f in self.errors.iterkeys():
+			if f!='__all__':
+				self.fields[f].widget.attrs.update({'class':'error feedback form'})
+		return form
+	class Meta :
+		model = FB
+		exclude = ('gm_id','unique_id','s_id','meal_type','batch','mess')
 		
 
 

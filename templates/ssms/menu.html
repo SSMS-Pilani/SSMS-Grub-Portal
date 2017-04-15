@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>SSMS BITS Pilani</title>
+    <style>
+        ul{
+        list-style-type: none;
+        }
+        body{
+        background-size: 1800px 900px;
+        background-repeat: no-repeat;
+        }
+    </style>
+</head>
+<body  style="text-align:center" background="{%static 'menu/images/food.jpg'%} ">
+<!-- if user is a superuser / authorized then file upload prompt is shown, for all other registered users
+simply display today's menu -->
+{% if user.is_authenticated %}
+{% if user.is_superuser %}
+ <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="myfile">
+    <button type="submit">Upload</button>
+  </form>
+{% endif %}
+{% else %}
+<h1>Today's Menu</h1>
+<h2>{{date}}</h2>
+<h2>{{day}}</h2>
+<h3>{{types.0.meal_type}}</h3>
+<ul>
+    {% for i in items.0 %}
+    <li>{{i.item}}</li>
+    {% endfor %}
+</ul>
+<h3>{{types.1.meal_type}}</h3>
+<ul>
+    {% for i in items.1 %}
+    <li>{{i.item}}</li>
+    {% endfor %}
+</ul>
+<h3>{{types.2.meal_type}}</h3>
+<ul>
+    {% for i in items.2 %}
+    <li>{{i.item}}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+</body>
+</html>

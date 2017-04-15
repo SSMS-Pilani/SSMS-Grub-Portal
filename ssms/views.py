@@ -4,8 +4,8 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus
-from ssms.forms import GrubForm,Grub_CoordUserForm,Grub_CoordUserProfileForm,GrubEditDeadlineForm,ExcelUpload,VegForm,NonVegForm,BothForm,CoordStudentRegForm, GrubFormEdit , UploadFileForm
+from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus,Items, Meal,FB
+from ssms.forms import GrubForm,Grub_CoordUserForm,Grub_CoordUserProfileForm,GrubEditDeadlineForm,ExcelUpload,VegForm,NonVegForm,BothForm,CoordStudentRegForm, GrubFormEdit , UploadFileForm,FeedbackForm
 from django.conf import settings
 #addddddd
 from django import forms
@@ -20,6 +20,12 @@ import xlsxwriter
 ####
 #from django_cron import CronJobBase, Schedule
 
+
+#for menu
+
+from django.core.files.storage import FileSystemStorage
+from os.path import dirname, abspath
+from ssms.populate import populate
 
 def datechecker(gmid):
 	grub = Grub.objects.get(gm_id=gmid)
@@ -270,6 +276,32 @@ def ssms_grub_sendmail(request,gmid):
 		return HttpResponseRedirect('/ssms/')
 	return render(request,'ssms/ssms_grub_sendmail.html',context_dict)
 		
+		
+def menu(request):
+    # check if request is post and handle appropriately by storing file in media
+    if request.method == 'POST' and request.FILES['myfile']:
+        # recieve and store file in /media folder
+        myfile = request.FILES['myfile']
+        fs = FileSystemStorage()
+        filename = fs.save("menu.csv", myfile)
+        # call population script to use add uploaded file data to database
+        populate(filename)
+        return render(request, 'menu.html')
+
+    # if database has no data then cathc error and display menu.html page
+    # if user is authorized shows upload option else shoes blank page
+    try:
+        # display today's menu to visitors if request is not a post request
+        current_date = '2017-02-14'  # explicitly setting date for debugging in 'yyyy-mm-dd' format
+        # current_date = date.today().isoformat()
+        meal_types = Meal.objects.filter(date=current_date)
+        day = meal_types[0].day
+        food = [Items.objects.filter(meal=i) for i in meal_types]
+    except:
+        return  render(request, 'ssms/menu.html')
+    return render(request, 'ssms/menu.html', {'types': meal_types, 'items': food, 'date': current_date, 'day': day})
+
+    		
 def index(request):
 	if not request.user.is_authenticated():
 		return render(request, 'ssms/index.html')
@@ -1016,6 +1048,7 @@ def student_grub_cancel(request, gmid):
 		try:
 			grub = Grub.objects.get(gm_id=gmid,status="Active")
 			d=datechecker(gmid)
+			
 			if d==1 :
 				try :
 					a=Grub_Student.objects.get(gm_id=gmid,user_id=str(request.user))
@@ -1031,6 +1064,49 @@ def student_grub_cancel(request, gmid):
 			return HttpResponseRedirect("/ssms/")
 	else :
 		return HttpResponseRedirect("/ssms/")
+		
+		
+def student_grub_feedback(request, gmid):
+	if request.user.is_authenticated() and not request.user.is_staff:
+		try:
+			grub = Grub.objects.get(gm_id=gmid,status="Active")
+			d=datechecker(gmid)
+			grubstu = Grub_Student.objects.get(gm_id=gmid,user_id=str(request.user))
+			print("here")
+			if d==4 :
+				if request.method == 'POST':
+					fb_form = FeedbackForm(request.POST)
+					if fb_form.is_valid():
+						feedb_form = fb_form.save(commit=False)
+						feedb_form.s_id = request.user
+						feedb_form.gm_id = grub
+						feedb_form.meal_type = grubstu.meal
+						feedb_form.save()
+						return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
+					else:
+						print form.errors
+				else:
+					fb_form = FeedbackForm()	
+					return render(request,'ssms/createfb.html',{'fb_form':fb_form} )
+			else :
+				return HttpResponseRedirect("/ssms/")
+		except :
+			pass
+			return HttpResponseRedirect("/ssms/")
+	else :
+		return HttpResponseRedirect("/ssms/")	
+		
+@login_required
+def fbform(request,feed_form=None):
+	fb_form = FeedbackForm(request.POST or None)
+
+	if fb_form.is_valid():
+		feedb_form = fb_form.save(commit=False)
+		feedb_form.user = request.user
+		feedb_form.save()
+		return render(request,'Feedback/view.html',{'feedb_form':feedb_form} )
+		
+	return render(request, 'Feedback/createfb.html',{'fb_form':fb_form})	
 @login_required
 def user_logout(request):
 	logout(request)

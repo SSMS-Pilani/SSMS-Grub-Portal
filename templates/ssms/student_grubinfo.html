@@ -104,7 +104,9 @@
 	<h1>Registrations Are Over!</h1>
 {% endifequal %}
 {% ifequal e 4 %}
-
+{% ifequal student.status "Signed Up" %}
+<h1><a href='/ssms/student/grub/{{ grub.gm_id }}/feedback/' ><button class="btn btn-lg btn-success" >Feedback</button></a></h1>
+	{% endifequal %}
 	<h1>Grub is Over!</h1>
 {% endifequal %}
 {% ifequal e 1 %}

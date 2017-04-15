@@ -11,7 +11,9 @@ from django.db import models
 from django import forms
 #from django.contrib.admin.widgets import AdminDateWidget
 
-
+time_choices = (('1','08:30 pm'),('2','08:45 pm'),('3','09:00 pm'),('4','09:15 pm'),
+		('5','09:30 pm'),('6','09:45 pm'),('7','10:00 pm'),('8','10:15 pm'),
+		('9','10:30 pm'),('10','10:45 pm'),('11','11:00 pm'))
 
 def content_album_name(instance, filename):
 	return os.path.join(instance.name,filename)
@@ -120,4 +122,37 @@ class DateMailStatus(models.Model):
 	mails = models.IntegerField("Mails Sent",default = 0)
 	def __str__(self):
 		return self.date.strftime('%m/%d/%Y')
-
+		
+		#for menu
+		
+class Meal(models.Model):
+    date = models.DateField(null=False, blank=False)
+    meal_type = models.CharField(max_length=30, choices=(('grub','GRUB'),('lunch', 'LUNCH') , ('dinner','DINNER'), ('breakfast','BREAKFAST')))
+    day = models.CharField(max_length=10, null=True)
+    def __unicode__(self):
+        return str(self.date) + str(self.meal_type)
+class Items(models.Model):
+    item = models.CharField(null=False, blank=False, max_length=30)
+    meal = models.ForeignKey('Meal')
+    def __unicode__(self):
+        return str(self.item) + str(self.meal.date)
+        
+        
+class FB(models.Model):
+	#unique_id = models.UUIDField("Unique Feedback Id",primary_key=True, default=uuid.uuid4, editable=False)
+	gm_id = models.ForeignKey(Grub,default='1',verbose_name="Grub Id")
+	s_id = models.CharField(max_length=16,default='1')
+	meal_type = models.CharField(max_length=20)
+	batch = models.IntegerField(default=0)
+	grub_time = models.CharField(max_length=7,choices=time_choices)
+	mess = models.CharField(max_length = 30,choices=venue.place,null=True)
+	quality	= models.IntegerField(default=0)
+	hygiene = models.IntegerField(default=0)
+	taste = models.IntegerField(default=0)
+	rating = models.IntegerField(default=0)
+	dish_most_liked = models.CharField(max_length = 50, blank=True)
+	others = models.CharField(max_length=500,blank=True)
+	def __unicode__(self):
+		return str(self.gm_id) + " "+str(self.s_id)      
+		
+		  
