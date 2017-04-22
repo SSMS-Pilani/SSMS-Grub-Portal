@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus,Items, Meal,FB
+from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus
 from ssms.forms import GrubForm,Grub_CoordUserForm,Grub_CoordUserProfileForm,GrubEditDeadlineForm,ExcelUpload,VegForm,NonVegForm,BothForm,CoordStudentRegForm, GrubFormEdit , UploadFileForm,FeedbackForm
 from django.conf import settings
 #addddddd
@@ -20,12 +20,6 @@ import xlsxwriter
 ####
 #from django_cron import CronJobBase, Schedule
 
-
-#for menu
-
-from django.core.files.storage import FileSystemStorage
-from os.path import dirname, abspath
-from ssms.populate import populate
 
 def datechecker(gmid):
 	grub = Grub.objects.get(gm_id=gmid)
@@ -276,32 +270,6 @@ def ssms_grub_sendmail(request,gmid):
 		return HttpResponseRedirect('/ssms/')
 	return render(request,'ssms/ssms_grub_sendmail.html',context_dict)
 		
-		
-def menu(request):
-    # check if request is post and handle appropriately by storing file in media
-    if request.method == 'POST' and request.FILES['myfile']:
-        # recieve and store file in /media folder
-        myfile = request.FILES['myfile']
-        fs = FileSystemStorage()
-        filename = fs.save("menu.csv", myfile)
-        # call population script to use add uploaded file data to database
-        populate(filename)
-        return render(request, 'menu.html')
-
-    # if database has no data then cathc error and display menu.html page
-    # if user is authorized shows upload option else shoes blank page
-    try:
-        # display today's menu to visitors if request is not a post request
-        current_date = '2017-02-14'  # explicitly setting date for debugging in 'yyyy-mm-dd' format
-        # current_date = date.today().isoformat()
-        meal_types = Meal.objects.filter(date=current_date)
-        day = meal_types[0].day
-        food = [Items.objects.filter(meal=i) for i in meal_types]
-    except:
-        return  render(request, 'ssms/menu.html')
-    return render(request, 'ssms/menu.html', {'types': meal_types, 'items': food, 'date': current_date, 'day': day})
-
-    		
 def index(request):
 	if not request.user.is_authenticated():
 		return render(request, 'ssms/index.html')
@@ -526,7 +494,10 @@ def export_data(request, gmid):
 		
 				b=[]		
 				for stu in c:
-					b.append([stu.user_id,stu.name, stu.student_id, stu.meal,stu.bhawan,stu.room])
+					if(stu.batch):
+						b.append([stu.user_id,stu.name, stu.student_id, stu.meal,stu.bhawan,stu.room,stu.batch.batch_name])
+					else :
+						b.append([stu.user_id,stu.name, stu.student_id, stu.meal,stu.bhawan,stu.room,stu.batch])
 				print(b)
 				workbook = xlsxwriter.Workbook('media/'+a.name+'_'+bh+'_grublist.xlsx')
 				worksheet = workbook.add_worksheet()
@@ -536,6 +507,7 @@ def export_data(request, gmid):
 				worksheet.set_column('D:D', 15)
 				worksheet.set_column('E:E', 15)
 				worksheet.set_column('F:F', 15)
+				worksheet.set_column('G:G', 5)
 				bold = workbook.add_format({'bold': 1})
 				worksheet.write('A1', 'User ID', bold)
 				worksheet.write('B1', 'Name', bold)
@@ -543,6 +515,7 @@ def export_data(request, gmid):
 				worksheet.write('D1', 'Meal Type', bold)
 				worksheet.write('E1', 'Bhawan', bold)
 				worksheet.write('F1', 'Room No.', bold)
+				worksheet.write('G1', 'Batch', bold)
 				row = 1
 				col = 0
 				for i in b:
@@ -552,6 +525,8 @@ def export_data(request, gmid):
 					worksheet.write_string  (row, col+3,i[3] )
 					worksheet.write_string(row, col + 4, i[4] )
 					worksheet.write_string  (row, col + 5,i[5] )
+					if (i[6]):
+						worksheet.write_string  (row, col + 6,i[6] )
 					row += 1
 				workbook.close()
 				return HttpResponseRedirect('media/'+a.name+'_'+bh+'_grublist.xlsx')
@@ -576,7 +551,7 @@ def coord_login(request):
 
         	user = authenticate(username=username, password=password)
 
-		if user and user.is_staff:
+		if user and user.is_staff and not user.is_superuser:
 		    	if user.is_active:                                                 #add status  choice here
 		        	login(request, user)
 		        	return HttpResponseRedirect('/ssms/')
@@ -1048,7 +1023,6 @@ def student_grub_cancel(request, gmid):
 		try:
 			grub = Grub.objects.get(gm_id=gmid,status="Active")
 			d=datechecker(gmid)
-			
 			if d==1 :
 				try :
 					a=Grub_Student.objects.get(gm_id=gmid,user_id=str(request.user))
@@ -1064,49 +1038,6 @@ def student_grub_cancel(request, gmid):
 			return HttpResponseRedirect("/ssms/")
 	else :
 		return HttpResponseRedirect("/ssms/")
-		
-		
-def student_grub_feedback(request, gmid):
-	if request.user.is_authenticated() and not request.user.is_staff:
-		try:
-			grub = Grub.objects.get(gm_id=gmid,status="Active")
-			d=datechecker(gmid)
-			grubstu = Grub_Student.objects.get(gm_id=gmid,user_id=str(request.user))
-			print("here")
-			if d==4 :
-				if request.method == 'POST':
-					fb_form = FeedbackForm(request.POST)
-					if fb_form.is_valid():
-						feedb_form = fb_form.save(commit=False)
-						feedb_form.s_id = request.user
-						feedb_form.gm_id = grub
-						feedb_form.meal_type = grubstu.meal
-						feedb_form.save()
-						return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
-					else:
-						print form.errors
-				else:
-					fb_form = FeedbackForm()	
-					return render(request,'ssms/createfb.html',{'fb_form':fb_form} )
-			else :
-				return HttpResponseRedirect("/ssms/")
-		except :
-			pass
-			return HttpResponseRedirect("/ssms/")
-	else :
-		return HttpResponseRedirect("/ssms/")	
-		
-@login_required
-def fbform(request,feed_form=None):
-	fb_form = FeedbackForm(request.POST or None)
-
-	if fb_form.is_valid():
-		feedb_form = fb_form.save(commit=False)
-		feedb_form.user = request.user
-		feedb_form.save()
-		return render(request,'Feedback/view.html',{'feedb_form':feedb_form} )
-		
-	return render(request, 'Feedback/createfb.html',{'fb_form':fb_form})	
 @login_required
 def user_logout(request):
 	logout(request)
@@ -1169,7 +1100,64 @@ def export(request):
 #def invalid(request,inv):
 #	return HttpResponse("done")
 
-
-
+def ssms_grub_batchallocation(request,gmid):
+	if request.user.is_superuser:
+		grub = Grub.objects.get(gm_id=gmid)
+		if request.method == 'POST':
+			students = Grub_Student.objects.filter().order_by('bhawan')
+			count = len(students)
+				
+		else :
+			return render(request,'ssms/batch_allocation.html',{'grub': grub})
+			
+			
+def student_grub_feedback(request,gmid):
+	if request.user.is_authenticated() and not request.user.is_staff:
+		try:
+			grub = Grub.objects.get(gm_id=gmid,status="Active")
+			d=datechecker(gmid)
+			print("here")
+			if d==4 :
+				print("here")
+				try :
+					a=Grub_Student.objects.get(gm_id=gmid,user_id=str(request.user),status="Signed Up")
+					if request.method == 'POST':
+						fb_form = FeedbackForm(request.POST)
+						if fb_form.is_valid():
+							feedb_form = fb_form.save(commit=False)
+							feedb_form.user = request.user
+							feedb_form.gm_id = grub
+							feedb_form.stugm_id = a.student_id
+							feedb_form.meal_type = a.meal
+							feedb_form.save()
+							a.feedback_given=1
+							a.save()
+							return HttpResponse("here")
+							return render(request,'Feedback/view.html',{'feedb_form':feedb_form} )
+						else :
+							return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
+					else :
+						fb_form = FeedbackForm()
+						return render(request,'ssms/createfb.html',{'grub': grub,'fb_form':fb_form,"grubstu":a})
+				except Grub_Student.DoesNotExist:
+					return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")	
+			else :
+				return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
+		except Grub.DoesNotExist:
+			pass
+			return HttpResponseRedirect("/ssms/")
+	else :
+		return HttpResponseRedirect("/ssms/")
+	
+		
+			
+def menu(request):
+	if request.user.is_superuser:
+		grub = Grub.objects.get(gm_id=gmid)
+		if request.method == 'POST':
+			students = Grub_Student.objects.filter().order_by('bhawan')
+			count = len(students)
+		else :
+			return render(request,'ssms/menu.html')
 
 

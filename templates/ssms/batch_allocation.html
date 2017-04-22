@@ -1,0 +1,65 @@
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+{% block block1 %}
+<h1 class="intro-text text-center"><strong>Batch Allocation- {{grub.name}}</strong></h1>  
+<h1 class="text-center text-danger">{{ invalid }}</h1>
+<hr>
+<div class="text-center">
+<h4>Veg:  No of Batches
+<select id="Batch" >
+ <option value="1">1</option>
+  <option value="2">2</option> 
+  <option value="3" >3</option> 
+  <option value="4" >4</option> 
+</select></h4>
+</div>
+
+<div id="batch1">
+hello
+</div>
+<div id="batch2">
+hello2
+</div>
+<div id="batch3">
+hello3
+</div>
+<div id="batch4">
+hello4
+</div>
+
+<script>
+	$(document).ready(function() {
+	$('#batch2').hide(); //hide field on start
+ 	$('#batch3').hide(); //hide field on start
+ 	$('#batch4').hide(); //hide field on start
+	$('#Batch').change(function() {
+ 
+	 if($('#Batch').val() == '1') { //if this value is selected
+	 	$('#batch1').show(); 
+	 	$('#batch2').hide(); 
+ 		$('#batch3').hide(); 
+ 		$('#batch4').hide(); 
+	 } 
+	 else if($('#Batch').val() == '2'){
+		$('#batch1').hide(); 
+	 	$('#batch2').show(); 
+ 		$('#batch3').hide(); 
+ 		$('#batch4').hide(); 
+	 }
+	 else if($('#Batch').val() == '3'){
+		$('#batch1').hide(); 
+	 	$('#batch2').hide(); 
+ 		$('#batch3').show(); 
+ 		$('#batch4').hide(); 
+	 }
+	 else if($('#Batch').val() == '4'){
+		$('#batch1').hide(); 
+	 	$('#batch2').hide(); 
+ 		$('#batch3').hide(); 
+ 		$('#batch4').show(); 
+	 }
+        });
+ });
+</script>
+{% endblock %}

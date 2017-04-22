@@ -11,9 +11,7 @@ from django.db import models
 from django import forms
 #from django.contrib.admin.widgets import AdminDateWidget
 
-time_choices = (('1','08:30 pm'),('2','08:45 pm'),('3','09:00 pm'),('4','09:15 pm'),
-		('5','09:30 pm'),('6','09:45 pm'),('7','10:00 pm'),('8','10:15 pm'),
-		('9','10:30 pm'),('10','10:45 pm'),('11','11:00 pm'))
+
 
 def content_album_name(instance, filename):
 	return os.path.join(instance.name,filename)
@@ -27,7 +25,7 @@ class Grub_Coord(models.Model):
 	user = models.OneToOneField(User)
 	cg_id= models.UUIDField("Coordinator UUID",primary_key=True, default=uuid.uuid4, editable=False)
 	cg_name = models.CharField("Coordinator Name",max_length=32,blank=False)
-	cg_bitsid = models.CharField("Coordinator Bits ID",max_length=32, unique=True)
+	cg_bitsid = models.CharField("Coordinator Bits ID",max_length=32, unique=False)
 	assoc_name = models.CharField("Association",max_length=64, blank=False)
 	status=models.CharField(choices=stype,max_length=32,default='Active')
 	date = models.DateTimeField(auto_now=True)
@@ -54,7 +52,16 @@ class Grub(models.Model):
 	def __str__(self):
 		return self.name
 
-
+		
+class Batch(models.Model):
+	batch_choices = (("A","A"),("B","B"),("C","C"),("D","D"))
+	color_choices = (("Red","Red"),("Yellow","Yellow"),("Blue","Blue"),("Green","Green"))
+	gm_id = models.ForeignKey(Grub,verbose_name="Grub Id")
+	batch_name = models.CharField("Batch Name",default="",choices=batch_choices,max_length=32,blank=False) #batch name
+	color = models.CharField("Batch Color",max_length=10,choices=color_choices)
+	timing = models.CharField("Batch Time",max_length=16,blank=False)
+	def __str__(self):
+		return self.batch_name
 
 class Grub_Student(models.Model):
 	unique_id = models.UUIDField("Unique Student Id",primary_key=True, default=uuid.uuid4, editable=False)
@@ -70,6 +77,8 @@ class Grub_Student(models.Model):
 	status=models.CharField(choices=stype,max_length=128,blank=False)
 	room=models.CharField("Room No.",max_length=32,default='303')
 	bhawan=models.CharField("Bhawan",max_length=32,default='VK')
+	batch = models.ForeignKey(Batch,verbose_name="Batch",blank=True,null=True)
+	feedback_given = models.IntegerField("Feedback given",default=0,null=False)
 	class Meta:
 		unique_together = ('student_id', 'gm_id','status') ##add meal
 	def __str__(self):
@@ -123,36 +132,18 @@ class DateMailStatus(models.Model):
 	def __str__(self):
 		return self.date.strftime('%m/%d/%Y')
 		
-		#for menu
-		
-class Meal(models.Model):
-    date = models.DateField(null=False, blank=False)
-    meal_type = models.CharField(max_length=30, choices=(('grub','GRUB'),('lunch', 'LUNCH') , ('dinner','DINNER'), ('breakfast','BREAKFAST')))
-    day = models.CharField(max_length=10, null=True)
-    def __unicode__(self):
-        return str(self.date) + str(self.meal_type)
-class Items(models.Model):
-    item = models.CharField(null=False, blank=False, max_length=30)
-    meal = models.ForeignKey('Meal')
-    def __unicode__(self):
-        return str(self.item) + str(self.meal.date)
-        
-        
-class FB(models.Model):
-	#unique_id = models.UUIDField("Unique Feedback Id",primary_key=True, default=uuid.uuid4, editable=False)
-	gm_id = models.ForeignKey(Grub,default='1',verbose_name="Grub Id")
-	s_id = models.CharField(max_length=16,default='1')
-	meal_type = models.CharField(max_length=20)
-	batch = models.IntegerField(default=0)
-	grub_time = models.CharField(max_length=7,choices=time_choices)
-	mess = models.CharField(max_length = 30,choices=venue.place,null=True)
-	quality	= models.IntegerField(default=0)
-	hygiene = models.IntegerField(default=0)
-	taste = models.IntegerField(default=0)
-	rating = models.IntegerField(default=0)
-	dish_most_liked = models.CharField(max_length = 50, blank=True)
-	others = models.CharField(max_length=500,blank=True)
+class Feedback(models.Model):
+	unique_id = models.UUIDField("Unique Stud Id",primary_key=True, default=uuid.uuid4, editable=False)
+	gm_id = models.ForeignKey(Grub,verbose_name="Grub Id")
+	stugm_id = models.CharField("Student BITS Id",max_length=20,null=True,blank=True)
+	user = models.ForeignKey(User,verbose_name="User Id")
+	meal_type = models.CharField("Meal type",max_length=10)
+	quality	= models.CharField(max_length=2,null=True,blank=True)
+	hygiene = models.CharField(max_length=2,null=True,blank=True)
+	taste = models.CharField(max_length=2,null=True,blank=True)
+	rating = models.CharField(max_length=2,null=True,blank=True)
+	most_liked_dish = models.CharField(max_length = 50,null=True,blank=True)
+	others = models.CharField(max_length=500,null=True,blank=True)
 	def __unicode__(self):
-		return str(self.gm_id) + " "+str(self.s_id)      
-		
-		  
+		return self.gm_id.name + "-" + self.stugm_id
+
