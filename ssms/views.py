@@ -17,6 +17,8 @@ from datetime import datetime,date,timedelta
 from django.core.mail import send_mail,send_mass_mail
 from django.views.decorators.cache import cache_control
 import xlsxwriter
+from django.contrib.auth.decorators import user_passes_test
+import openpyxl
 ####
 #from django_cron import CronJobBase, Schedule
 
@@ -1148,10 +1150,9 @@ def student_grub_feedback(request,gmid):
 			return HttpResponseRedirect("/ssms/")
 	else :
 		return HttpResponseRedirect("/ssms/")
-	
-		
-			
-def index(request):
+
+@user_passes_test(lambda u: u.is_superuser)
+def menu_upload(request):
     # check if request is post and handle appropriately by storing file in media
     if request.method == 'POST' and request.FILES['myfile']:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dailymenu.settings')
@@ -1176,27 +1177,24 @@ def index(request):
             for j in range(24, max_val):
                 if col[j].value: Items.objects.get_or_create(item=col[j].value, meal=dinner)
 
-        return render(request, 'ssms/menu.html', {
+        return render(request, 'ssms/menu_upload.html', {
             'uploaded_file': name
         })
     else:
-    	return render(request, 'ssms/menu.html',{
+    	return render(request, 'ssms/menu_upload.html',{
     		'message': 'Please upload a file.'
     		})
 
-    # if database has no data then catch error and display menu.html page
-    # if user is authorized shows upload option else shoes blank page
-    try:
-        # display today's menu to visitors if request is not a post request
-        # explicitly setting datein 'yyyy-mm-dd' format
-        current_date = date.today().isoformat()
-        meal_types = Meal.objects.filter(date=current_date)
-        day = meal_types[0].day
-        food = [Items.objects.filter(meal=i) for i in meal_types]
-    except:
-        return render(request, 'ssms/menu.html')
-    return render(request, 'ssms/menu.html', {'types': meal_types,\
-                                         'items': food,\
-                                         'date': current_date, 'day': day})
-
-
+def menu_display(request):
+	# if database has no data then catch error and display menu.html page
+	try:
+		# explicitly setting datein 'yyyy-mm-dd' format
+		current_date = date.today().isoformat()
+		meal_types = Meal.objects.filter(date=current_date)
+		day = meal_types[0].day
+		food = [Items.objects.filter(meal=i) for i in meal_types]
+	except:
+		return render(request, 'ssms/menu.html')
+	return render(request, 'ssms/menu.html', {'types': meal_types, \
+											  'items': food, \
+											  'date': current_date, 'day': day})
