@@ -19,6 +19,9 @@
 simply display today's menu -->
 {% if user.is_authenticated %}
 {% if user.is_superuser %}
+{% if message %}
+{{message}}
+{% endif %}
  <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="file" name="myfile">
@@ -50,3 +53,4 @@ simply display today's menu -->
 {% endif %}
 </body>
 </html>
+
