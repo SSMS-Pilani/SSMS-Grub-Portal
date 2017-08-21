@@ -10,3 +10,4 @@ pillow
 xlsxwriter
 boto
 django-storages
+openpyxl==2.4.1

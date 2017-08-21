@@ -1,5 +1,5 @@
 from django.contrib import admin
-from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus,Batch,Feedback
+from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus,Batch,Feedback, Meal, Items
 admin.site.register(Veg)
 admin.site.register(NonVeg)
 admin.site.register(Both)
@@ -18,3 +18,5 @@ class GrubAdmin(admin.ModelAdmin):
 admin.site.register(Grub,GrubAdmin)
 admin.site.register(Batch)
 admin.site.register(Feedback)
+admin.site.register(Meal)
+admin.site.register(Items)

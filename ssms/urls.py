@@ -44,5 +44,6 @@ urlpatterns = [
 	url('^ajax/ssms/grub/(?P<gmid>[-\w]+)/sendmail2/' , views.ssms_grub_sendmail2, name="Grub send mail1") ,
 	#url(r'^(?P<inv>\w+)/$',views.invalid,name="invalid"),
 	#url(r'^coord/upload-spot-signing/(?P<gmid>[-\w]+)/$', views.coord_upload_spot, name='upload spot signing'),
+	url(r'^/ssms/menu_upload/$', views.menu_upload, name='menu_upload'),
+	url(r'^/ssms/menu/$', views.menu_display, name='menu_display'),
 	]
-

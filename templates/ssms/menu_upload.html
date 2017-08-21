@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Mess Menu Excel SHeet</title>
+</head>
+<body>
+{% if message %}
+{{message}}
+{% endif %}
+ <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="myfile">
+    <button type="submit">Upload</button>
+ </form>
+</body>
+</html>
