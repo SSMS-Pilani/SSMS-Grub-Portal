@@ -20,6 +20,7 @@ def content_album_name2(instance, filename):
 #######Use verbose name
 
 
+
 class Grub_Coord(models.Model):
 	stype=(('Active','Active'),('Inactive','Inactive'))
 	user = models.OneToOneField(User)
@@ -31,13 +32,14 @@ class Grub_Coord(models.Model):
 	date = models.DateTimeField(auto_now=True)
 	reg_by = models.CharField(max_length=32)
 	def __str__(self):
-		return self.cg_name
+		return self.cg_name + "-" + self.user.username
 
 
 class Grub(models.Model):
 	mtype=(('Veg','Veg'),('Non Veg','Non Veg'),('Both','Both'))
 	stype=(('Active','Active'),('Inactive','Inactive'))
 	emtype=(('Sent','Sent'),('Not Sent','Not Sent'),('Sent2','Sent2'))
+	spot_signing_choices=(('Yes','Yes'),('No','No'))
 	gm_id=  models.UUIDField("Grub UUID",primary_key=True, default=uuid.uuid4, editable=False)
 	name = models.CharField("Grub Name",max_length=32)
 	meal= models.CharField("Meal Type",choices=mtype,max_length=16,default='Veg')
@@ -49,6 +51,7 @@ class Grub(models.Model):
 	status=models.CharField(choices=stype,max_length=128,default='Active')
 	excel = models.FileField(upload_to=content_album_name,blank=False)	
 	mails=models.CharField(choices=emtype,max_length=128,default='Not Sent',blank=False)
+	spot_signing = models.CharField(choices=spot_signing_choices,max_length=6,default="Yes",blank=False)
 	def __str__(self):
 		return self.name
 
@@ -149,15 +152,15 @@ class Feedback(models.Model):
 
 
 class Meal(models.Model):
-    date = models.DateField(null=False, blank=False)
-    meal_type = models.CharField(max_length=30, choices=(('grub','GRUB'),('lunch', 'LUNCH') , ('dinner','DINNER'), ('breakfast','BREAKFAST')))
-    day = models.CharField(max_length=10, null=True)
-    def __unicode__(self):
-        return str(self.date) + str(self.meal_type)
-
+	meal_choices = (('grub','GRUB'),('lunch', 'LUNCH') , ('dinner','DINNER'), ('breakfast','BREAKFAST'))
+	date = models.DateField(null=False, blank=False)
+	meal_type = models.CharField(max_length=16, choices=meal_choices)
+	day = models.CharField(max_length=10, null=True)
+	def __unicode__(self):
+		return str(self.date) + str(self.meal_type)
 
 class Items(models.Model):
-    item = models.CharField(null=False, blank=False, max_length=30)
-    meal = models.ForeignKey('Meal')
-    def __unicode__(self):
-        return str(self.item) + str(self.meal.date)
+	item = models.CharField(null=False, blank=False, max_length=30)
+	meal = models.ForeignKey('Meal')
+	def __unicode__(self):
+		return str(self.item) + str(self.meal.date)

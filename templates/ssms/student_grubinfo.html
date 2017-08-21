@@ -89,6 +89,8 @@
 	<h1>Deadline is over</h1>
 {% endifequal %}
 {% ifequal e 4 %}
+<h1><a href='/ssms/student/grub/{{ grub.gm_id }}/feedback/' ><button class="btn btn-lg btn-success" >Feedback</button></a></h1>
+
 	<h1>Grub is over</h1>
 {% endifequal %}
 {% ifequal e 2 %}
@@ -104,10 +106,8 @@
 	<h1>Registrations Are Over!</h1>
 {% endifequal %}
 {% ifequal e 4 %}
-{% ifequal student.status "Signed Up" %}
-<h1><a href='/ssms/student/grub/{{ grub.gm_id }}/feedback/' ><button class="btn btn-lg btn-success" >Feedback</button></a></h1>
-	{% endifequal %}
-	<h1>Grub is Over!</h1>
+
+	<h1>Grub is Over2!</h1>
 {% endifequal %}
 {% ifequal e 1 %}
 	{% ifequal i 0 %}

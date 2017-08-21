@@ -17,8 +17,9 @@ from datetime import datetime,date,timedelta
 from django.core.mail import send_mail,send_mass_mail
 from django.views.decorators.cache import cache_control
 import xlsxwriter
-from django.contrib.auth.decorators import user_passes_test
 import openpyxl
+from django.contrib.auth.models import User
+import os
 ####
 #from django_cron import CronJobBase, Schedule
 
@@ -138,7 +139,7 @@ def send2(request):
 	else :
 		return HttpResponseRedirect("/ssms")
 	
-	    
+	
 def ssms_grub_sendmail1(request,gmid):
 	grubid = request.GET.get('grubid')
 	datemail = DateMailStatus.objects.get(date=datetime.now())
@@ -250,27 +251,30 @@ def ssms_grub_sendmail2(request,gmid):
 		data = {'is_taken': "Internal Error"}
 		return JsonResponse(data)
 	
-	    
+	
 def ssms_grub_sendmail(request,gmid):
-	context_dict={}
-	try:
-		grub = Grub.objects.get(gm_id=gmid)
-		context_dict["grub"]=grub
-		stud = Grub_Student.objects.filter(gm_id=gmid,status="Signed Up")
-		registered=len(stud)
-		context_dict["registered"]=registered
-		if(DateMailStatus.objects.filter(date=datetime.now()).exists()):
-			datemail = DateMailStatus.objects.get(date=datetime.now())
-			context_dict["datemail"]=datemail
-		else :
-			datemail = DateMailStatus.objects.create(date=datetime.now(),mails=0)
-			context_dict["datemail"]=datemail
-		mailsleft = 1000 - datemail.mails
-		context_dict["mailsleft"]=mailsleft
-	except:
-		pass	
-		return HttpResponseRedirect('/ssms/')
-	return render(request,'ssms/ssms_grub_sendmail.html',context_dict)
+	if request.user.is_superuser:
+		context_dict={}
+		try:
+			grub = Grub.objects.get(gm_id=gmid)
+			context_dict["grub"]=grub
+			stud = Grub_Student.objects.filter(gm_id=gmid,status="Signed Up")
+			registered=len(stud)
+			context_dict["registered"]=registered
+			if(DateMailStatus.objects.filter(date=datetime.now()).exists()):
+				datemail = DateMailStatus.objects.get(date=datetime.now())
+				context_dict["datemail"]=datemail
+			else :
+				datemail = DateMailStatus.objects.create(date=datetime.now(),mails=0)
+				context_dict["datemail"]=datemail
+			mailsleft = 1000 - datemail.mails
+			context_dict["mailsleft"]=mailsleft
+		except Exception as e:
+			print e	
+			context_dict["error"] = e
+		return render(request,'ssms/ssms_grub_sendmail.html',context_dict)
+	else :
+		return HttpResponseRedirect('/ssms/ssms/login/')
 		
 def index(request):
 	if not request.user.is_authenticated():
@@ -296,25 +300,24 @@ def index(request):
 
 def ssms_login(request):
 	context_dict={}
-    	if request.method == 'POST':
+	if request.method == 'POST':
 		username = request.POST.get('username')
 		password = request.POST.get('password')
 
 		user = authenticate(username=username, password=password)
 
 		if user and user.is_superuser:
-		    	if user.is_active:
-				login(request, user)
-				return HttpResponseRedirect('/ssms/')
-		    	else:
-				return HttpResponse("Your ssms account is disabled.")
+				if user.is_active:
+					login(request, user)
+					return HttpResponseRedirect('/ssms/')
+				else:
+					return HttpResponse("Your ssms account is disabled.")
 		else:
 			
 			context_dict['invalid']="Invalid login details supplied."
-		    	return render(request, 'ssms/ssms_login.html',context_dict)
+			return render(request, 'ssms/ssms_login.html',context_dict)
 
-    	else:
-		
+	else:
 		return render(request, 'ssms/ssms_login.html')
 
 
@@ -359,7 +362,7 @@ def ssms_grubinfo(request,gmid):
 	if request.user.is_superuser:
 		e=datechecker(gmid)
 		context_dict = {}
-	    	try:
+		try:
 			grub = Grub.objects.get(gm_id=gmid)
 			if (grub.meal=='Veg'):
 				b=Veg.objects.get(gm_id=gmid)
@@ -374,9 +377,9 @@ def ssms_grubinfo(request,gmid):
 			context_dict['meal'] = b
 			context_dict['i'] = i
 			context_dict['e'] = e
-	    	except Grub.DoesNotExist:
+		except Grub.DoesNotExist:
 			pass
-    		return render(request, 'ssms/ssms_grubinfo.html', context_dict)
+		return render(request, 'ssms/ssms_grubinfo.html', context_dict)
 	else :
 		return HttpResponseRedirect('/ssms/ssms/login/')
 
@@ -422,7 +425,7 @@ def ssms_student_table(request,gmid):
 			grub =Grub.objects.get(gm_id=gmid)
 			form = ExcelUpload(instance=grub)
 			e=datechecker(gmid)
-			coord = Grub_Coord.objects.get(cg_name=grub.cg_id)
+			coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
 			if request.user == coord.user:
 				grub=Grub.objects.get(gm_id=gmid)
 				stud = Grub_Student.objects.filter(gm_id=gmid)
@@ -440,7 +443,7 @@ def ssms_student_table(request,gmid):
 
 
 
-from django.contrib.auth.models import User
+
 
 
 
@@ -480,7 +483,18 @@ def ssms_coord_inactive(request,cgid):
 	else :
 		return HttpResponseRedirect('/ssms/ssms/login/')
 
-import os
+def ssms_grub_spot_signing(request,gmid):
+	if request.user.is_superuser:
+		grub = Grub.objects.get(gm_id=gmid)
+		if (grub.spot_signing=="Yes"):
+			grub.spot_signing="No"
+		else :
+			grub.spot_signing="Yes"
+		grub.save()
+		return HttpResponseRedirect('/ssms/ssms/grub/'+gmid)
+	else :
+		return HttpResponseRedirect('/ssms/ssms/login/')
+
 
 def export_data(request, gmid):
 	if request.user.is_staff:
@@ -550,23 +564,21 @@ def coord_login(request):
 	if request.method == 'POST':
 		username = request.POST.get('username')
 		password = request.POST.get('password')
-
-        	user = authenticate(username=username, password=password)
+		user = authenticate(username=username, password=password)
 
 		if user and user.is_staff and not user.is_superuser:
-		    	if user.is_active:                                                 #add status  choice here
-		        	login(request, user)
-		        	return HttpResponseRedirect('/ssms/')
-		    	else:
-		        	return HttpResponse("Your ssms account is disabled.")	
+			if user.is_active:                                             #add status  choice here
+				login(request, user)
+				return HttpResponseRedirect('/ssms/')
+			else:
+				return HttpResponse("Your ssms account is disabled.")	
 		else:
 			context_dict['invalid']="Invalid login details supplied."
-		    	print "Invalid login details: {0}, {1}".format(username, password)
-		    	return render(request,'ssms/coord_login.html', context_dict)
+			print "Invalid login details: {0}, {1}".format(username, password)
+			return render(request,'ssms/coord_login.html', context_dict)
 
-    	else:
-
-       		return render(request, 'ssms/coord_login.html', {})
+	else:
+		return render(request, 'ssms/coord_login.html', {})
 
 
 
@@ -594,7 +606,7 @@ def coord_grub_register(request):
 				a.deadline=b-c
 				a.deadline2=b-e
 				a.save()
-		   		photo=form1.save(commit=False)
+				photo=form1.save(commit=False)
 				photo.name=request.POST.get('name')
 				photo.veg_price=request.POST.get('v_price')
 				photo.veg_venue=request.POST.get('v_venue')
@@ -602,7 +614,7 @@ def coord_grub_register(request):
 				photo.gm_id=d
 				if 'v_images' in request.FILES :
 					photo.v_images = request.FILES['v_images']
-			    		photo.save()
+					photo.save()
 					done=1			
 					
 			
@@ -628,7 +640,7 @@ def coord_grub_register(request):
 				photo.gm_id=d
 				if 'n_images' in request.FILES :
 					photo.n_images = request.FILES['n_images']
-			    		photo.save()
+					photo.save()
 					done=1
 			
 			elif form.is_valid() and  form3.is_valid():
@@ -646,7 +658,7 @@ def coord_grub_register(request):
 				a.deadline=b-c
 				a.deadline2=b-e
 				a.save()
-		   		photo=form3.save(commit=False)
+				photo=form3.save(commit=False)
 				photo.veg_price=request.POST.get('veg_price')
 				photo.non_veg_price=request.POST.get('non_veg_price')
 				photo.veg_venue=request.POST.get('veg_venue')
@@ -656,10 +668,10 @@ def coord_grub_register(request):
 				if 'veg_images' in request.FILES and 'non_veg_images' in request.FILES:
 					photo.veg_images = request.FILES['veg_images']
 					photo.non_veg_images = request.FILES['non_veg_images']
-			    		photo.save()
+					photo.save()
 					done=1
 			
-		   	else:
+			else:
 				print form.errors
 
 		else:
@@ -679,7 +691,7 @@ def coord_upload(request,gmid):
 			grub =Grub.objects.get(gm_id=gmid)
 			form = ExcelUpload(instance=grub)
 			e=datechecker(gmid)
-			coord = Grub_Coord.objects.get(cg_name=grub.cg_id)
+			coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
 			if request.user == coord.user:
 				if (e==2 or e==4):
 					if request.method == 'POST' and request.FILES:
@@ -691,7 +703,7 @@ def coord_upload(request,gmid):
 			
 							form = ExcelUpload(request.POST,request.FILES,instance=grub)
 							if form.is_valid():
-						   		photo=form.save(commit=False)
+								photo=form.save(commit=False)
 								if 'excel' in request.FILES :
 									def choice_func(row):
 										a=row[0]
@@ -736,14 +748,14 @@ def coord_upload(request,gmid):
 											row[1]="Non Veg"
 										row.append("Signed Up")
 										row.append(d)
-									    	return row
+										return row
 									files=request.FILES['excel']
 									files.save_to_database(
 									model=Grub_Student,
 									initializer=choice_func,
 									mapdict=[ 'student_id','meal','user_id','name','bhawan', 'room','status','gm_id']
-								    	)
-							    		photo.excel = files
+										)
+									photo.excel = files
 									photo.save()
 									return HttpResponseRedirect("/ssms/stats/"+gmid)
 							else:
@@ -772,17 +784,17 @@ def coord_upload(request,gmid):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def coord_student_register(request,gmid):
-	if request.user.is_staff and not request.user.is_superuser:
+	if request.user.is_staff : #and not request.user.is_superuser - Allow superuser to access
 		try :
 			grub =Grub.objects.get(gm_id=gmid)
 			form = ExcelUpload(instance=grub)
 			e=datechecker(gmid)
-			coord = Grub_Coord.objects.get(cg_name=grub.cg_id)
-			if request.user == coord.user:
+			coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
+			if request.user == coord.user or request.user.is_superuser:
 				done=0
 				if e==2:
 					if request.method == 'POST': 
-						form = CoordStudentRegForm(request.POST)    
+						form = CoordStudentRegForm(request.POST)
 						if form.is_valid():
 							photo=form.save(commit=False)
 							photo.student_id=photo.student_id.upper()
@@ -834,10 +846,10 @@ def coord_view_grub(request,gmid):
 			grub =Grub.objects.get(gm_id=gmid)
 			form = ExcelUpload(instance=grub)
 			e=datechecker(gmid)
-			coord = Grub_Coord.objects.get(cg_name=grub.cg_id)
+			coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
 			if request.user == coord.user:
 				context_dict = {}
-			    	try:
+				try:
 					grub = Grub.objects.get(gm_id=gmid)
 					if (grub.meal=='Veg'):
 						b=Veg.objects.get(gm_id=gmid)
@@ -852,9 +864,9 @@ def coord_view_grub(request,gmid):
 					context_dict['meal'] = b
 					context_dict['i'] = i
 					context_dict['e']=e
-			    	except Grub.DoesNotExist:
+				except Grub.DoesNotExist:
 					pass
-			    	return render(request, 'ssms/coord_grubinfo.html', context_dict)
+				return render(request, 'ssms/coord_grubinfo.html', context_dict)
 			else:
 				return HttpResponseRedirect("/ssms")
 		except Grub.DoesNotExist:
@@ -873,7 +885,7 @@ def coord_grub_edit(request,gmid):
 			grub =Grub.objects.get(gm_id=gmid)
 			form = ExcelUpload(instance=grub)
 			e=datechecker(gmid)
-			coord = Grub_Coord.objects.get(cg_name=grub.cg_id)
+			coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
 			if request.user == coord.user:
 				done=0
 				inst = Grub.objects.get(gm_id=gmid)
@@ -884,7 +896,7 @@ def coord_grub_edit(request,gmid):
 						grub=form.save(commit=False)
 						grub.save()
 						done=1		
-				   	else:
+					else:
 						print form.errors
 				else:
 					form = GrubFormEdit(instance=inst)		
@@ -940,32 +952,32 @@ def student_grub_register(request, gmid):
 	context_dict={}
 	context_dict['gmid'] = gmid
 	if request.user.is_authenticated() and not request.user.is_staff:
-	    	try:
-			grub = Grub.objects.get(gm_id=gmid,status="Active")
-			grubcoord = Grub_Coord.objects.get(cg_name=grub.cg_id)
-			if (grub.meal=='Veg'):
-				b=Veg.objects.get(gm_id=gmid)
-				i=0
-			elif (grub.meal=='Non Veg'):
-				b=NonVeg.objects.get(gm_id=gmid)
-				i=1
-			elif (grub.meal=='Both'):
-				b=Both.objects.get(gm_id=gmid)
-				i=2
-			try :
-				a = Grub_Student.objects.get(gm_id=gmid,user_id=str(request.user))
-				context_dict['student']= a
-			except Grub_Student.DoesNotExist:
+			try:
+				grub = Grub.objects.get(gm_id=gmid,status="Active")
+				grubcoord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
+				if (grub.meal=='Veg'):
+					b=Veg.objects.get(gm_id=gmid)
+					i=0
+				elif (grub.meal=='Non Veg'):
+					b=NonVeg.objects.get(gm_id=gmid)
+					i=1
+				elif (grub.meal=='Both'):
+					b=Both.objects.get(gm_id=gmid)
+					i=2
+				try :
+					a = Grub_Student.objects.get(gm_id=gmid,user_id=str(request.user))
+					context_dict['student']= a
+				except Grub_Student.DoesNotExist:
+					pass
+				e=datechecker(gmid)
+				context_dict['grub'] = grub
+				context_dict['grubcoord'] = grubcoord
+				context_dict['meal'] = b
+				context_dict['i'] = i
+				context_dict['e']=e
+			except Grub.DoesNotExist:
 				pass
-			e=datechecker(gmid)
-			context_dict['grub'] = grub
-			context_dict['grubcoord'] = grubcoord
-			context_dict['meal'] = b
-			context_dict['i'] = i
-			context_dict['e']=e
-	    	except Grub.DoesNotExist:
-			pass
-	    	return render(request, 'ssms/student_grubinfo.html', context_dict)
+			return render(request, 'ssms/student_grubinfo.html', context_dict)
 	else :
 		return render(request, 'ssms/student_grubinfo.html', context_dict)
 		return HttpResponseRedirect("/soc/login/google-oauth2/?next=/ssms/student/grub/"+gmid)
@@ -993,6 +1005,7 @@ def student_grub_register2(request, gmid):           #register for veg
 			return HttpResponseRedirect("/ssms/")
 	else :
 		return HttpResponseRedirect("/ssms/")
+
 def student_grub_register3(request, gmid):                 #register for non veg
 	if request.user.is_authenticated() and not request.user.is_staff:
 		try:
@@ -1052,9 +1065,7 @@ def user_logout(request):
 def import_data(request):
 	if request.user.is_superuser:
 		done=0
-		
-		
-	    	if request.method == "POST":
+		if request.method == "POST":
 			form = UploadFileForm(request.POST,request.FILES)
 			if form.is_valid():
 				def choice_func(row):
@@ -1064,18 +1075,17 @@ def import_data(request):
 					else :
 						b="f"+a[0:4]+a[8:]
 					row.append(b.lower())
-					
-				    	return row
+					return row
 				request.FILES['file'].save_to_database(
 				model=Student,
 				initializer=choice_func,
 				mapdict=['bits_id','name','bhawan','room_no','user_id',]
-			   	)
+				)
 				done=1
 				
 		else:
 			form = UploadFileForm()
-	    	return render(request,'ssms/upload_form.html',{'form': form,'d':done})
+			return render(request,'ssms/upload_form.html',{'form': form,'d':done})
 	else :
 		return HttpResponseRedirect("/ssms/ssms/login/")
 		
@@ -1151,39 +1161,43 @@ def student_grub_feedback(request,gmid):
 	else :
 		return HttpResponseRedirect("/ssms/")
 
-@user_passes_test(lambda u: u.is_superuser)
-def menu_upload(request):
-    # check if request is post and handle appropriately by storing file in media
-    if request.method == 'POST' and request.FILES['myfile']:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dailymenu.settings')
-        django.setup()
-        # file path can be filled manually or using file url generated by file upload.
-        name = request.FILES['myfile'].name
-        wb = openpyxl.load_workbook(request.FILES['myfile'])
-        sheet = wb.active
-        max_val = sheet.max_row
-        for col in sheet.iter_cols():
-            month_date, day = col[0].value, col[1].value
-            breakfast = Meal(day=day, date=month_date, meal_type='BREAKFAST')
-            lunch = Meal(day=day, date=month_date, meal_type=col[11].value)
-            dinner = Meal(day=day, date=month_date, meal_type=col[23].value)
-            breakfast.save()
-            lunch.save()
-            dinner.save()
-            for j in range(2, 11):
-                if col[j].value: Items.objects.get_or_create(item=col[j].value, meal=breakfast)
-            for j in range(12, 23):
-                if col[j].value: Items.objects.get_or_create(item=col[j].value, meal=lunch)
-            for j in range(24, max_val):
-                if col[j].value: Items.objects.get_or_create(item=col[j].value, meal=dinner)
 
-        return render(request, 'ssms/menu_upload.html', {
-            'uploaded_file': name
-        })
-    else:
-    	return render(request, 'ssms/menu_upload.html',{
-    		'message': 'Please upload a file.'
-    		})
+def menu_upload(request):
+	# check if request is post and handle appropriately by storing file in media
+	if request.user.is_superuser:
+		if request.method == 'POST' and request.FILES['myfile']:
+			context_dict={}
+			# file path can be filled manually or using file url generated by file upload.
+			try :
+				name = request.FILES['myfile'].name
+				wb = openpyxl.load_workbook(request.FILES['myfile'])
+				sheet = wb.active
+				max_val = sheet.max_row
+				for col in sheet.iter_cols():
+					month_date, day = col[0].value, col[1].value
+					breakfast = Meal(day=day, date=month_date, meal_type='BREAKFAST')
+					lunch = Meal(day=day, date=month_date, meal_type=col[10].value)
+					dinner = Meal(day=day, date=month_date, meal_type=col[22].value)
+					breakfast.save()
+					lunch.save()
+					dinner.save()
+					for j in range(2, 11):
+						if col[j].value: Items.objects.get_or_create(item=col[j].value, meal=breakfast)
+					for j in range(12, 23):
+						if col[j].value: Items.objects.get_or_create(item=col[j].value, meal=lunch)
+					for j in range(24, max_val):
+						if col[j].value: Items.objects.get_or_create(item=col[j].value, meal=dinner)
+
+				context_dict["error"] = "Succesfully Uploaded!!"
+				return render(request, 'ssms/menu_upload.html', context_dict)
+			except Exception as e:
+				print (e)
+				context_dict["error"] = e
+				return render(request, 'ssms/menu_upload.html', context_dict)
+		else:
+			return render(request, 'ssms/menu_upload.html',{})
+	else :
+		return HttpResponseRedirect("/ssms/ssms/login/")
 
 def menu_display(request):
 	# if database has no data then catch error and display menu.html page
@@ -1191,10 +1205,11 @@ def menu_display(request):
 		# explicitly setting datein 'yyyy-mm-dd' format
 		current_date = date.today().isoformat()
 		meal_types = Meal.objects.filter(date=current_date)
-		day = meal_types[0].day
+		day = meal_types[1].day
 		food = [Items.objects.filter(meal=i) for i in meal_types]
 	except:
 		return render(request, 'ssms/menu.html')
 	return render(request, 'ssms/menu.html', {'types': meal_types, \
 											  'items': food, \
 											  'date': current_date, 'day': day})
+

@@ -1,17 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Upload Mess Menu Excel SHeet</title>
-</head>
-<body>
-{% if message %}
-{{message}}
-{% endif %}
- <form method="post" enctype="multipart/form-data">
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+
+
+
+{% block block1 %}
+
+{% if user.is_superuser %}
+<h3>{{ error }}</h3>h3>
+<hr>
+<h2 class="intro-text text-center">Upload Menu
+                    </h2>
+ <hr>
+ <form class="form-horizontal" method="post" enctype="multipart/form-data" action="/ssms/ssms/menu_upload">
     {% csrf_token %}
+    <div class="form-group">
     <input type="file" name="myfile">
-    <button type="submit">Upload</button>
+    </div>
+    <button class="btn btn-lg btn-primary" type="submit" value="upload-menu" >Upload</button>
  </form>
-</body>
-</html>
+ {% else %}
+ <h3>You are not allowed to view this page</h3>
+<h3>Login to View this page</h3>
+{% endif %}
+{% endblock %}

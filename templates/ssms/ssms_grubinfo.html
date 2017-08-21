@@ -41,6 +41,7 @@
 	<h3>Cancellations starts on {{ grub.deadline2 }}<h3>
 	<h3 >Cancellations Deadline: {{grub.deadline}}</h3>
 	<h3  class="text-right"  >Status: {{grub.status}}</h3>
+	<h3  class="text-right"  >Spot Signing: {{grub.spot_signing}}</h3>
 	
 	{% ifequal i 0 %}
 		<h3>veg price: {{meal.v_price}}</h3>
@@ -77,6 +78,12 @@
 	<h3 class="col-md-3"><button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#search{{ grub.gm_id }}"><strong>Download List</strong></button></h3>
 	<h3 class="text-right"><a href="/ssms/ssms/grub/{{grub.gm_id}}/editdeadline"><button type="button" class="btn btn-lg btn-info"><strong>Edit Deadline</strong></button></a></h3>
 	<h3 class="text-right"><a href="/ssms/ssms/grub/{{grub.gm_id}}/batchallocation"><button type="button" class="btn btn-lg btn-danger"><strong>Allocate Batches</strong></button></a></h3>
+	{% ifequal grub.spot_signing "Yes" %}
+	<h3 class="col-md-3"><a href="/ssms/ssms/grub/{{grub.gm_id}}/spot_signing/"><button type="button" class="btn btn-lg btn-danger"><strong>Close Spot Signing </strong></button></a></h3>
+	{% else %}
+	<h3 class="col-md-3"><a href="/ssms/ssms/grub/{{grub.gm_id}}/spot_signing/"><button type="button" class="btn btn-lg btn-success"><strong>Open Spot Signing </strong></button></a></h3>
+	{% endifequal %}
+	<h3 class="text-right"><a href="/ssms/coord/register-students/{{grub.gm_id}}/"><button type="button" class="btn btn-lg btn-info"><strong>Register Students</strong></button></a></h3>
 
 
 <div id="search{{ grub.gm_id }}" class="modal fade" role="dialog">
