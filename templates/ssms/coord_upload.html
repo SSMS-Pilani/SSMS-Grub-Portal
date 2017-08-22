@@ -6,7 +6,6 @@
 
 {% block block1 %}
 {% if user.is_staff %}
-       
 	<h2 class="text-center"><a href="{% static 'sample-sheet-grubs.xlsx' %}"><button class="btn btn-md btn-success">Sample Sheet</button></a></h2>
 	{% if e == 2 %}
 	        <h1></h1>
@@ -58,6 +57,7 @@
 	<h3 class="text-center">Uploading Students list date is over.</h3>
 	<h3 class="text-center">Upload Spot Signing list after the grub is over.</h3>
 	{% endif %}
+	<h3 class="text-right"><a href="/ssms/invalid_ids/{{ grub.gm_id }}/"><button class="btn btn-lg btn-danger" >Invalid IDs Uploaded</button></a></h3>
 {% else %}
 <h3>You are not allowed to view this page</h3>
 <h3>Login to View this page</h3>

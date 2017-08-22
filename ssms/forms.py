@@ -24,7 +24,7 @@ class Grub_CoordUserForm(forms.ModelForm):
 class Grub_CoordUserProfileForm(forms.ModelForm):
 	def clean(self):
 		cgbid = self.cleaned_data.get('cg_bitsid')
-		if cgbid and len(str(cgbid))!=12:
+		if cgbid and len(str(cgbid))!=13:
 			raise forms.ValidationError("Enter a valid BITS ID")
 		return self.cleaned_data
 	class Meta:

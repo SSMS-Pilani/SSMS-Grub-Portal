@@ -45,6 +45,7 @@ urlpatterns = [
 	#adddddddddddddddd
 	url(r'^export/(?P<gmid>[-\w]+)/$', views.export_data, name="export"),
 	url(r'^stats/(?P<gmid>[-\w]+)/$', views.ssms_student_table, name="stats"),
+	url(r'^invalid_ids/(?P<gmid>[-\w]+)/$', views.coord_invalid_ids, name="invalid-ids"),
 	url(r'^import/', views.import_data, name="import"),
 	
 	url(r'^export2/',views.export,name="export2"),

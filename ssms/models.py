@@ -164,3 +164,13 @@ class Items(models.Model):
 	meal = models.ForeignKey('Meal')
 	def __unicode__(self):
 		return str(self.item) + str(self.meal.date)
+
+class Grub_Invalid_Students(models.Model):
+	mtype=(('Veg','Veg'),('Non Veg','Non Veg'))
+	student_id= models.CharField("Bits Id",max_length=32,blank=False)
+	gm_id = models.ForeignKey(Grub,default='1',verbose_name="Grub Id")
+	meal= models.CharField("Mealtype Selected",choices=mtype,max_length=16,default='Veg',blank=False)
+	class Meta:
+		unique_together = ('student_id', 'gm_id') ##add meal
+	def __str__(self):
+		return self.student_id

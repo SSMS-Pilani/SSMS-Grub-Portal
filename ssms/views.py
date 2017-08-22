@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus
+from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus,Grub_Invalid_Students
 from ssms.forms import GrubForm,Grub_CoordUserForm,Grub_CoordUserProfileForm,GrubEditDeadlineForm,ExcelUpload,VegForm,NonVegForm,BothForm,CoordStudentRegForm, GrubFormEdit , UploadFileForm,FeedbackForm
 from django.conf import settings
 #addddddd
@@ -423,7 +423,6 @@ def ssms_student_table(request,gmid):
 	elif request.user.is_staff :
 		try :
 			grub =Grub.objects.get(gm_id=gmid)
-			form = ExcelUpload(instance=grub)
 			e=datechecker(gmid)
 			coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
 			if request.user == coord.user:
@@ -695,19 +694,21 @@ def coord_upload(request,gmid):
 			if request.user == coord.user:
 				if (e==2 or e==4):
 					if request.method == 'POST' and request.FILES:
+						Grub_Invalid_Students.objects.all
+						ValidateFileUpload.objects.filter(gm_id=gmid).delete()
 						b=request.FILES['excel']
 						filename=str(b.name)
 						if filename.endswith('.xls') or filename.endswith('.xlsx') or filename.endswith('.csv'):
 							a = Grub.objects.get(gm_id=gmid)
 							d=Grub.objects.filter(gm_id=gmid)[0]
-			
+							invalidids = False
 							form = ExcelUpload(request.POST,request.FILES,instance=grub)
 							if form.is_valid():
 								photo=form.save(commit=False)
 								if 'excel' in request.FILES :
 									def choice_func(row):
 										a=row[0]
-										a=str(a).upper()[:11]
+										a=str(a).upper()[:12]		#Change to 13 if "P" is too be included
 										try :
 											b=Student.objects.get(bits_id=str(a))
 											smailid=b.user_id
@@ -724,24 +725,29 @@ def coord_upload(request,gmid):
 											row.append(sbhawan)
 											row.append(sroom)
 										except :
-											if a[4]=="H" or a[4]=="P":
-												smailid=a[4]+a[0:4]+a[8:11]
-												sname="User"
-												sbhawan="Not Specified"
-												sroom="Not Specified"
-												row.append(smailid)
-												row.append(sname)
-												row.append(sbhawan)
-												row.append(sroom)
-											else :
-												smailid="f"+a[0:4]+a[8:11]
-												sname="User"
-												sbhawan="Not Specified"
-												sroom="Not Specified"
-												row.append(smailid)
-												row.append(sname)
-												row.append(sbhawan)
-												row.append(sroom)
+											invalidids = True
+											invalid_grub = Grub_Invalid_Students.objects.get_or_create(
+												student_id=str(row[0]),gm_id=gmid,meal=str(row[1]).lower()
+												)
+											return None
+											# if a[4]=="H" or a[4]=="P":
+											# 	smailid=a[4].lower()+a[0:4]+a[8:12]
+											# 	sname="User"
+											# 	sbhawan="Not Specified"
+											# 	sroom="Not Specified"
+											# 	row.append(smailid)
+											# 	row.append(sname)
+											# 	row.append(sbhawan)
+											# 	row.append(sroom)
+											# else :
+											# 	smailid="f"+a[0:4]+a[8:11]
+											# 	sname="User"
+											# 	sbhawan="Not Specified"
+											# 	sroom="Not Specified"
+											# 	row.append(smailid)
+											# 	row.append(sname)
+											# 	row.append(sbhawan)
+											# 	row.append(sroom)
 										if str(row[1]).lower()=="veg":
 											row[1]="Veg"
 										elif str(row[1]).lower()=="non veg":
@@ -757,7 +763,10 @@ def coord_upload(request,gmid):
 										)
 									photo.excel = files
 									photo.save()
-									return HttpResponseRedirect("/ssms/stats/"+gmid)
+									if (invalidids):
+										return HttpResponseRedirect("/ssms/invalid_ids/"+gmid)
+									else :
+										return HttpResponseRedirect("/ssms/stats/"+gmid)
 							else:
 								print form.errors
 						else :
@@ -771,7 +780,7 @@ def coord_upload(request,gmid):
 			
 					return render(request, 'ssms/coord_upload.html', {'form': form,'grub':grub,"e":e})
 				else:
-					return render(request, 'ssms/coord_upload.html', {"e":e})
+					return render(request, 'ssms/coord_upload.html', {"e":e,'grub':grub})
 			else:
 				return HttpResponseRedirect("/ssms")
 		except Grub.DoesNotExist:
@@ -781,6 +790,29 @@ def coord_upload(request,gmid):
 			return HttpResponseRedirect('/ssms/coord/login/')
 
 
+def coord_invalid_ids(request,gmid):
+	if request.user.is_superuser:
+		grub=Grub.objects.get(gm_id=gmid)
+		invalidstud = Grub_Invalid_Students.objects.filter(gm_id=gmid)
+		invalidno=len(invalidstud)
+		context_dict={"stud":invalidstud,"invalidno":invalidno,"gmid":gmid,"grub":grub}
+		return render(request, 'ssms/invalid_student_table.html',context_dict)
+	elif request.user.is_staff :
+		try :
+			grub =Grub.objects.get(gm_id=gmid)
+			coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
+			if request.user == coord.user:
+				invalidstud = Grub_Invalid_Students.objects.filter(gm_id=gmid)
+				invalidno = len(invalidstud)
+				context_dict={"stud":invalidstud,"invalidno":invalidno,"gmid":gmid,"grub":grub}
+				return render(request, 'ssms/invalid_student_table.html',context_dict)
+			else :
+				return HttpResponseRedirect("/ssms")
+		except Grub.DoesNotExist:
+			pass
+			return HttpResponseRedirect("/ssms")
+	else:
+		return HttpResponseRedirect('/ssms/ssms/login/')
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def coord_student_register(request,gmid):
@@ -807,7 +839,7 @@ def coord_student_register(request,gmid):
 							photo.status="Signed Up"
 							photo.meal=request.POST.get('mealtype')
 							a = photo.student_id
-							photo.user_id="f"+a[0:4]+a[8:11]
+							photo.user_id="f"+a[0:4]+a[8:12]
 							try :
 								d=Student.objects.get(bits_id=a)
 								photo.room=d.room_no
@@ -1071,9 +1103,9 @@ def import_data(request):
 				def choice_func(row):
 					a=row[0]
 					if a[4]=="H" or a[4]=="P":
-						b=a[4]+a[0:4]+a[8:]
+						b=a[4]+a[0:4]+a[8:12] # "P" Not included
 					else :
-						b="f"+a[0:4]+a[8:]
+						b="f"+a[0:4]+a[8:12]
 					row.append(b.lower())
 					return row
 				request.FILES['file'].save_to_database(
@@ -1124,7 +1156,7 @@ def ssms_grub_batchallocation(request,gmid):
 			
 			
 def student_grub_feedback(request,gmid):
-	if request.user.is_authenticated() and not request.user.is_staff:
+	if request.user.is_authenticated():  # and not request.user.is_staff:
 		try:
 			grub = Grub.objects.get(gm_id=gmid,status="Active")
 			d=datechecker(gmid)
@@ -1145,7 +1177,6 @@ def student_grub_feedback(request,gmid):
 							a.feedback_given=1
 							a.save()
 							return HttpResponse("here")
-							return render(request,'Feedback/view.html',{'feedb_form':feedb_form} )
 						else :
 							return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
 					else :
