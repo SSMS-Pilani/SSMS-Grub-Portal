@@ -19,6 +19,9 @@
 	    	<th>Meal type</th>
 		<th>Bhawan</th>
 		<th>Room No.</th>
+		{% ifequal grub.batch_allocated "Yes" %}
+		<th>Batch</th>
+		{% endifequal %}
 		<th>Status</th>
 	</tr>
 </thead>
@@ -31,6 +34,9 @@
 	<td>{{i.meal}}</td>
 	<td>{{i.bhawan}}</td>
 	<td>{{i.room}}</td>
+	{% ifequal grub.batch_allocated "Yes" %}
+	<td>{{i.batch.batch_name}}</td>
+	{% endifequal %}
 	<td>{{i.status}}</td>
 	</tr>
 	 {% endfor %}  

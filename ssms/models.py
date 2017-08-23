@@ -19,7 +19,7 @@ def content_album_name2(instance, filename):
 	return os.path.join(instance.gm_id.name,filename)
 #######Use verbose name
 
-
+batch_allocation_choices=(('Yes','Yes'),('No','No'))
 
 class Grub_Coord(models.Model):
 	stype=(('Active','Active'),('Inactive','Inactive'))
@@ -51,20 +51,24 @@ class Grub(models.Model):
 	status=models.CharField(choices=stype,max_length=128,default='Active')
 	excel = models.FileField(upload_to=content_album_name,blank=False)	
 	mails=models.CharField(choices=emtype,max_length=128,default='Not Sent',blank=False)
-	spot_signing = models.CharField(choices=spot_signing_choices,max_length=6,default="Yes",blank=False)
+	spot_signing = models.CharField("Spot Signing Available",choices=spot_signing_choices,max_length=6,default="Yes",blank=False)
+	batch_allocated = models.CharField("Batch Allocated",choices=batch_allocation_choices,max_length=6,default='No')
+	no_batch = models.IntegerField("No. of batches",default=0)
 	def __str__(self):
 		return self.name
 
 		
 class Batch(models.Model):
+	mtype=(('Veg','Veg'),('Non Veg','Non Veg'))
 	batch_choices = (("A","A"),("B","B"),("C","C"),("D","D"))
 	color_choices = (("Red","Red"),("Yellow","Yellow"),("Blue","Blue"),("Green","Green"))
 	gm_id = models.ForeignKey(Grub,verbose_name="Grub Id")
+	meal= models.CharField("Meal Type",choices=mtype,max_length=16,default='Veg')
 	batch_name = models.CharField("Batch Name",default="",choices=batch_choices,max_length=32,blank=False) #batch name
 	color = models.CharField("Batch Color",max_length=10,choices=color_choices)
 	timing = models.CharField("Batch Time",max_length=16,blank=False)
 	def __str__(self):
-		return self.batch_name
+		return self.batch_name + "-" + self.gm_id.name
 
 class Grub_Student(models.Model):
 	unique_id = models.UUIDField("Unique Student Id",primary_key=True, default=uuid.uuid4, editable=False)
@@ -105,6 +109,7 @@ class Veg(models.Model):
 	v_venue = models.CharField("Veg Location",choices=venue.place,max_length=16,blank=False)
 	v_price = models.IntegerField("Veg Price",default=0,null=False)
 	v_images = models.ImageField("Veg Meal image",upload_to=content_album_name2, blank=False)
+	batch_allocated = models.CharField(choices=batch_allocation_choices,max_length=6,default='No')
 	def __str__(self):
                 return self.gm_id.name
 class NonVeg(models.Model):
@@ -112,7 +117,8 @@ class NonVeg(models.Model):
 	n_id=  models.UUIDField("Non Veg Grub ID",primary_key=True, default=uuid.uuid4, editable=False)
 	n_venue = models.CharField("Non Veg Location",choices=venue.place,max_length=16,blank=False)
 	n_price = models.IntegerField("Non Veg Price",default=0,null=False)
-	n_images = models.ImageField("Non Veg Meal image",upload_to=content_album_name2, blank=False)	
+	n_images = models.ImageField("Non Veg Meal image",upload_to=content_album_name2, blank=False)
+	batch_allocated = models.CharField(choices=batch_allocation_choices,max_length=6,default='No')
 	def __str__(self):
                 return self.gm_id.name
 
@@ -124,7 +130,9 @@ class Both(models.Model):
 	veg_price = models.IntegerField("Veg Price",default=0,null=False)
 	non_veg_price = models.IntegerField("Non Veg price",default=0,null=False)
 	veg_images = models.ImageField("Veg Meal Image",upload_to=content_album_name2, blank=False)
-	non_veg_images = models.ImageField("Non Veg Image",upload_to=content_album_name2, blank=False)	
+	non_veg_images = models.ImageField("Non Veg Image",upload_to=content_album_name2, blank=False)
+	veg_batch_allocated = models.CharField(choices=batch_allocation_choices,max_length=6,default='No')
+	nonveg_batch_allocated = models.CharField(choices=batch_allocation_choices,max_length=6,default='No')
 	def __str__(self):
                 return self.gm_id.name
 
@@ -174,3 +182,4 @@ class Grub_Invalid_Students(models.Model):
 		unique_together = ('student_id', 'gm_id') ##add meal
 	def __str__(self):
 		return self.student_id
+

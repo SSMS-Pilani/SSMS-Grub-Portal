@@ -31,28 +31,32 @@
 	<br/>
 	<h5>Last date for uploading excel is before {{ grub.deadline2 }}</h5>
 	{% elif e == 4 %}
-	<h3 class="text-center text-danger">Grub is over. You can now upload Spot Signing list .</h1>
-	<hr>
-		
-                    <h2 class="intro-text text-center">{{ grub.name }} : Upload Spot Signing list
-                    </h2>
-                    <hr>
-                   <h5 class="text-center text-info"> Supported File Formats: xls, xlsx, csv</h5>
-{{ invalid }}
-        <form id="coord_upload"  role="form"  class="form-horizontal"  method="post"  enctype="multipart/form-data">  
-            {% csrf_token %}
-           {% for field in form %}
-		<div class="form-group">
-	<div class="text-danger ">{{ field.errors }}</div>
-      	<label class="control-label " >{{ field.label_tag }}</label>
-	      	<div >
-		{{ field }}
-		</div>
-      	</div>
-		{% endfor %}
-          <input class=" btn btn-lg btn-info" type="submit" name="submit" value="Add Excel" />
-        </form>
-	<br/>
+		{% ifequal grub.spot_signing "Yes" %}
+			<h3 class="text-center text-danger">Grub is over. You can now upload Spot Signing list .</h1>
+			<hr>
+				
+		                    <h2 class="intro-text text-center">{{ grub.name }} : Upload Spot Signing list
+		                    </h2>
+		                    <hr>
+		                   <h5 class="text-center text-info"> Supported File Formats: xls, xlsx, csv</h5>
+		{{ invalid }}
+		        <form id="coord_upload"  role="form"  class="form-horizontal"  method="post"  enctype="multipart/form-data">  
+		            {% csrf_token %}
+		           {% for field in form %}
+				<div class="form-group">
+			<div class="text-danger ">{{ field.errors }}</div>
+		      	<label class="control-label " >{{ field.label_tag }}</label>
+			      	<div >
+				{{ field }}
+				</div>
+		      	</div>
+				{% endfor %}
+		          <input class=" btn btn-lg btn-info" type="submit" name="submit" value="Add Excel" />
+		        </form>
+			<br/>
+		{% else %}
+			<h3 class="text-center">You are not allowed to upload Spot Signing list.</h3>
+		{% endifequal %}
 	{% else %}
 	<h3 class="text-center">Uploading Students list date is over.</h3>
 	<h3 class="text-center">Upload Spot Signing list after the grub is over.</h3>

@@ -2,62 +2,1094 @@
 
 {% load staticfiles %}
 {% block block1 %}
-<h1 class="intro-text text-center"><strong>Batch Allocation- {{grub.name}}</strong></h1>  
-<h1 class="text-center text-danger">{{ invalid }}</h1>
+<h1 class="intro-text text-center"><strong>Batch Allocation: {{grub.name}}</strong></h1>
+<h1 class="intro-text text-center"><strong>Meal Type: {{grub.meal}}</strong></h1>
+{% ifequal grub.batch_allocated "Yes" %}  
+<h1 class="text-center text-danger">Already Allocated</h1>
+{% else %}
 <hr>
-<div class="text-center">
+{% ifequal grub.meal "Veg" %}
+<div class="col-md-6" class="text-center">
 <h4>Veg:  No of Batches
-<select id="Batch" >
+<select id="VegBatch" >
  <option value="1">1</option>
   <option value="2">2</option> 
   <option value="3" >3</option> 
   <option value="4" >4</option> 
 </select></h4>
+<div id="vbatch1">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
 </div>
-
-<div id="batch1">
-hello
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
 </div>
-<div id="batch2">
-hello2
+<button type="submit" class="btn btn-lg btn-primary " name="VegAllocate1" value="VegAllocate1">Allocate</button>
+</form>
 </div>
-<div id="batch3">
-hello3
+<div id="vbatch2">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
 </div>
-<div id="batch4">
-hello4
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
 </div>
-
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 2 Color</label>
+  <div class="col-sm-5">
+        <select name="batch2color" id="batch2color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 2 Time</label>
+      <div class="col-sm-5">
+        <select name="batch2time" id="batch2time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="VegAllocate2" value="VegAllocate2">Allocate</button>
+</form>
+</div>
+<div id="vbatch3">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 2 Color</label>
+  <div class="col-sm-5">
+        <select name="batch2color" id="batch2color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 2 Time</label>
+      <div class="col-sm-5">
+        <select name="batch2time" id="batch2time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 3 Color</label>
+  <div class="col-sm-5">
+        <select name="batch3color" id="batch3color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 3 Time</label>
+      <div class="col-sm-5">
+        <select name="batch3time" id="batch3time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="VegAllocate3" value="VegAllocate3">Allocate</button>
+</form>
+</div>
+<div id="vbatch4">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 2 Color</label>
+  <div class="col-sm-5">
+        <select name="batch2color" id="batch2color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 2 Time</label>
+      <div class="col-sm-5">
+        <select name="batch2time" id="batch2time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 3 Color</label>
+  <div class="col-sm-5">
+        <select name="batch3color" id="batch3color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 3 Time</label>
+      <div class="col-sm-5">
+        <select name="batch3time" id="batch3time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 4 Color</label>
+  <div class="col-sm-5">
+        <select name="batch4color" id="batch4color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 4 Time</label>
+      <div class="col-sm-5">
+        <select name="batch4time" id="batch4time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="VegAllocate4" value="VegAllocate4">Allocate</button>
+</form>
+</div>
+</div>
+{% endifequal %}
+{% ifequal grub.meal "Non Veg" %}
+<div class="col-md-6" class="text-center">
+<h4>Non Veg:  No of Batches
+<select id="NonVegBatch" >
+ <option value="1">1</option>
+  <option value="2">2</option> 
+  <option value="3" >3</option> 
+  <option value="4" >4</option> 
+</select></h4>
+<div id="nvbatch1">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="NonVegAllocate1" value="VegAllocate1">Allocate</button>
+</form>
+</div>
+<div id="nvbatch2">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 2 Color</label>
+  <div class="col-sm-5">
+        <select name="batch2color" id="batch2color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 2 Time</label>
+      <div class="col-sm-5">
+        <select name="batch2time" id="batch2time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="NonVegAllocate2" value="VegAllocate2">Allocate</button>
+</form>
+</div>
+<div id="nvbatch3">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 2 Color</label>
+  <div class="col-sm-5">
+        <select name="batch2color" id="batch2color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 2 Time</label>
+      <div class="col-sm-5">
+        <select name="batch2time" id="batch2time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 3 Color</label>
+  <div class="col-sm-5">
+        <select name="batch3color" id="batch3color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 3 Time</label>
+      <div class="col-sm-5">
+        <select name="batch3time" id="batch3time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="NonVegAllocate3" value="VegAllocate3">Allocate</button>
+</form>
+</div>
+<div id="nvbatch4">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 2 Color</label>
+  <div class="col-sm-5">
+        <select name="batch2color" id="batch2color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 2 Time</label>
+      <div class="col-sm-5">
+        <select name="batch2time" id="batch2time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 3 Color</label>
+  <div class="col-sm-5">
+        <select name="batch3color" id="batch3color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 3 Time</label>
+      <div class="col-sm-5">
+        <select name="batch3time" id="batch3time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 4 Color</label>
+  <div class="col-sm-5">
+        <select name="batch4color" id="batch4color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 4 Time</label>
+      <div class="col-sm-5">
+        <select name="batch4time" id="batch4time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="NonVegAllocate4" value="VegAllocate4">Allocate</button>
+</form>
+</div>
+</div>
+{% endifequal %}
+{% ifequal grub.meal "Both" %}
+{% ifequal veg.veg_batch_allocated "Yes" %}
+<div class="col-md-6" class="text-center">
+<h4> Veg Batch already allocated </h4>
+</div>
+{% else %}
+<div class="col-md-6" class="text-center">
+<h4>Veg:  No of Batches
+<select id="BothBatch1" >
+ <option value="1">1</option>
+  <option value="2">2</option> 
+  <option value="3" >3</option> 
+  <option value="4" >4</option> 
+</select></h4>
+<div id="bothvbatch1">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="VegAllocate1" value="VegAllocate1">Allocate</button>
+</form>
+</div>
+<div id="bothvbatch2">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 2 Color</label>
+  <div class="col-sm-5">
+        <select name="batch2color" id="batch2color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 2 Time</label>
+      <div class="col-sm-5">
+        <select name="batch2time" id="batch2time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="VegAllocate2" value="VegAllocate2">Allocate</button>
+</form>
+</div>
+<div id="bothvbatch3">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 2 Color</label>
+  <div class="col-sm-5">
+        <select name="batch2color" id="batch2color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 2 Time</label>
+      <div class="col-sm-5">
+        <select name="batch2time" id="batch2time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 3 Color</label>
+  <div class="col-sm-5">
+        <select name="batch3color" id="batch3color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 3 Time</label>
+      <div class="col-sm-5">
+        <select name="batch3time" id="batch3time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="VegAllocate3" value="VegAllocate3">Allocate</button>
+</form>
+</div>
+<div id="bothvbatch4">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 2 Color</label>
+  <div class="col-sm-5">
+        <select name="batch2color" id="batch2color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 2 Time</label>
+      <div class="col-sm-5">
+        <select name="batch2time" id="batch2time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 3 Color</label>
+  <div class="col-sm-5">
+        <select name="batch3color" id="batch3color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 3 Time</label>
+      <div class="col-sm-5">
+        <select name="batch3time" id="batch3time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 4 Color</label>
+  <div class="col-sm-5">
+        <select name="batch4color" id="batch4color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 4 Time</label>
+      <div class="col-sm-5">
+        <select name="batch4time" id="batch4time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="VegAllocate4" value="VegAllocate4">Allocate</button>
+</form>
+</div>
+</div>
+{% endifequal %}
+{% ifequal nonveg.nonveg_batch_allocated  "Yes" %}
+<div class="col-md-6" class="text-center">
+<h4>Non Veg batch already allocated </h4>
+{% else %}
+<div class="col-md-6" class="text-center">
+<h4>Non Veg:  No of Batches
+<select id="BothBatch2" >
+ <option value="1">1</option>
+  <option value="2">2</option> 
+  <option value="3" >3</option> 
+  <option value="4" >4</option> 
+</select></h4>
+<div id="bothnvbatch1">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="NonVegAllocate1" value="VegAllocate1">Allocate</button>
+</form>
+</div>
+<div id="bothnvbatch2">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 2 Color</label>
+  <div class="col-sm-5">
+        <select name="batch2color" id="batch2color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 2 Time</label>
+      <div class="col-sm-5">
+        <select name="batch2time" id="batch2time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="NonVegAllocate2" value="VegAllocate2">Allocate</button>
+</form>
+</div>
+<div id="bothnvbatch3">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 2 Color</label>
+  <div class="col-sm-5">
+        <select name="batch2color" id="batch2color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 2 Time</label>
+      <div class="col-sm-5">
+        <select name="batch2time" id="batch2time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 3 Color</label>
+  <div class="col-sm-5">
+        <select name="batch3color" id="batch3color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 3 Time</label>
+      <div class="col-sm-5">
+        <select name="batch3time" id="batch3time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="NonVegAllocate3" value="VegAllocate3">Allocate</button>
+</form>
+</div>
+<div id="bothnvbatch4">
+<form role="form"  class="form-horizontal" method="post" action="/ssms/ssms/grub/{{ grub.gm_id }}/batchallocation/" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 1 Color</label>
+  <div class="col-sm-5">
+        <select name="batch1color" id="batch1color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 1 Time</label>
+      <div class="col-sm-5">
+        <select name="batch1time" id="batch1time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 2 Color</label>
+  <div class="col-sm-5">
+        <select name="batch2color" id="batch2color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 2 Time</label>
+      <div class="col-sm-5">
+        <select name="batch2time" id="batch2time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 3 Color</label>
+  <div class="col-sm-5">
+        <select name="batch3color" id="batch3color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 3 Time</label>
+      <div class="col-sm-5">
+        <select name="batch3time" id="batch3time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label col-sm-2" >Batch 4 Color</label>
+  <div class="col-sm-5">
+        <select name="batch4color" id="batch4color">
+        	{% for i in color %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<div class="form-group">
+      <label class="control-label col-sm-2" >Batch 4 Time</label>
+      <div class="col-sm-5">
+        <select name="batch4time" id="batch4time">
+	  		{% for i in time %}
+        	<option value="{{ i }}">{{ i }}</option>
+        	{% endfor %}
+		</select>
+  </div>
+</div>
+<button type="submit" class="btn btn-lg btn-primary " name="NonVegAllocate4" value="VegAllocate4">Allocate</button>
+</form>
+</div>
+</div>
+{% endifequal %}
+{% endifequal %}
+{% endifequal %}
 <script>
 	$(document).ready(function() {
-	$('#batch2').hide(); //hide field on start
- 	$('#batch3').hide(); //hide field on start
- 	$('#batch4').hide(); //hide field on start
-	$('#Batch').change(function() {
+	$('#vbatch2').hide(); //hide field on start
+ 	$('#vbatch3').hide(); //hide field on start
+ 	$('#vbatch4').hide(); //hide field on start
+	$('#VegBatch').change(function() {
  
-	 if($('#Batch').val() == '1') { //if this value is selected
-	 	$('#batch1').show(); 
-	 	$('#batch2').hide(); 
- 		$('#batch3').hide(); 
- 		$('#batch4').hide(); 
+	 if($('#VegBatch').val() == '1') { //if this value is selected
+	 	$('#vbatch2').show(); 
+	 	$('#vbatch2').hide(); 
+ 		$('#vbatch3').hide(); 
+ 		$('#vbatch4').hide(); 
 	 } 
-	 else if($('#Batch').val() == '2'){
-		$('#batch1').hide(); 
-	 	$('#batch2').show(); 
- 		$('#batch3').hide(); 
- 		$('#batch4').hide(); 
+	 else if($('#VegBatch').val() == '2'){
+		$('#vbatch1').hide(); 
+	 	$('#vbatch2').show(); 
+ 		$('#vbatch3').hide(); 
+ 		$('#vbatch4').hide(); 
 	 }
-	 else if($('#Batch').val() == '3'){
-		$('#batch1').hide(); 
-	 	$('#batch2').hide(); 
- 		$('#batch3').show(); 
- 		$('#batch4').hide(); 
+	 else if($('#VegBatch').val() == '3'){
+		$('#vbatch1').hide(); 
+	 	$('#vbatch2').hide(); 
+ 		$('#vbatch3').show(); 
+ 		$('#vbatch4').hide(); 
 	 }
-	 else if($('#Batch').val() == '4'){
-		$('#batch1').hide(); 
-	 	$('#batch2').hide(); 
- 		$('#batch3').hide(); 
- 		$('#batch4').show(); 
+	 else if($('#VegBatch').val() == '4'){
+		$('#vbatch1').hide(); 
+	 	$('#vbatch2').hide(); 
+ 		$('#vbatch3').hide(); 
+ 		$('#vbatch4').show(); 
+	 }
+        });
+ });
+</script>
+<script>
+	$(document).ready(function() {
+	$('#nvbatch2').hide(); //hide field on start
+ 	$('#nvbatch3').hide(); //hide field on start
+ 	$('#nvbatch4').hide(); //hide field on start
+	$('#NonVegBatch').change(function() {
+ 
+	 if($('#NonVegBatch').val() == '1') { //if this value is selected
+	 	$('#nvbatch1').show(); 
+	 	$('#nvbatch2').hide(); 
+ 		$('#nvbatch3').hide(); 
+ 		$('#nvbatch4').hide(); 
+	 } 
+	 else if($('#NonVegBatch').val() == '2'){
+		$('#nvbatch1').hide(); 
+	 	$('#nvbatch2').show(); 
+ 		$('#nvbatch3').hide(); 
+ 		$('#nvbatch4').hide(); 
+	 }
+	 else if($('#NonVegBatch').val() == '3'){
+		$('#nvbatch1').hide(); 
+	 	$('#nvbatch2').hide(); 
+ 		$('#nvbatch3').show(); 
+ 		$('#nvbatch4').hide(); 
+	 }
+	 else if($('#NonVegBatch').val() == '4'){
+		$('#nvbatch1').hide(); 
+	 	$('#nvbatch2').hide(); 
+ 		$('#nvbatch3').hide(); 
+ 		$('#nvbatch4').show(); 
+	 }
+        });
+ });
+</script>
+<script>
+	$(document).ready(function() {
+	$('#bothvbatch2').hide(); //hide field on start
+ 	$('#bothvbatch3').hide(); //hide field on start
+ 	$('#bothvbatch4').hide(); //hide field on start
+	$('#BothBatch1').change(function() {
+ 
+	 if($('#BothBatch1').val() == '1') { //if this value is selected
+	 	$('#bothvbatch1').show(); 
+	 	$('#bothvbatch2').hide(); 
+ 		$('#bothvbatch3').hide(); 
+ 		$('#bothvbatch4').hide(); 
+	 } 
+	 else if($('#BothBatch1').val() == '2'){
+		$('#bothvbatch1').hide(); 
+	 	$('#bothvbatch2').show(); 
+ 		$('#bothvbatch3').hide(); 
+ 		$('#bothvbatch4').hide(); 
+	 }
+	 else if($('#BothBatch1').val() == '3'){
+		$('#bothvbatch1').hide(); 
+	 	$('#bothvbatch2').hide(); 
+ 		$('#bothvbatch3').show(); 
+ 		$('#bothvbatch4').hide(); 
+	 }
+	 else if($('#BothBatch1').val() == '4'){
+		$('#bothvbatch1').hide(); 
+	 	$('#bothvbatch2').hide(); 
+ 		$('#bothvbatch3').hide(); 
+ 		$('#bothvbatch4').show(); 
+	 }
+        });
+ });
+</script>
+<script>
+	$(document).ready(function() {
+	$('#bothnvbatch2').hide(); //hide field on start
+ 	$('#bothnvbatch3').hide(); //hide field on start
+ 	$('#bothnvbatch4').hide(); //hide field on start
+	$('#BothBatch2').change(function() {
+ 
+	 if($('#BothBatch2').val() == '1') { //if this value is selected
+	 	$('#bothnvbatch1').show(); 
+	 	$('#bothnvbatch2').hide(); 
+ 		$('#bothnvbatch3').hide(); 
+ 		$('#bothnvbatch4').hide(); 
+	 } 
+	 else if($('#BothBatch2').val() == '2'){
+		$('#bothnvbatch1').hide(); 
+	 	$('#bothnvbatch2').show(); 
+ 		$('#bothnvbatch3').hide(); 
+ 		$('#bothnvbatch4').hide(); 
+	 }
+	 else if($('#BothBatch2').val() == '3'){
+		$('#bothnvbatch1').hide(); 
+	 	$('#bothnvbatch2').hide(); 
+ 		$('#bothnvbatch3').show(); 
+ 		$('#bothnvbatch4').hide(); 
+	 }
+	 else if($('#BothBatch2').val() == '4'){
+		$('#bothnvbatch1').hide(); 
+	 	$('#bothnvbatch2').hide(); 
+ 		$('#bothnvbatch3').hide(); 
+ 		$('#bothnvbatch4').show(); 
 	 }
         });
  });
