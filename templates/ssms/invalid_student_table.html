@@ -10,13 +10,14 @@
                     <h1 class="intro-text text-center"><strong>{{grub.name}} Invalid IDs uploaded</strong>
                     </h1>
                     <hr>
-                    <h3> These IDs are incorrect and will not be charged. Please correct them and upload the excel file again. You can upload all the IDs again or just upload the below IDs after correcting them.</h3>
+                    <h3 style="color:red;"> These IDs are incorrect and will not be charged. Please correct them and upload the excel file again. You can upload all the IDs again or just upload the below IDs after correcting them.</h3>
                     <h3>This list gets updated whenever you upload a new excel file. </h3>
+                    <h3>You can check the currents stats of the grub <a href="/ssms/stats/{{ grub.gm_id}}/">here</a></h3>
                     <hr>
 <table id="example" class="table table-hover">
 <thead>
 	<tr>
-		<th><input type="checkbox" id="selectall"/></th>
+		
 	    	<th>BITS ID</th>
 	    	<th>Meal type</th>
 	</tr>
@@ -24,7 +25,6 @@
 <tbody>
 	{% for i in stud %}
 	<tr>
-	<td align="center"><input type="checkbox" class="case" name="case" value={{ i.student_id }}/></td>
 	<td>{{i.student_id}}</td>
 	<td>{{i.meal}}</td>
 	</tr>

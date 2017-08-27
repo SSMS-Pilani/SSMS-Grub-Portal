@@ -4,6 +4,9 @@
 {% block block1 %}
 <h1 class="intro-text text-center"><strong>Batch Allocation: {{grub.name}}</strong></h1>
 <h1 class="intro-text text-center"><strong>Meal Type: {{grub.meal}}</strong></h1>
+{% if error %}
+<h1 class="text-center text-danger">{{error}}</h1>
+{% else %}
 {% ifequal grub.batch_allocated "Yes" %}  
 <h1 class="text-center text-danger">Already Allocated</h1>
 {% else %}
@@ -958,6 +961,7 @@
 {% endifequal %}
 {% endifequal %}
 {% endifequal %}
+{% endif %}
 <script>
 	$(document).ready(function() {
 	$('#vbatch2').hide(); //hide field on start
