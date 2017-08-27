@@ -76,7 +76,6 @@ def send(request):
 						j.mail = "Sent"
 						j.save()
 					print a
-				
 					subject, from_email = str(i.name), 'ssms.pilani@gmail.com'
 					text_content = 'This is an important message.'
 					html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(i.name)+"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/"+str(i.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
@@ -512,7 +511,7 @@ def export_data(request, gmid):
 					if(stu.batch):
 						b.append([stu.user_id,stu.name, stu.student_id, stu.meal,stu.bhawan,stu.room,stu.batch.batch_name])
 					else :
-						b.append([stu.user_id,stu.name, stu.student_id, stu.meal,stu.bhawan,stu.room,stu.batch])
+						b.append([stu.user_id,stu.name, stu.student_id, stu.meal,stu.bhawan,stu.room,""])
 				print(b)
 				workbook = xlsxwriter.Workbook('media/'+a.name+'_'+bh+'_grublist.xlsx')
 				worksheet = workbook.add_worksheet()
@@ -540,8 +539,7 @@ def export_data(request, gmid):
 					worksheet.write_string  (row, col+3,i[3] )
 					worksheet.write_string(row, col + 4, i[4] )
 					worksheet.write_string  (row, col + 5,i[5] )
-					if (i[6]):
-						worksheet.write_string  (row, col + 6,i[6] )
+					worksheet.write_string  (row, col + 6,i[6] )
 					row += 1
 				workbook.close()
 				return HttpResponseRedirect('media/'+a.name+'_'+bh+'_grublist.xlsx')
