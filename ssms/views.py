@@ -494,6 +494,40 @@ def ssms_grub_spot_signing(request,gmid):
 	else :
 		return HttpResponseRedirect('/ssms/ssms/login/')
 
+def ssms_student_cancel(request,gmid):
+	context_dict={}
+	if request.user.is_superuser:#and not request.user.is_superuser - Allow superuser to access
+		try :
+			grub =Grub.objects.get(gm_id=gmid)
+			context_dict["grub"]= grub
+			e=datechecker(gmid)
+			context_dict["e"] =e
+			done=0
+			context_dict["done"] = done
+			if e==1:
+				if request.method == 'POST':
+					try :
+						grubstu = Grub_Student.objects.get(student_id=request.POST['student_id'],gm_id=grub)
+						if grubstu.status =="Opted Out":
+							context_dict["invalid"] = "Student already opted out."
+							return render(request, 'ssms/ssms_student_cancel.html', context_dict)
+						grubstu.status ="Opted Out"
+						grubstu.save()
+						done=1
+						context_dict["done"]=done
+						return render(request, 'ssms/ssms_student_cancel.html', context_dict)
+					except:
+						context_dict["invalid"] = "Student is not registered in the grub."
+						return render(request, 'ssms/ssms_student_cancel.html',context_dict)
+				else:
+					return render(request, 'ssms/ssms_student_cancel.html', context_dict)
+			else:
+				return render(request, 'ssms/ssms_student_cancel.html', context_dict)
+		except Grub.DoesNotExist:
+			pass
+			return HttpResponseRedirect("/ssms")
+	else :
+		return HttpResponseRedirect('/ssms/ssms/login/')
 
 def export_data(request, gmid):
 	if request.user.is_staff:
@@ -1198,7 +1232,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="A",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,1,[batch1])
 						veg.batch_allocated = "Yes"
 						veg.save()
@@ -1220,7 +1254,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="B",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,2,[batch1,batch2])
 						veg.batch_allocated = "Yes"
 						veg.save()
@@ -1250,7 +1284,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="C",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,3,[batch1,batch2,batch3])
 						veg.batch_allocated = "Yes"
 						veg.save()
@@ -1288,7 +1322,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="D",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,3,[batch1,batch2,batch3,batch4])
 						veg.batch_allocated = "Yes"
 						veg.save()
@@ -1304,7 +1338,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="A",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,1,[batch1])
 						nonveg.batch_allocated = "Yes"
 						nonveg.save()
@@ -1326,7 +1360,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="B",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,2,[batch1,batch2])
 						nonveg.batch_allocated = "Yes"
 						nonveg.save()
@@ -1356,7 +1390,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="C",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,3,[batch1,batch2,batch3])
 						nonveg.batch_allocated = "Yes"
 						nonveg.save()
@@ -1394,7 +1428,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="D",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,3,[batch1,batch2,batch3,batch4])
 						nonveg.batch_allocated = "Yes"
 						nonveg.save()
@@ -1411,7 +1445,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="A",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,1,[batch1])
 						veg.veg_batch_allocated = "Yes"
 						veg.save()
@@ -1433,7 +1467,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="B",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,2,[batch1,batch2])
 						veg.veg_batch_allocated = "Yes"
 						veg.save()
@@ -1463,7 +1497,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="C",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,3,[batch1,batch2,batch3])
 						veg.veg_batch_allocated = "Yes"
 						veg.save()
@@ -1501,7 +1535,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="D",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,3,[batch1,batch2,batch3,batch4])
 						veg.veg_batch_allocated = "Yes"
 						veg.save()
@@ -1515,7 +1549,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="A",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,1,[batch1])
 						nonveg.nonveg_batch_allocated = "Yes"
 						nonveg.save()
@@ -1537,7 +1571,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="B",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,2,[batch1,batch2])
 						nonveg.nonveg_batch_allocated = "Yes"
 						nonveg.save()
@@ -1567,7 +1601,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="C",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,3,[batch1,batch2,batch3])
 						nonveg.nonveg_batch_allocated = "Yes"
 						nonveg.save()
@@ -1605,7 +1639,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="D",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id).order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
 						allocate(grub,grubstu,3,[batch1,batch2,batch3,batch4])
 						nonveg.nonveg_batch_allocated = "Yes"
 						nonveg.save()

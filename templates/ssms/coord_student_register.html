@@ -57,8 +57,10 @@
     </div>
 	You can register Students till {{ grub.deadline2 }}
 {% else %}
- <h3>You cannot register now!</h3>
-<h4> Registration Deadline : {{ grub.deadline2 }}
+ <h3>You cannot cancel now!</h3>
+<h4> Registration Deadline : {{ grub.deadline2 }}</h4>
+<h4> Cancellation Deadline : {{ grub.deadline }}</h4>
+
 {% endifequal %}
 	</form>
 	

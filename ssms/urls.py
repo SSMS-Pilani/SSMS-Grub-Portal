@@ -22,6 +22,7 @@ urlpatterns = [
 	url('^ajax/ssms/grub/(?P<gmid>[-\w]+)/sendmail1/' , views.ssms_grub_sendmail1, name="Grub send mail1") ,
 	url('^ajax/ssms/grub/(?P<gmid>[-\w]+)/sendmail2/' , views.ssms_grub_sendmail2, name="Grub send mail1") ,
 	url(r'^ssms/menu_upload/$', views.menu_upload, name='menu_upload'),
+	url(r'^ssms/cancel-students/(?P<gmid>[-\w]+)/$',views.ssms_student_cancel,name='ssms student cancel'),
 	
 	url(r'^logout/$', views.user_logout, name='logout'),  #Common logout
 
