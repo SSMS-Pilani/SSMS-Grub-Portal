@@ -207,6 +207,10 @@ def ssms_grub_sendmail2(request,gmid):
 		else :
 			getspotsigning=""
 		allstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up")
+		allgrubbatch = Batch.objects.filter(gm_id=grub)
+		if (len(allgrubbatch)==0):
+			data ={'is_taken': "No batch allocated. Please allocate batch first." }
+			return JsonResponse(data)
 		if (forloop==1 or forloop==3):
 			veg = Veg.objects.get(gm_id=grub)
 			venue = veg.v_venue
@@ -223,35 +227,36 @@ def ssms_grub_sendmail2(request,gmid):
 							a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
 							j.mail = "Sent2"
 							j.save()
-					subject, from_email = str(grub.name) + " | " + e + " | " +"Batch " +str(i.batch_name) , 'ssms.pilani@gmail.com'
-					text_content = 'This is an important message.'
-					html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+\
-					str(grub.name)+"</strong> that is going to take place on <strong>"+ e +"</strong>. You are required \
-					to collect your stubs from the PitStop counter in your mess during meal timings today.</p>\
-					<p>Also, please note the following details.</p>\
-					<p><strong>Batch: </strong>" + i.batch_name + "</p>\
-					<p><strong>Wristband: </strong>" + i.color + "</p>\
-					<p><strong>Timings: </strong>" + i.timing + "</p>\
-					<p><strong>Venue: </strong>" + venue + "</p>\
-	<strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong>\
-					<p>"+getspotsigning+" </p><p>Thank you.</p>\
-					<p>Regards,</p>\
-					<p>Grub Committee, SSMS</p></body>"
-					print a
-					msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2015040@pilani.bits-pilani.ac.in"])
-					msg.attach_alternative(html_content, "text/html")
-					try :
-						msg.send(fail_silently=False)
-						count = count + len(a)
-						datemail.mails = datemail.mails+len(a)
-						datemail.save()
-					except :
-						for j in students:
-							j.mail = "Sent"
-							j.save()
-						left = len(allstu)-count
-						data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send." }
-						return JsonResponse(data)
+					if (len(a)>0):
+						subject, from_email = str(grub.name) + " | " + e + " | " +"Batch " +str(i.batch_name) , 'ssms.pilani@gmail.com'
+						text_content = 'This is an important message.'
+						html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+\
+						str(grub.name)+"</strong> that is going to take place on <strong>"+ e +"</strong>. You are required \
+						to collect your stubs from the PitStop counter in your mess during meal timings today.</p>\
+						<p>Also, please note the following details.</p>\
+						<p><strong>Batch: </strong>" + i.batch_name + "</p>\
+						<p><strong>Wristband: </strong>" + i.color + "</p>\
+						<p><strong>Timings: </strong>" + i.timing + "</p>\
+						<p><strong>Venue: </strong>" + venue + "</p>\
+		<strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong>\
+						<p>"+getspotsigning+" </p><p>Thank you.</p>\
+						<p>Regards,</p>\
+						<p>Grub Committee, SSMS</p></body>"
+						print a
+						msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2015040@pilani.bits-pilani.ac.in"])
+						msg.attach_alternative(html_content, "text/html")
+						try :
+							msg.send(fail_silently=False)
+							count = count + len(a)
+							datemail.mails = datemail.mails+len(a)
+							datemail.save()
+						except :
+							for j in students:
+								j.mail = "Sent"
+								j.save()
+							left = len(allstu)-count
+							data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send." }
+							return JsonResponse(data)
 		if (forloop==2 or forloop==3):
 			veg = NonVeg.objects.get(gm_id=grub)
 			venue = veg.n_venue
@@ -268,35 +273,36 @@ def ssms_grub_sendmail2(request,gmid):
 							a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
 							j.mail = "Sent2"
 							j.save()
-					subject, from_email = str(grub.name) + " | " + e + " | " +"Batch " +str(i.batch_name) , 'ssms.pilani@gmail.com'
-					text_content = 'This is an important message.'
-					html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+\
-					str(grub.name)+"</strong> that is going to take place on <strong>"+ e +"</strong>. You are required \
-					to collect your stubs from the PitStop counter in your mess during meal timings today.</p>\
-					<p>Also, please note the following details.</p>\
-					<p><strong>Batch: </strong>" + i.batch_name + "</p>\
-					<p><strong>Wristband: </strong>" + i.color + "</p>\
-					<p><strong>Timings: </strong>" + i.timing + "</p>\
-					<p><strong>Venue: </strong>" + venue + "</p>\
-	<strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong>\
-					<p>"+getspotsigning+" </p><p>Thank you.</p>\
-					<p>Regards,</p>\
-					<p>Grub Committee, SSMS</p></body>"
-					print a
-					msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2015040@pilani.bits-pilani.ac.in"])
-					msg.attach_alternative(html_content, "text/html")
-					try :
-						msg.send(fail_silently=False)
-						count = count + len(a)
-						datemail.mails = datemail.mails+len(a)
-						datemail.save()
-					except :
-						for j in students:
-							j.mail = "Sent"
-							j.save()
-						left = len(allstu)-count
-						data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send." }
-						return JsonResponse(data)
+					if (len(a)>0):
+						subject, from_email = str(grub.name) + " | " + e + " | " +"Batch " +str(i.batch_name) , 'ssms.pilani@gmail.com'
+						text_content = 'This is an important message.'
+						html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+\
+						str(grub.name)+"</strong> that is going to take place on <strong>"+ e +"</strong>. You are required \
+						to collect your stubs from the PitStop counter in your mess during meal timings today.</p>\
+						<p>Also, please note the following details.</p>\
+						<p><strong>Batch: </strong>" + i.batch_name + "</p>\
+						<p><strong>Wristband: </strong>" + i.color + "</p>\
+						<p><strong>Timings: </strong>" + i.timing + "</p>\
+						<p><strong>Venue: </strong>" + venue + "</p>\
+		<strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong>\
+						<p>"+getspotsigning+" </p><p>Thank you.</p>\
+						<p>Regards,</p>\
+						<p>Grub Committee, SSMS</p></body>"
+						print a
+						msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2015040@pilani.bits-pilani.ac.in"])
+						msg.attach_alternative(html_content, "text/html")
+						try :
+							msg.send(fail_silently=False)
+							count = count + len(a)
+							datemail.mails = datemail.mails+len(a)
+							datemail.save()
+						except :
+							for j in students:
+								j.mail = "Sent"
+								j.save()
+							left = len(allstu)-count
+							data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send." }
+							return JsonResponse(data)
 		grub.mails="Sent2"
 		grub.save()
 		data = {'is_taken': "All the mails ("+ str(len(abcd)) +") were sent succesfully"}
