@@ -61,14 +61,14 @@ class Grub(models.Model):
 class Batch(models.Model):
 	mtype=(('Veg','Veg'),('Non Veg','Non Veg'))
 	batch_choices = (("A","A"),("B","B"),("C","C"),("D","D"))
-	color_choices = (("Red","Red"),("Yellow","Yellow"),("Blue","Blue"),("Green","Green"))
+	color_choices = (("Pink","Pink"),("Yellow","Yellow"),("Blue","Blue"),("Green","Green"))
 	gm_id = models.ForeignKey(Grub,verbose_name="Grub Id")
 	meal= models.CharField("Meal Type",choices=mtype,max_length=16,default='Veg')
 	batch_name = models.CharField("Batch Name",default="",choices=batch_choices,max_length=32,blank=False) #batch name
 	color = models.CharField("Batch Color",max_length=10,choices=color_choices)
 	timing = models.CharField("Batch Time",max_length=16,blank=False)
 	def __str__(self):
-		return self.batch_name + "-" + self.gm_id.name
+		return self.batch_name + "-" + self.meal + "- " + self.gm_id.name
 
 class Grub_Student(models.Model):
 	unique_id = models.UUIDField("Unique Student Id",primary_key=True, default=uuid.uuid4, editable=False)

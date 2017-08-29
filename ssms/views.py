@@ -143,7 +143,6 @@ def send2(request):
 def ssms_grub_sendmail1(request,gmid):
 	grubid = request.GET.get('grubid')
 	datemail = DateMailStatus.objects.get(date=datetime.now())
-	print(gmid)
 	try:
 		grub = Grub.objects.get(name=str(grubid))
 		print(gmid)
@@ -151,11 +150,9 @@ def ssms_grub_sendmail1(request,gmid):
 		e = date.strftime(d, "%d %B %Y")
 		v = datetime.strptime(str(grub.deadline), '%Y-%m-%d')
 		h = date.strftime(v, "%d %B %Y")
-		abcd=Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",mail="Not Sent")
-		print e
-		print h
-		k=len(abcd)//99
 		count=0
+		abcd=Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",mail="Not Sent")
+		k=len(abcd)//99
 		for q in range(k+1):
 			a=[]
 			students=abcd[q*99:(q+1)*99] 
@@ -163,8 +160,7 @@ def ssms_grub_sendmail1(request,gmid):
 				a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
 				j.mail = "Sent"
 				j.save()
-			print a
-			subject, from_email = str(grub.name), 'ssms.pilani@gmail.com'
+			subject, from_email = str(grub.name) + " | " + e , 'ssms.pilani@gmail.com'
 			text_content = 'This is an important message.'
 			html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(grub.name)+"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/"+str(grub.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
 			msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
@@ -184,10 +180,9 @@ def ssms_grub_sendmail1(request,gmid):
 				return JsonResponse(data)
 		grub.mails="Sent"
 		grub.save()
-		print(gmid)
-		data = {'is_taken': "All the mails ("+ str(len(abcd)) +") were sent succesfully"}
+		data = {'is_taken': "All the mails ("+ str(len(abcd)) +") were sent successfully"}
 		return JsonResponse(data)
-	except :
+	except Exc:
 		print("here")
 		data = {'is_taken': "Internal Error"}
 		return JsonResponse(data)
@@ -195,60 +190,120 @@ def ssms_grub_sendmail1(request,gmid):
 def ssms_grub_sendmail2(request,gmid):
 	grubid = request.GET.get('grubid')
 	datemail = DateMailStatus.objects.get(date=datetime.now())
-	print(gmid)
 	try:
 		grub = Grub.objects.get(name=str(grubid))
 		print(gmid)
 		if (grub.meal=="Veg"):
-			veg = Veg.objects.get(gm_id=grub.gm_id)
-			meal = str(veg.v_venue)
+			forloop = 1
 		elif (grub.meal=="Non Veg"):
-			veg = NonVeg.objects.get(gm_id=grub.gm_id)
-			meal = str(veg.n_venue)
+			forloop = 2	
 		else :
-			veg = Veg.objects.get(gm_id=grub.gm_id)
-			veg2 = NonVeg.objects.get(gm_id=grub.gm_id)
-			meal = str(veg.v_venue) + " and " + str(veg2.n_venue)
+			forloop = 3  # both  1 and two
 		d = datetime.strptime(str(grub.date), '%Y-%m-%d')
 		e = date.strftime(d, "%d %B %Y")
-		abcd=Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up")
-		print e
-		k=len(abcd)//99
 		count=0
-		for q in range(k+1):
-			a=[]
-			students=abcd[q*99:(q+1)*99] 
-			for j in students:
-				a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
-				j.mail = "Sent2"
-				j.save()
-			print a
-			subject, from_email = str(grub.name) + " (Reminder)", 'ssms.pilani@gmail.com'
-			text_content = 'This is an important message.'
-			html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+str(grub.name)+"</strong> which will take place on <strong>"+ e +"</strong> at the <strong>"+meal+"</strong> Mess. </p> <p>Wristbands for the same are available at your mess counter, and you are requested to collect the same if you haven't already.</p><strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong><p>Limited on spot signings will be available. Please carry your ID cards for the same. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
-			print a
-			msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
-			msg.attach_alternative(html_content, "text/html")
-			try :
-				msg.send(fail_silently=False)
-				count = count + len(a)
-				datemail.mails = datemail.mails+len(a)
-				datemail.save()
-			except :
-				for j in students:
-					j.mail = "Sent"
-					j.save()
-				left = len(abcd)-count
-				data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send." }
-				return JsonResponse(data)
-		grub.mails="Sent"
+		if (grub.spot_signing=="Yes") :
+			getspotsigning="Limited on spot signings will be available. Please carry your ID cards for the same."
+		else :
+			getspotsigning=""
+		allstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up")
+		if (forloop==1 or forloop==3):
+			veg = Veg.objects.get(gm_id=grub)
+			venue = veg.v_venue
+			all_batch = Batch.objects.filter(gm_id=grub,meal="Veg")
+			print all_batch
+			for i in all_batch:
+				abcd=Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",batch=i)
+				k=len(abcd)//99
+				for q in range(k+1):
+					a=[]
+					students=abcd[q*99:(q+1)*99] 
+					for j in students:
+						if (j.mail!="Sent2"):
+							a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+							j.mail = "Sent2"
+							j.save()
+					subject, from_email = str(grub.name) + " | " + e + " | " +"Batch " +str(i.batch_name) , 'ssms.pilani@gmail.com'
+					text_content = 'This is an important message.'
+					html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+\
+					str(grub.name)+"</strong> that is going to take place on <strong>"+ e +"</strong>. You are required \
+					to collect your stubs from the PitStop counter in your mess during meal timings today.</p>\
+					<p>Also, please note the following details.</p>\
+					<p><strong>Batch: </strong>" + i.batch_name + "</p>\
+					<p><strong>Wristband: </strong>" + i.color + "</p>\
+					<p><strong>Timings: </strong>" + i.timing + "</p>\
+					<p><strong>Venue: </strong>" + venue + "</p>\
+	<strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong>\
+					<p>"+getspotsigning+" </p><p>Thank you.</p>\
+					<p>Regards,</p>\
+					<p>Grub Committee, SSMS</p></body>"
+					print a
+					msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2015040@pilani.bits-pilani.ac.in"])
+					msg.attach_alternative(html_content, "text/html")
+					try :
+						msg.send(fail_silently=False)
+						count = count + len(a)
+						datemail.mails = datemail.mails+len(a)
+						datemail.save()
+					except :
+						for j in students:
+							j.mail = "Sent"
+							j.save()
+						left = len(allstu)-count
+						data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send." }
+						return JsonResponse(data)
+		if (forloop==2 or forloop==3):
+			veg = NonVeg.objects.get(gm_id=grub)
+			venue = veg.n_venue
+			all_batch = Batch.objects.filter(gm_id=grub,meal="Non Veg")
+			print all_batch
+			for i in all_batch:
+				abcd=Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",batch=i)
+				k=len(abcd)//99
+				for q in range(k+1):
+					a=[]
+					students=abcd[q*99:(q+1)*99] 
+					for j in students:
+						if (j.mail!="Sent2"):
+							a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+							j.mail = "Sent2"
+							j.save()
+					subject, from_email = str(grub.name) + " | " + e + " | " +"Batch " +str(i.batch_name) , 'ssms.pilani@gmail.com'
+					text_content = 'This is an important message.'
+					html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+\
+					str(grub.name)+"</strong> that is going to take place on <strong>"+ e +"</strong>. You are required \
+					to collect your stubs from the PitStop counter in your mess during meal timings today.</p>\
+					<p>Also, please note the following details.</p>\
+					<p><strong>Batch: </strong>" + i.batch_name + "</p>\
+					<p><strong>Wristband: </strong>" + i.color + "</p>\
+					<p><strong>Timings: </strong>" + i.timing + "</p>\
+					<p><strong>Venue: </strong>" + venue + "</p>\
+	<strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong>\
+					<p>"+getspotsigning+" </p><p>Thank you.</p>\
+					<p>Regards,</p>\
+					<p>Grub Committee, SSMS</p></body>"
+					print a
+					msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2015040@pilani.bits-pilani.ac.in"])
+					msg.attach_alternative(html_content, "text/html")
+					try :
+						msg.send(fail_silently=False)
+						count = count + len(a)
+						datemail.mails = datemail.mails+len(a)
+						datemail.save()
+					except :
+						for j in students:
+							j.mail = "Sent"
+							j.save()
+						left = len(allstu)-count
+						data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send." }
+						return JsonResponse(data)
+		grub.mails="Sent2"
 		grub.save()
-		print(gmid)
 		data = {'is_taken': "All the mails ("+ str(len(abcd)) +") were sent succesfully"}
 		return JsonResponse(data)
-	except :
+	except Exception as e:
 		print("here")
-		data = {'is_taken': "Internal Error"}
+		data = {'is_taken': "Internal Error " + str(e)}
 		return JsonResponse(data)
 	
 	
@@ -1657,12 +1712,12 @@ def ssms_grub_batchallocation(request,gmid):
 				grub.save()
 				if grub.batch_allocated=="Yes":
 					return HttpResponseRedirect("/ssms/stats/"+gmid)
-				context_dict["color"] = ["Red","Yellow","Blue","Green"]
+				context_dict["color"] = ["Pink","Yellow","Blue","Green"]
 				context_dict["grub"] = grub
 				context_dict["time"] = ("8:00","8:15","8:30","8:45","9:00","9:15","9:30","9:45","10:00","10:15","10:30","10:45","11:00")
 				return render(request,'ssms/batch_allocation.html',context_dict) 
 			else :
-				context_dict["color"] = ["Red","Yellow","Blue","Green"]
+				context_dict["color"] = ["Pink","Yellow","Blue","Green"]
 				context_dict["grub"] = grub
 				if grub.meal =="Both":
 					both = Both.objects.get(gm_id=grub)
