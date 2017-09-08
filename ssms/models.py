@@ -74,7 +74,7 @@ class Grub_Student(models.Model):
 	unique_id = models.UUIDField("Unique Student Id",primary_key=True, default=uuid.uuid4, editable=False)
 	stype=(('Signed Up','Signed Up'),('Opted Out','Opted Out'))  
 	mtype=(('Veg','Veg'),('Non Veg','Non Veg'))
-	emtype=(('Sent','Sent'),('Not Sent','Not Sent'))
+	emtype=(('Sent','Sent'),('Not Sent','Not Sent'),('Sent2','Sent2'))
 	name = models.CharField(max_length=32)
 	student_id= models.CharField("Bits Id",max_length=32,blank=False)
 	user_id=models.CharField("Bits Email Id",db_index=True,max_length=32,blank=False)
@@ -94,7 +94,7 @@ class Grub_Student(models.Model):
 
 class Student(models.Model):
 	unique_id = models.UUIDField("Unique Stud Id",primary_key=True, default=uuid.uuid4, editable=False)
-	name = models.CharField(max_length=32)
+	name = models.CharField(max_length=64)
 	bits_id= models.CharField("BITS ID",max_length=32,unique=True)
 	bhawan = models.CharField(max_length=32)
 	room_no = models.CharField("Room No.",max_length=4)
@@ -160,15 +160,15 @@ class Feedback(models.Model):
 
 
 class Meal(models.Model):
-	meal_choices = (('grub','GRUB'),('lunch', 'LUNCH') , ('dinner','DINNER'), ('breakfast','BREAKFAST'))
+	#meal_choices = (('grub','GRUB'),('lunch', 'LUNCH') , ('dinner','DINNER'), ('breakfast','BREAKFAST'))
 	date = models.DateField(null=False, blank=False)
-	meal_type = models.CharField(max_length=16, choices=meal_choices)
-	day = models.CharField(max_length=10, null=True)
+	meal_type = models.CharField(max_length=60)
+	day = models.CharField(max_length=20, null=True)
 	def __unicode__(self):
 		return str(self.date) + str(self.meal_type)
 
 class Items(models.Model):
-	item = models.CharField(null=False, blank=False, max_length=30)
+	item = models.CharField(null=False, blank=False, max_length=60)
 	meal = models.ForeignKey('Meal')
 	def __unicode__(self):
 		return str(self.item) + str(self.meal.date)

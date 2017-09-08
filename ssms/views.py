@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus,Grub_Invalid_Students,Batch
+from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus,Grub_Invalid_Students,Batch,Meal,Items,Feedback
 from ssms.forms import GrubForm,Grub_CoordUserForm,Grub_CoordUserProfileForm,GrubEditDeadlineForm,ExcelUpload,VegForm,NonVegForm,BothForm,CoordStudentRegForm, GrubFormEdit , UploadFileForm,FeedbackForm
 from django.conf import settings
 #addddddd
@@ -163,7 +163,7 @@ def ssms_grub_sendmail1(request,gmid):
 			subject, from_email = str(grub.name) + " | " + e , 'ssms.pilani@gmail.com'
 			text_content = 'This is an important message.'
 			html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(grub.name)+"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/"+str(grub.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
-			msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
+			msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2015040@pilani.bits-pilani.ac.in"])
 			msg.attach_alternative(html_content, "text/html")
 			print a
 			try :
@@ -171,12 +171,13 @@ def ssms_grub_sendmail1(request,gmid):
 				count=count + len(a)
 				datemail.mails = datemail.mails+len(a)
 				datemail.save()
-			except :
+			except Exception as e:
+				print e
 				for j in students:
 					j.mail = "Not Sent"
 					j.save()
 				left = len(abcd)-count
-				data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send." }
+				data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send. Error "+ str(e) }
 				return JsonResponse(data)
 		grub.mails="Sent"
 		grub.save()
@@ -186,6 +187,106 @@ def ssms_grub_sendmail1(request,gmid):
 		print("here")
 		data = {'is_taken': "Internal Error"}
 		return JsonResponse(data)
+
+def ssms_grub_sendmail3(grub,forloop,datemail,d,e,getspotsigning):
+	count = 0
+	data = ""
+	allstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up")
+	try:
+		if (forloop==1 or forloop==3):
+			if (forloop==1):
+				veg = Veg.objects.get(gm_id=grub)
+				venue = veg.v_venue
+			else :
+				veg = Both.objects.get(gm_id=grub)
+				venue = veg.veg_venue
+			abcd=Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",meal = "Veg")
+			k=len(abcd)//99
+			for q in range(k+1):
+				a=[]
+				students=abcd[q*99:(q+1)*99] 
+				for j in students:
+					if (j.mail!="Sent2"):
+						a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+						j.mail = "Sent2"
+						j.save()
+				if (len(a)>0):
+					subject, from_email = str(grub.name) + " | " + e + " | Veg |" + venue , 'ssms.pilani@gmail.com'
+					text_content = 'This is an important message.'
+					html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+\
+					str(grub.name)+"</strong> that is going to take place on <strong>"+ e +"</strong> at the " + venue + ".\
+					You are required \
+					to collect your stubs from the PitStop counter in your mess during meal timings today.</p>\
+	<strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong>\
+					<p>"+getspotsigning+" </p><p>Thank you.</p>\
+					<p>Regards,</p>\
+					<p>Grub Committee, SSMS</p></body>"
+					#print a
+					msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2015040@pilani.bits-pilani.ac.in"])
+					msg.attach_alternative(html_content, "text/html")
+					try :
+						msg.send(fail_silently=False)
+						count = count + len(a)
+						datemail.mails = datemail.mails+len(a)
+						datemail.save()
+					except Exception as e:
+						for j in students:
+							j.mail = "Sent"
+							j.save()
+						left = len(allstu)-count
+						data ="Only "+str(count)+" -Veg- mails were sent succesfully. " + str(left) +" mails are left to be send. Error " + str(e) 
+						return data
+		if (forloop==2 or forloop==3):
+			if (forloop==1):
+				veg = NonVeg.objects.get(gm_id=grub)
+				venue = veg.n_venue
+			else :
+				veg = Both.objects.get(gm_id=grub)
+				venue = veg.non_veg_venue
+			abcd=Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",meal = "Non Veg")
+			k=len(abcd)//99
+			for q in range(k+1):
+				a=[]
+				students=abcd[q*99:(q+1)*99] 
+				for j in students:
+					if (j.mail!="Sent2"):
+						a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+						j.mail = "Sent2"
+						j.save()
+				if (len(a)>0):
+					subject, from_email = str(grub.name) + " | " + e + " | Non Veg |" + venue , 'ssms.pilani@gmail.com'
+					text_content = 'This is an important message.'
+					html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+\
+					str(grub.name)+"</strong> that is going to take place on <strong>"+ e +"</strong> at the " + venue + ".\
+					You are required \
+					to collect your stubs from the PitStop counter in your mess during meal timings today.</p>\
+	<strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong>\
+					<p>"+getspotsigning+" </p><p>Thank you.</p>\
+					<p>Regards,</p>\
+					<p>Grub Committee, SSMS</p></body>"
+					#print a
+					msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2015040@pilani.bits-pilani.ac.in"])
+					msg.attach_alternative(html_content, "text/html")
+					try :
+						msg.send(fail_silently=False)
+						count = count + len(a)
+						datemail.mails = datemail.mails+len(a)
+						datemail.save()
+					except Exception as e:
+						for j in students:
+							j.mail = "Sent"
+							j.save()
+						left = len(allstu)-count
+						data ="Only "+str(count)+" -Non Veg- mails were sent succesfully. " + str(left) +" mails are left to be send. Error " + str(e) 
+						return data
+		grub.mails="Sent2"
+		grub.save()
+		data ="All the mails ("+ str(len(allstu)) +") were sent succesfully"
+		return data
+	except Exception as e:
+		print("here")
+		data = "Internal Error " + str(e)
+		return data
 
 def ssms_grub_sendmail2(request,gmid):
 	grubid = request.GET.get('grubid')
@@ -209,11 +310,17 @@ def ssms_grub_sendmail2(request,gmid):
 		allstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up")
 		allgrubbatch = Batch.objects.filter(gm_id=grub)
 		if (len(allgrubbatch)==0):
-			data ={'is_taken': "No batch allocated. Please allocate batch first." }
-			return JsonResponse(data)
+			print "here2"
+			#return JsonResponse({"is_taken" : "here"})
+			data = ssms_grub_sendmail3(grub,forloop,datemail,d,e,getspotsigning) #{'is_taken': "No batch allocated. Please allocate batch first." }
+			return JsonResponse({"is_taken" : data })
 		if (forloop==1 or forloop==3):
-			veg = Veg.objects.get(gm_id=grub)
-			venue = veg.v_venue
+			if (forloop==1):
+				veg = Veg.objects.get(gm_id=grub)
+				venue = veg.v_venue
+			else :
+				veg = Both.objects.get(gm_id=grub)
+				venue = veg.veg_venue
 			all_batch = Batch.objects.filter(gm_id=grub,meal="Veg")
 			print all_batch
 			for i in all_batch:
@@ -250,16 +357,20 @@ def ssms_grub_sendmail2(request,gmid):
 							count = count + len(a)
 							datemail.mails = datemail.mails+len(a)
 							datemail.save()
-						except :
+						except Exception as e:
 							for j in students:
 								j.mail = "Sent"
 								j.save()
 							left = len(allstu)-count
-							data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send." }
+							data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send. Error " + str(e) }
 							return JsonResponse(data)
 		if (forloop==2 or forloop==3):
-			veg = NonVeg.objects.get(gm_id=grub)
-			venue = veg.n_venue
+			if (forloop==1):
+				veg = NonVeg.objects.get(gm_id=grub)
+				venue = veg.n_venue
+			else :
+				veg = Both.objects.get(gm_id=grub)
+				venue = veg.non_veg_venue
 			all_batch = Batch.objects.filter(gm_id=grub,meal="Non Veg")
 			print all_batch
 			for i in all_batch:
@@ -296,12 +407,12 @@ def ssms_grub_sendmail2(request,gmid):
 							count = count + len(a)
 							datemail.mails = datemail.mails+len(a)
 							datemail.save()
-						except :
+						except Exception as e:
 							for j in students:
 								j.mail = "Sent"
 								j.save()
 							left = len(allstu)-count
-							data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send." }
+							data ={'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(left) +" mails are left to be send. Error " + str(e) }
 							return JsonResponse(data)
 		grub.mails="Sent2"
 		grub.save()
@@ -776,7 +887,7 @@ def coord_grub_register(request):
 	else :
 		return HttpResponseRedirect('/ssms/coord/login/')
 
-invalidids = False
+#invalidids = False
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def coord_upload(request,gmid):
 	if request.user.is_staff and not request.user.is_superuser:
@@ -795,8 +906,8 @@ def coord_upload(request,gmid):
 						if filename.endswith('.xls') or filename.endswith('.xlsx') or filename.endswith('.csv'):
 							a = Grub.objects.get(gm_id=gmid)
 							d=Grub.objects.filter(gm_id=gmid)[0]
-							global invalidids
-							invalidids = False
+							#global invalidids
+							#invalidids = False
 							form = ExcelUpload(request.POST,request.FILES,instance=grub)
 							if form.is_valid():
 								photo=form.save(commit=False)
@@ -804,7 +915,7 @@ def coord_upload(request,gmid):
 									def choice_func(row):
 										row[0]=row[0].upper()
 										a=row[0]
-										a=str(a).upper()[:13]		#Change to 13 if "P" is too be included
+										a=str(a).upper()[:12]		#Change to 13 if "P" is too be included
 										try :
 											b=Student.objects.get(bits_id=str(a))
 											smailid=b.user_id
@@ -822,8 +933,8 @@ def coord_upload(request,gmid):
 											row.append(sroom)
 											
 										except :
-											global invalidids
-											invalidids = True
+											#global invalidids
+											#invalidids = True
 											invalid_grub = Grub_Invalid_Students.objects.get_or_create(
 												student_id=str(row[0]),gm_id=grub,meal=str(row[1]).lower()
 												)
@@ -863,7 +974,7 @@ def coord_upload(request,gmid):
 									photo.excel = files
 									photo.save()
 									global invalidids
-									if (invalidids== True):
+									if (len(Grub_Invalid_Students.objects.filter(gm_id= grub))>0):
 										return HttpResponseRedirect("/ssms/invalid_ids/"+gmid)
 									else :
 										return HttpResponseRedirect("/ssms/stats/"+gmid)
@@ -1783,14 +1894,15 @@ def student_grub_feedback(request,gmid):
 def menu_upload(request):
 	# check if request is post and handle appropriately by storing file in media
 	if request.user.is_superuser:
+		context_dict={}
 		if request.method == 'POST' and request.FILES['myfile']:
-			context_dict={}
+			
 			# file path can be filled manually or using file url generated by file upload.
 			try :
 				name = request.FILES['myfile'].name
 				wb = openpyxl.load_workbook(request.FILES['myfile'])
 				sheet = wb.active
-				max_val = sheet.max_row
+				max_val = 32 #sheet.max_row
 				for col in sheet.iter_cols():
 					month_date, day = col[0].value, col[1].value
 					breakfast = Meal(day=day, date=month_date, meal_type='BREAKFAST')
@@ -1803,7 +1915,7 @@ def menu_upload(request):
 						if col[j].value: Items.objects.get_or_create(item=col[j].value, meal=breakfast)
 					for j in range(12, 23):
 						if col[j].value: Items.objects.get_or_create(item=col[j].value, meal=lunch)
-					for j in range(24, max_val):
+					for j in range(24, max_val): # to iterate to end of the sheet
 						if col[j].value: Items.objects.get_or_create(item=col[j].value, meal=dinner)
 
 				context_dict["error"] = "Succesfully Uploaded!!"
@@ -1813,7 +1925,8 @@ def menu_upload(request):
 				context_dict["error"] = e
 				return render(request, 'ssms/menu_upload.html', context_dict)
 		else:
-			return render(request, 'ssms/menu_upload.html',{})
+			context_dict["error"] = "No file uploaded"
+			return render(request, 'ssms/menu_upload.html',context_dict)
 	else :
 		return HttpResponseRedirect("/ssms/ssms/login/")
 
@@ -1823,7 +1936,7 @@ def menu_display(request):
 		# explicitly setting datein 'yyyy-mm-dd' format
 		current_date = date.today().isoformat()
 		meal_types = Meal.objects.filter(date=current_date)
-		day = meal_types[1].day
+		day = meal_types[0].day
 		food = [Items.objects.filter(meal=i) for i in meal_types]
 	except:
 		return render(request, 'ssms/menu.html')

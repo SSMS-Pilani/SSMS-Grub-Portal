@@ -13,7 +13,7 @@
                     </h2>
  <h2 class="text-center"><a href="{% static 'sample-mess-upload.xlsx' %}"><button class="btn btn-md btn-success">Sample Sheet</button></a></h2>
  <hr>
- <form class="form-horizontal" method="post" enctype="multipart/form-data" action="/ssms/ssms/menu_upload">
+ <form class="form-horizontal" method="post" enctype="multipart/form-data" action="/ssms/ssms/menu_upload/">
     {% csrf_token %}
     <div class="form-group">
     <input type="file" name="myfile">
