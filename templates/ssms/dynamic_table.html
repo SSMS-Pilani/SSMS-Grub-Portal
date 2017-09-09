@@ -44,8 +44,11 @@
 </table>
 <br>
 <h2>Registered:{{reg}}</h2>
-
 <h2>Opted Out:{{out}}</h2>
+{% if vegreg %}
+<h2>Veg Reg : {{ vegreg }}</h2>
+<h2>Non Veg Reg : {{ nonvegreg }}</h2>
+{% endif %}
 {% else %}
 <h2>You are not allowed to view this page</h2>
 <h2>Login to View this page</h2>

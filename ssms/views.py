@@ -79,7 +79,15 @@ def send(request):
 					print a
 					subject, from_email = str(i.name), 'ssms.pilani@gmail.com'
 					text_content = 'This is an important message.'
-					html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(i.name)+"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/"+str(i.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
+					html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(i.name)+\
+					"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing,\
+					please visit <a href=http://www.ssms-pilani.org/ssms/student/grub/"+str(i.gm_id)+"/ >SSMS Grub Portal</a>, \
+					before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. \
+					</p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to \
+					the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be \
+					treated as invalid. </p> <p><strong> If the above url doesn't work, please click\
+					<a href=https://ssmsbitspilani.herokuapp.com/ssms/student/grub/"+str(i.gm_id)+"/ >here</a>\
+					</strong></p> <p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
 					msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
 					msg.attach_alternative(html_content, "text/html")
 					msg.send(fail_silently=False)
@@ -162,7 +170,7 @@ def ssms_grub_sendmail1(request,gmid):
 				j.save()
 			subject, from_email = str(grub.name) + " | " + e , 'ssms.pilani@gmail.com'
 			text_content = 'This is an important message.'
-			html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(grub.name)+"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/"+str(grub.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
+			html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(grub.name)+"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/"+str(grub.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p><strong> If the above url doesn't work, please click<a href=https://ssmsbitspilani.herokuapp.com/ssms/student/grub/"+str(grub.gm_id)+"/ >here</a></strong></p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
 			msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2015040@pilani.bits-pilani.ac.in"])
 			msg.attach_alternative(html_content, "text/html")
 			print a
@@ -183,7 +191,7 @@ def ssms_grub_sendmail1(request,gmid):
 		grub.save()
 		data = {'is_taken': "All the mails ("+ str(len(abcd)) +") were sent successfully"}
 		return JsonResponse(data)
-	except Exc:
+	except Exception:
 		print("here")
 		data = {'is_taken': "Internal Error"}
 		return JsonResponse(data)
@@ -590,7 +598,11 @@ def ssms_student_table(request,gmid):
 		stud = Grub_Student.objects.filter(gm_id=gmid)
 		registered=len(stud.filter(status="Signed Up"))
 		out=len(stud.filter(status="Opted Out"))
-		context_dict={"stud":stud,"reg":registered,"out":out,"gmid":gmid,"grub":grub}
+		vegreg = nonvegreg = ""
+		if grub.meal == "Both":
+			vegreg = len(stud.filter(status="Signed Up",meal= "Veg"))
+			nonvegreg = len(stud.filter(status="Signed Up",meal= "Non Veg"))
+		context_dict={"stud":stud,"reg":registered,"out":out,"gmid":gmid,"grub":grub,'vegreg':vegreg,'nonvegreg':nonvegreg}
 		return render(request, 'ssms/dynamic_table.html',context_dict)
 	elif request.user.is_staff :
 		try :
@@ -602,7 +614,11 @@ def ssms_student_table(request,gmid):
 				stud = Grub_Student.objects.filter(gm_id=gmid)
 				registered=len(stud.filter(status="Signed Up"))
 				out=len(stud.filter(status="Opted Out"))
-				context_dict={"stud":stud,"reg":registered,"out":out,"gmid":gmid,"grub":grub}
+				vegreg = nonvegreg = ""
+				if grub.meal == "Both":
+					vegreg = len(stud.filter(status="Signed Up",meal= "Veg"))
+					nonvegreg = len(stud.filter(status="Signed Up",meal= "Non Veg"))
+				context_dict={"stud":stud,"reg":registered,"out":out,"gmid":gmid,"grub":grub,'vegreg':vegreg,'nonvegreg':nonvegreg}
 				return render(request, 'ssms/dynamic_table.html',context_dict)
 			else :
 				return HttpResponseRedirect("/ssms")
