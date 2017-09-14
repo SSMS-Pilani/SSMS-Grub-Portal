@@ -83,9 +83,7 @@ def send(request):
 					"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing,\
 					please visit <a href=http://www.ssms-pilani.org/ssms/student/grub/"+str(i.gm_id)+"/ >SSMS Grub Portal</a>, \
 					before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. \
-					</p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to \
-					the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be \
-					treated as invalid. </p> <p><strong> If the above url doesn't work, please click\
+					</p> <p><strong> If the above url doesn't work, please click \
 					<a href=https://ssmsbitspilani.herokuapp.com/ssms/student/grub/"+str(i.gm_id)+"/ >here</a>\
 					</strong></p> <p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
 					msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
@@ -170,7 +168,7 @@ def ssms_grub_sendmail1(request,gmid):
 				j.save()
 			subject, from_email = str(grub.name) + " | " + e , 'ssms.pilani@gmail.com'
 			text_content = 'This is an important message.'
-			html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(grub.name)+"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/"+str(grub.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. </p><p>If you receive your stub even after cancellation, do not give it to anybody else; please return it to the SSMS office in FD II with your name and ID number written on the back. Else, your cancellation will be treated as invalid. </p><p><strong> If the above url doesn't work, please click<a href=https://ssmsbitspilani.herokuapp.com/ssms/student/grub/"+str(grub.gm_id)+"/ >here</a></strong></p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
+			html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(grub.name)+"</strong> that is to take place on <strong>"+ e +"</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/"+str(grub.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h +"</strong>. Any requests made after the deadline will not be entertained. </p><p><strong> If the above url doesn't work, please click <a href=https://ssmsbitspilani.herokuapp.com/ssms/student/grub/"+str(grub.gm_id)+"/ >here</a></strong></p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
 			msg = EmailMultiAlternatives(subject, text_content, from_email, cc = a, bcc=["f2015040@pilani.bits-pilani.ac.in"])
 			msg.attach_alternative(html_content, "text/html")
 			print a
@@ -219,7 +217,7 @@ def ssms_grub_sendmail3(grub,forloop,datemail,d,e,getspotsigning):
 						j.mail = "Sent2"
 						j.save()
 				if (len(a)>0):
-					subject, from_email = str(grub.name) + " | " + e + " | Veg |" + venue , 'ssms.pilani@gmail.com'
+					subject, from_email = str(grub.name) + " | " + e + " | Veg | " + venue , 'ssms.pilani@gmail.com'
 					text_content = 'This is an important message.'
 					html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+\
 					str(grub.name)+"</strong> that is going to take place on <strong>"+ e +"</strong> at the " + venue + ".\
@@ -262,7 +260,7 @@ def ssms_grub_sendmail3(grub,forloop,datemail,d,e,getspotsigning):
 						j.mail = "Sent2"
 						j.save()
 				if (len(a)>0):
-					subject, from_email = str(grub.name) + " | " + e + " | Non Veg |" + venue , 'ssms.pilani@gmail.com'
+					subject, from_email = str(grub.name) + " | " + e + " | Non Veg | " + venue , 'ssms.pilani@gmail.com'
 					text_content = 'This is an important message.'
 					html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+\
 					str(grub.name)+"</strong> that is going to take place on <strong>"+ e +"</strong> at the " + venue + ".\
@@ -343,7 +341,7 @@ def ssms_grub_sendmail2(request,gmid):
 							j.mail = "Sent2"
 							j.save()
 					if (len(a)>0):
-						subject, from_email = str(grub.name) + " | " + e + " | " +"Batch " +str(i.batch_name) , 'ssms.pilani@gmail.com'
+						subject, from_email = str(grub.name) + " | " + e + " | Veg | " +"Batch " +str(i.batch_name) , 'ssms.pilani@gmail.com'
 						text_content = 'This is an important message.'
 						html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+\
 						str(grub.name)+"</strong> that is going to take place on <strong>"+ e +"</strong>. You are required \
@@ -393,7 +391,7 @@ def ssms_grub_sendmail2(request,gmid):
 							j.mail = "Sent2"
 							j.save()
 					if (len(a)>0):
-						subject, from_email = str(grub.name) + " | " + e + " | " +"Batch " +str(i.batch_name) , 'ssms.pilani@gmail.com'
+						subject, from_email = str(grub.name) + " | " + e + " | Non Veg | " +"Batch " +str(i.batch_name) , 'ssms.pilani@gmail.com'
 						text_content = 'This is an important message.'
 						html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> "+\
 						str(grub.name)+"</strong> that is going to take place on <strong>"+ e +"</strong>. You are required \
@@ -1397,7 +1395,7 @@ def allocate(grub,grubstu,no,batchlist):
 		i.batch = batchlist[j]
 		i.save()
 		count=count + 1
-		if (count >= batchgroup):
+		if (count > batchgroup):
 			j=j+1
 			count =0
 
@@ -1633,7 +1631,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="A",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",meal = "Veg").order_by('bhawan')
 						allocate(grub,grubstu,1,[batch1])
 						veg.veg_batch_allocated = "Yes"
 						veg.save()
@@ -1655,7 +1653,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="B",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",meal = "Veg").order_by('bhawan')
 						allocate(grub,grubstu,2,[batch1,batch2])
 						veg.veg_batch_allocated = "Yes"
 						veg.save()
@@ -1685,7 +1683,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="C",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",meal = "Veg").order_by('bhawan')
 						allocate(grub,grubstu,3,[batch1,batch2,batch3])
 						veg.veg_batch_allocated = "Yes"
 						veg.save()
@@ -1723,7 +1721,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="D",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",meal = "Veg").order_by('bhawan')
 						allocate(grub,grubstu,3,[batch1,batch2,batch3,batch4])
 						veg.veg_batch_allocated = "Yes"
 						veg.save()
@@ -1737,7 +1735,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="A",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",meal = "Non Veg").order_by('bhawan')
 						allocate(grub,grubstu,1,[batch1])
 						nonveg.nonveg_batch_allocated = "Yes"
 						nonveg.save()
@@ -1759,7 +1757,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="B",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",meal = "Non Veg").order_by('bhawan')
 						allocate(grub,grubstu,2,[batch1,batch2])
 						nonveg.nonveg_batch_allocated = "Yes"
 						nonveg.save()
@@ -1789,7 +1787,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="C",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",meal = "Non Veg").order_by('bhawan')
 						allocate(grub,grubstu,3,[batch1,batch2,batch3])
 						nonveg.nonveg_batch_allocated = "Yes"
 						nonveg.save()
@@ -1827,7 +1825,7 @@ def ssms_grub_batchallocation(request,gmid):
 							batch_name="D",
 							color=color1,
 							timing = time1)
-						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up").order_by('bhawan')
+						grubstu = Grub_Student.objects.filter(gm_id=grub.gm_id,status="Signed Up",meal = "Non Veg").order_by('bhawan')
 						allocate(grub,grubstu,3,[batch1,batch2,batch3,batch4])
 						nonveg.nonveg_batch_allocated = "Yes"
 						nonveg.save()
