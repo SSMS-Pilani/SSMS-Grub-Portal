@@ -165,13 +165,13 @@ class Meal(models.Model):
 	meal_type = models.CharField(max_length=60)
 	day = models.CharField(max_length=20, null=True)
 	def __unicode__(self):
-		return str(self.date) + str(self.meal_type)
+		return str(self.date)
 
 class Items(models.Model):
 	item = models.CharField(null=False, blank=False, max_length=60)
 	meal = models.ForeignKey('Meal')
 	def __unicode__(self):
-		return str(self.item) + str(self.meal.date)
+		return str(self.meal.date)
 
 class Grub_Invalid_Students(models.Model):
 	mtype=(('Veg','Veg'),('Non Veg','Non Veg'))
