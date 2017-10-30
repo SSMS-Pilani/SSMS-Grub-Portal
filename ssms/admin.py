@@ -5,7 +5,7 @@ admin.site.register(NonVeg)
 admin.site.register(Both)
 admin.site.register(DateMailStatus)
 class GrubStudentAdmin(admin.ModelAdmin):
-    search_fields = ('student_id',)
+    search_fields = ('student_id','name','user_id')
 admin.site.register(Grub_Student,GrubStudentAdmin)
 class StudentAdmin(admin.ModelAdmin):
     search_fields = ('bits_id','name','user_id')
