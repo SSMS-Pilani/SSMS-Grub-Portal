@@ -6,9 +6,6 @@ from django import forms
 from django.contrib.auth.models import User
 from ssms import venue
 import uuid
-
-from django.db import models
-from django import forms
 #from django.contrib.admin.widgets import AdminDateWidget
 
 
@@ -72,7 +69,7 @@ class Batch(models.Model):
 
 class Grub_Student(models.Model):
 	unique_id = models.UUIDField("Unique Student Id",primary_key=True, default=uuid.uuid4, editable=False)
-	stype=(('Signed Up','Signed Up'),('Opted Out','Opted Out'))  
+	stype=(('Signed Up','Signed Up'),('Opted Out','Opted Out'),('Member','Member'))  
 	mtype=(('Veg','Veg'),('Non Veg','Non Veg'))
 	emtype=(('Sent','Sent'),('Not Sent','Not Sent'),('Sent2','Sent2'))
 	name = models.CharField(max_length=32)
@@ -91,6 +88,13 @@ class Grub_Student(models.Model):
 	def __str__(self):
                 return self.student_id
 
+class Grub_Member(models.Model):
+    mtype=(('Veg','Veg'),('Non Veg','Non Veg'))
+    student_id= models.CharField("Bits Id",max_length=32,blank=False)
+    meal= models.CharField("Mealtype Selected",choices=mtype,max_length=16,default='Veg',blank=False)
+    gm_id = models.ForeignKey(Grub,default='1',verbose_name="Grub Id")
+    def __str__(self):
+                return self.student_id
 
 class Student(models.Model):
 	unique_id = models.UUIDField("Unique Stud Id",primary_key=True, default=uuid.uuid4, editable=False)

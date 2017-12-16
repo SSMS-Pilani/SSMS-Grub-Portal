@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus,Grub_Invalid_Students,Batch,Meal,Items,Feedback
+from ssms.models import Grub,Grub_Coord,Grub_Student,Veg,NonVeg,Both,Student,DateMailStatus,Grub_Member,Grub_Invalid_Students,Batch,Meal,Items,Feedback
 from ssms.forms import GrubForm,Grub_CoordUserForm,Grub_CoordUserProfileForm,GrubEditDeadlineForm,ExcelUpload,VegForm,NonVegForm,BothForm,CoordStudentRegForm, GrubFormEdit , UploadFileForm,FeedbackForm
 from django.conf import settings
 #addddddd
@@ -21,6 +21,7 @@ import openpyxl
 from django.contrib.auth.models import User
 import os
 import math
+import traceback
 ####
 #from django_cron import CronJobBase, Schedule
 
@@ -992,10 +993,14 @@ def coord_upload(request,gmid):
 										return HttpResponseRedirect("/ssms/invalid_ids/"+gmid)
 									else :
 										return HttpResponseRedirect("/ssms/stats/"+gmid)
+								else :
+									invalid="No file uploaded."
+									return render(request, 'ssms/coord_upload.html', {'form': form,'grub':grub,"e":e,"invalid":invalid})
 							else:
 								print form.errors
-						else :
-					
+								invalid="Invalid File type."
+								return render(request, 'ssms/coord_upload.html', {'form': form,'grub':grub,"e":e,"invalid":invalid})
+						else :			
 							invalid="Unsupported File type."
 							return render(request, 'ssms/coord_upload.html', {'form': form,'grub':grub,"e":e,"invalid":invalid})
 		
@@ -1011,8 +1016,84 @@ def coord_upload(request,gmid):
 		except Grub.DoesNotExist:
 			pass
 			return HttpResponseRedirect("/ssms")
+		except Exception as e1:
+			invalid="The following error occured : \n" + str(e1)
+			return render(request, 'ssms/coord_upload.html', {'form': form,'grub':grub,"e":e,"invalid":invalid})
 	else :
 			return HttpResponseRedirect('/ssms/coord/login/')
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def coord_mem_upload(request,gmid):  # rename it to ssms_mem_upload coz admin uploads it for now
+	if request.user.is_superuser:
+		try :
+			grub =Grub.objects.get(gm_id=gmid)
+			form = ExcelUpload(instance=grub)
+			e=datechecker(gmid)
+			coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
+			if request.user.is_superuser:  #upload by admin only
+				if (e==4):				#after the grub gets over
+					if request.method == 'POST' and request.FILES:
+						b=request.FILES['excel']
+						filename=str(b.name)
+						if filename.endswith('.xls') or filename.endswith('.xlsx') or filename.endswith('.csv'):
+							a = Grub.objects.get(gm_id=gmid)
+							d = Grub.objects.filter(gm_id=gmid)[0]
+							form = ExcelUpload(request.POST,request.FILES,instance=grub)
+							if form.is_valid():
+								photo=form.save(commit=False)
+								if 'excel' in request.FILES :
+									def choice_func(row):
+										a=row[0].upper()[:12]		#Change to 13 if "P" is too be included		
+										try :
+											print(a)
+											print(grub)
+											stu = Grub_Student.objects.get(student_id=str(a),gm_id = gmid)
+											print(stu)
+											print(a)
+											stu.status = "Member"
+											stu.save()
+											print(stu)
+											row.append(d)
+											return row
+										except Exception as e:
+											print(e)
+											row.append(d)
+											return row
+									files=request.FILES['excel']
+									files.save_to_database(
+									model=Grub_Member,
+									initializer=choice_func,
+									mapdict=[ 'student_id','meal','gm_id']
+										)
+									photo.excel = files
+									photo.save()
+								else :
+									invalid="No file uploaded."
+									return render(request, 'ssms/coord_mem_upload.html', {'form': form,'grub':grub,"e":e,"invalid":invalid})
+							else:
+								print form.errors
+								invalid="Invalid File type."
+								return render(request, 'ssms/coord_mem_upload.html', {'form': form,'grub':grub,"e":e,"invalid":invalid})
+						else :			
+							invalid="Unsupported File type."
+							return render(request, 'ssms/coord_mem_upload.html', {'form': form,'grub':grub,"e":e,"invalid":invalid})
+		
+					else:
+						form = ExcelUpload(instance=grub)
+					return render(request, 'ssms/coord_mem_upload.html', {'form': form,'grub':grub,"e":e})
+				else:
+					return render(request, 'ssms/coord_mem_upload.html', {"e":e,'grub':grub})
+			else:
+				return HttpResponseRedirect("/ssms")
+		except Grub.DoesNotExist:
+			pass
+			return HttpResponseRedirect("/ssms")
+		except Exception as e1:
+			invalid="The following error occured : \n" + str(e1)
+			return render(request, 'ssms/coord_mem_upload.html', {'form': form,'grub':grub,"e":e,"invalid":invalid})
+	else :
+			return HttpResponseRedirect('/ssms/ssms/login/')
 
 
 def coord_invalid_ids(request,gmid):
@@ -1264,7 +1345,7 @@ def student_grub_register2(request, gmid):           #register for veg
 					b.status="Signed Up"
 					b.save()
 				except Grub_Student.DoesNotExist:
-					Grub_Student.objects.create(gm_id=a,user_id=str(request.user),student_id=str(d.bits_id)+"P",meal="Veg",status="Signed Up",room=d.room_no,bhawan=d.bhawan,name=d.name)
+					Grub_Student.objects.create(gm_id=a,user_id=str(request.user),student_id=str(d.bits_id),meal="Veg",status="Signed Up",room=d.room_no,bhawan=d.bhawan,name=d.name)  #if +"P" here in str(d.bits_id)+"P" change the whole thing accordingly
 				return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
 			else :
 				return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
@@ -1288,7 +1369,7 @@ def student_grub_register3(request, gmid):                 #register for non veg
 					b.status="Signed Up"
 					b.save()
 				except Grub_Student.DoesNotExist:
-					Grub_Student.objects.create(gm_id=a,user_id=str(request.user),student_id=str(d.bits_id)+"P",meal="Non Veg",status="Signed Up", room=d.room_no ,bhawan=d.bhawan,name=d.name)
+					Grub_Student.objects.create(gm_id=a,user_id=str(request.user),student_id=str(d.bits_id),meal="Non Veg",status="Signed Up", room=d.room_no ,bhawan=d.bhawan,name=d.name)  #if +"P" here in str(d.bits_id)+"P" change the whole thing accordingly
 	
 				return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
 			else :

@@ -56,6 +56,7 @@ class CoordStudentRegForm(forms.ModelForm):
 	class Meta:
 	        model = Grub_Student
 		fields = ('student_id',)
+
 class ExcelUpload(forms.ModelForm):
 	"""def clean(self):	
 		files = self.cleaned_data['excel']
