@@ -12,7 +12,7 @@
 			<small><strong>Veg + Non Veg</strong></small>
 			{% else %}
                         <small><strong>{{ grub.meal }}</strong></small>
-			{% endifequal %}
+			{% endifequal %} <!--end i 2-->
                     </h2>
                     <h1 class="brand-name text-center">{{ grub.name }}</h1>
                     <hr class="tagline-divider">
@@ -24,11 +24,11 @@
   {% ifequal i 0 %}
 <h4 class="text-center">Veg Menu</h4>
 <img class="img-responsive img-full" src="{{ meal.v_images.url }} " alt="">
-{% endifequal %}
+{% endifequal %}<!--end i 0-->
 	{% ifequal i 1 %}
 <h4 class="text-center">Non Veg Menu</h4>
 		<img class="img-responsive img-full" src="{{meal.n_images.url }} "  />
-{% endifequal %}
+{% endifequal %}<!--end i 1-->
 	{% ifequal i 2 %}
 		<div class="text-center">
 		<h4 class="text-center">Veg Menu</h4>
@@ -37,7 +37,7 @@
 		<h4 class="text-center">Non Veg Menu</h4>
 		<img class="img-responsive img-full" src="{{meal.non_veg_images.url }} "  />
 		</div>
-{% endifequal %}
+{% endifequal %}<!--end i 2-->
 	<h3>Cancellations starts on {{ grub.deadline2 }}<h3>
 	<h3 >Cancellations Deadline: {{grub.deadline}}</h3>
 	<h3  class="text-right"  >Status: {{grub.status}}</h3>
@@ -47,25 +47,25 @@
 	{% ifequal i 0 %}
 		<h3>veg price: {{meal.v_price}}</h3>
 		<h3>veg venue: {{meal.v_venue}}</h3>
-	{% endifequal %}
+	{% endifequal %}<!--end i 0-->
 	{% ifequal i 1 %}
 		
 		<h3>Non veg price: {{meal.n_price}}</h3>
 		<h3>Non veg venue: {{meal.n_venue}}</h3>
-	{% endifequal %}
+	{% endifequal %}<!--end i 1-->
 	{% ifequal i 2 %}
 		
 	<h3>veg price: {{meal.veg_price}}</h3>
 	<h3>non-veg price: {{meal.non_veg_price}}</h3>
 	<h3>veg venue: {{meal.veg_venue}}</h3>
 	<h3>non-veg venue: {{meal.non_veg_venue}}</h3>
-	{% endifequal %}
+	{% endifequal %}<!--end i 2-->
 	
 	{% ifequal e 4 %}
 	<h1>Grub is over</h1>
 	<h3 class="col-md-3"><a href="/ssms/stats/{{grub.gm_id}}/"><button type="button" class="btn btn-lg btn-info"><strong>View Stats</strong></button></a></h3>
 	
-	{% else %}
+	{% else %}<!--else e 4-->
 	{% ifequal grub.status "Active" %}
 	<h3 class="col-md-3"><a href="/ssms/stats/{{grub.gm_id}}/"><button type="button" class="btn btn-lg btn-info"><strong>View Stats</strong></button></a></h3>
 	<h3 class="text-right"><a href="/ssms/ssms/grub/{{grub.gm_id}}/sendmail/"><button type="button" class="btn btn-lg btn-warning" >Send Mail</button></a></h3>
@@ -74,21 +74,22 @@
 	{% else %}
 	<h3 class="text-right"><a href="/ssms/ssms/grub/{{grub.gm_id}}/active/"><button type="button" class="btn btn-lg btn-success" onClick="return confirm('Are you sure you want to Activate the grub {{ grub.name }}?');">Activate</button></a></h3>
 	
-	{% endifequal %}
+	{% endifequal %}<!--end grub.status "Active-->
 	<h3 class="text-right"><a href="/ssms/ssms/grub/{{grub.gm_id}}/batchallocation"><button type="button" class="btn btn-lg btn-success"><strong>Allocate Batches</strong></button></a></h3>
 	
 	<h3 class="text-right"><a href="/ssms/coord/register-students/{{grub.gm_id}}/"><button type="button" class="btn btn-lg btn-info"><strong>Register Students</strong></button></a></h3>
 	<h3 ><a href="/ssms/ssms/cancel-students/{{grub.gm_id}}/"><button type="button" class="btn btn-lg btn-danger"><strong>Cancel Students</strong></button></a></h3>
-	{% endifequal %}
+	{% endifequal %}<!--end e 4-->
 	<h3 class="col-md-3"><button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#search{{ grub.gm_id }}"><strong>Download List</strong></button></h3>
 	<h3 class="text-right"><a href="/ssms/ssms/grub/{{grub.gm_id}}/editdeadline"><button type="button" class="btn btn-lg btn-info"><strong>Edit Deadline</strong></button></a></h3>
 	{% ifequal grub.spot_signing "Yes" %}
 	<h3 class="col-md-3"><a href="/ssms/ssms/grub/{{grub.gm_id}}/spot_signing/"><button type="button" class="btn btn-lg btn-danger"><strong>Close Spot Signing </strong></button></a></h3>
 	{% else %}
 	<h3 class="col-md-3"><a href="/ssms/ssms/grub/{{grub.gm_id}}/spot_signing/"><button type="button" class="btn btn-lg btn-success"><strong>Open Spot Signing </strong></button></a></h3>
-	{% endifequal %}
+	{% endifequal %}<!--end grub.spot_signing "Yes"-->
 	
-
+	<h3><a href="/ssms/coord/memupload/{{grub.gm_id}}/"><button class="btn btn-lg btn-info" >Upload member</button></a></h3>
+	<a href="/ssms/coord/upload/{{ grub.gm_id }}/" class="col-lg-3"><button type="submit" class="btn btn-lg btn-primary " name="excel" value="Add excel">Upload Excel</button></a>
 
 <div id="search{{ grub.gm_id }}" class="modal fade" role="dialog">
 <div class="modal-dialog ">
@@ -137,7 +138,7 @@ Bhawan:
 <input type="submit" class="btn btn-lg btn-success btn-block "  value="Submit"  onClick="return confirm('This list is temporary. It is bound to change.');">
 {% else %}
 <input type="submit" class="btn btn-lg btn-success btn-block "  value="Submit" >
-{% endif %}
+{% endif %}<!--end grub.date|timesince <= "1 day"-->
 </form>
       </div>
       
@@ -152,7 +153,7 @@ Bhawan:
 
 
 
-    {% endif %}
+    {% endif %}<!--end grub-->
 
 
 {% else %}

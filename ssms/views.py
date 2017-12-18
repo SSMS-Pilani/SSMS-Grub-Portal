@@ -905,13 +905,13 @@ def coord_grub_register(request):
 #invalidids = False
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def coord_upload(request,gmid):
-	if request.user.is_staff and not request.user.is_superuser:
+	if request.user.is_staff or request.user.is_superuser:   #enabling admin access to coord upload
 		try :
 			grub =Grub.objects.get(gm_id=gmid)
 			form = ExcelUpload(instance=grub)
 			e=datechecker(gmid)
 			coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
-			if request.user == coord.user:
+			if (request.user == coord.user) or request.user.is_superuser:		#enabling admin access to coord upload
 				if (e==2 or (e==4 and grub.spot_signing=="Yes")):
 					if request.method == 'POST' and request.FILES:
 						Grub_Invalid_Students.objects.all
@@ -1046,20 +1046,34 @@ def coord_mem_upload(request,gmid):  # rename it to ssms_mem_upload coz admin up
 									def choice_func(row):
 										a=row[0].upper()[:12]		#Change to 13 if "P" is too be included		
 										try :
-											print(a)
-											print(grub)
+											# print(a)
+											# print(grub)
 											stu = Grub_Student.objects.get(student_id=str(a),gm_id = gmid)
-											print(stu)
-											print(a)
+											# print(stu)
+											# print(a)
 											stu.status = "Member"
 											stu.save()
-											print(stu)
+											# print(stu)
 											row.append(d)
 											return row
 										except Exception as e:
-											print(e)
-											row.append(d)
-											return row
+											# print(e)
+											try :
+												# print(a)
+												# print(grub)
+												stu = Grub_Student.objects.get(student_id=str(a)+"P",gm_id = gmid)
+												# print(stu)
+												# print(a)
+												stu.status = "Member"
+												stu.save()
+												# print(stu)
+												row.append(d)
+												return row
+											except Exception as e:
+												# print(e) 
+												return row
+												row.append(d)
+												return row
 									files=request.FILES['excel']
 									files.save_to_database(
 									model=Grub_Member,

@@ -30,6 +30,7 @@
         </form>
 	<br/>
 	<h5>Last date for uploading excel is before {{ grub.deadline2 }}</h5>
+	<h5>If the file is not in the required format will get an error.</h5>
 	{% elif e == 4 %}
 		{% ifequal grub.spot_signing "Yes" %}
 			<h3 class="text-center text-danger">Grub is over. You can now upload Spot Signing list .</h1>
