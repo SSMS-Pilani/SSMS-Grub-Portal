@@ -1,5 +1,5 @@
 from django.contrib import admin
-from ssms.models import Grub,Grub_Coord,Grub_Student,Grub_Member,Veg,NonVeg,Both,Student,DateMailStatus,Batch,Feedback, Meal, Items,Grub_Invalid_Students
+from ssms.models import Grub,Grub_Coord,Grub_Student,Grub_Member,Veg,NonVeg,Both,Student,DateMailStatus,Batch,Feedback, Meal,Grub_Invalid_Students
 admin.site.register(Veg)
 admin.site.register(NonVeg)
 admin.site.register(Both)
@@ -21,7 +21,6 @@ admin.site.register(Feedback)
 class MealAdmin(admin.ModelAdmin):
     search_fields = ('meal_type','date','day')
 admin.site.register(Meal,MealAdmin)
-admin.site.register(Items)
 class Grub_Invalid_StudentsAdmin(admin.ModelAdmin):
     search_fields = ('student_id',)
 admin.site.register(Grub_Invalid_Students,Grub_Invalid_StudentsAdmin)

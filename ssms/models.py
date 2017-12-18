@@ -164,18 +164,16 @@ class Feedback(models.Model):
 
 
 class Meal(models.Model):
-	#meal_choices = (('grub','GRUB'),('lunch', 'LUNCH') , ('dinner','DINNER'), ('breakfast','BREAKFAST'))
+	#meal_choices = (('grub','GRUB-LUNCH'),('lunch', 'LUNCH') , ('dinner','DINNER'), ('breakfast','BREAKFAST'))
 	date = models.DateField(null=False, blank=False)
-	meal_type = models.CharField(max_length=60)
-	day = models.CharField(max_length=20, null=True)
+	day = models.CharField(max_length=20,null=False)
+	breakfast = models.CharField(max_length=512,blank=False)
+	lunch = models.CharField(max_length=512,blank=False)
+	dinner = models.CharField(max_length=512,blank=False)
+	lunchgrub = models.CharField(max_length=5,blank=True,default="0")   #1 if grub
+	dinnergrub = models.CharField(max_length=5,blank=True,default="0")  #1 if grub
 	def __unicode__(self):
 		return str(self.date)
-
-class Items(models.Model):
-	item = models.CharField(null=False, blank=False, max_length=60)
-	meal = models.ForeignKey('Meal')
-	def __unicode__(self):
-		return str(self.meal.date)
 
 class Grub_Invalid_Students(models.Model):
 	mtype=(('Veg','Veg'),('Non Veg','Non Veg'))

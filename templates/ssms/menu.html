@@ -1,46 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-{% load static %}
-<head>
-    <meta charset="UTF-8">
-    <title>SSMS-BITS Pilani</title>
-    <style>
-        ul{
-        list-style-type: none;
-        }
-        body{
-        background-size: 1800px 900px;
-        background-repeat: no-repeat;
-        }
-    </style>
-</head>
-<body  style="text-align:center" background="{%static 'img/food.jpg'%} ">
-<!-- if user is a superuser / authorized then file upload prompt is shown, for all other registered users
-simply display today's menu -->
-{% if message %}
-{{message}}
+{% extends 'ssms/base.html' %}
+
+{% load staticfiles %}
+
+
+
+{% block block1 %}
+<div class="row"><div><h1 class="text-center">Today's Menu ({{day}})</h1></div>
+{% if error %}
+{{error}}
+{% else %}
+<table class="table table-bordered">
+
+    <tr>
+            <th>BREAKFAST</th>
+            {% ifequal lunchgrub "1" %}<th style="background-color:red">GRUB</th>{% else %}<th>LUNCH</th>{% endifequal %}
+            {% ifequal dinnergrub "1" %}<th style="background-color:red">GRUB</th>{% else %}<th>DINNER</th>{% endifequal %}
+    </tr>
+</thead>
+<tbody>
+    <tr>
+        <td>
+        <table class="table table-bordered table-hover table-striped" >
+        <tbody>
+            {% for i in breakfast %}
+            <tr><td>{{i}}</td></tr>
+            {% endfor %}
+        </tbody>
+        </table>
+        </td>
+
+        <td>
+        <table class="table table-bordered table-hover table-striped">
+        <tbody>
+            {% for i in lunch %}
+           <tr><td>{{i}}</td></tr>
+             {% endfor %}
+        </tbody>
+        </table>
+        </td>
+
+        <td>
+        <table class="table table-bordered table-hover table-striped">
+        <tbody>
+            {% for i in dinner %}
+            <tr><td>{{i}}</td></tr>
+             {% endfor %}
+        </tbody>
+        </table>
+        </td>
+
+</tbody>
+</table>
+
 {% endif %}
-<h1>Today's Menu</h1>
-<h2>{{date}}</h2>
-<h2>{{day}}</h2>
-<h3>{{types.0.meal_type}}</h3>
-<ul>
-    {% for i in items.0 %}
-    <li>{{i.item}}</li>
-    {% endfor %}
-</ul>
-<h3>{{types.1.meal_type}}</h3>
-<ul>
-    {% for i in items.1 %}
-    <li>{{i.item}}</li>
-    {% endfor %}
-</ul>
-<h3>{{types.2.meal_type}}</h3>
-<ul>
-    {% for i in items.2 %}
-    <li>{{i.item}}</li>
-    {% endfor %}
-</ul>
-</body>
-</html>
+{% endblock %}
 
