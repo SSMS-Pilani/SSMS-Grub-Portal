@@ -1,5 +1,5 @@
 Django==1.9.2
-gunicorn==19.4.5
+gunicorn==19.5.0
 psycopg2==2.6.1
 django-excel==0.0.4
 pyexcel-xls
