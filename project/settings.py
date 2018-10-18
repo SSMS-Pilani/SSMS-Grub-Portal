@@ -15,7 +15,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
-STATIC_PATH = os.path.join(BASE_DIR,'static')
+STATIC_PATH = os.path.join(BASE_DIR, 'static')
 
 
 # Quick-start development settings - unsuitable for production
@@ -38,9 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'ssms',
-	'social.apps.django_app.default',
-	'storages',
+    'ssms',
+    'social.apps.django_app.default',
+    'storages',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -52,8 +52,8 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	'django.middleware.locale.LocaleMiddleware',
-	'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -61,7 +61,7 @@ ROOT_URLCONF = 'project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATE_DIR,],
+        'DIRS': [TEMPLATE_DIR, ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,18 +79,13 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-#Change it accordingly to aws/heroku fields
+# Change it accordingly to aws/heroku fields
 DATABASES = {
     'default': {
-	'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': '',
-	'USER' : '',
-	'PASSWORD' : '',
-	'HOST' : '',
-	'PORT' : '',
-	
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-	
+
 }
 """
         """
@@ -135,8 +130,8 @@ STATIC_URL = '/static/'
 
 
 STATICFILES_DIRS = (
- 
-	STATIC_PATH,
+
+    STATIC_PATH,
 )
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -144,26 +139,23 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 #MEDIA_URL = '/media/'
-
-
 
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 LOGIN_URL = '/ssms/'
 
-SESSION_COOKIE_NAME="SSMS"
-SESSION_EXPIRE_AT_BROWSER_CLOSE=True
-SESSION_COOKIE_AGE= 3600
+SESSION_COOKIE_NAME = "SSMS"
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 3600
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY= ''
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
 SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = ['']
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
-SOCIAL_AUTH_LOGIN_ERROR_URL="/ssms/"
-
+SOCIAL_AUTH_LOGIN_ERROR_URL = "/ssms/"
 
 
 AUTHENTICATION_BACKENDS = (
@@ -218,12 +210,12 @@ FILE_UPLOAD_HANDLERS = ("django_excel.ExcelMemoryFileUploadHandler",
                         "django_excel.TemporaryExcelFileUploadHandler")
 
 
-#For Email
+# For Email
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-#Enter credentials for seding emails
+# Enter credentials for seding emails
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_HOST_USER = ''
@@ -234,7 +226,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 # aws
-#For AWS storage of media
+# For AWS storage of media
 AWS_STORAGE_BUCKET_NAME = ''
 AWS_ACCESS_KEY_ID = ''
 AWS_SECRET_ACCESS_KEY = ''
@@ -250,7 +242,6 @@ AWS_DEFAULT_ACL = ''
 # Tell the staticfiles app to use S3Boto storage when writing the collected static files (when
 # you run `collectstatic`).
 #STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-
 
 
 MEDIA_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN

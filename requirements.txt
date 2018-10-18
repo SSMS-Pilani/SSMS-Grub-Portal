@@ -1,6 +1,7 @@
 Django==1.9.2
 gunicorn==19.5.0
 psycopg2==2.7.5
+psycopg2-binary==2.7.5
 django-excel==0.0.4
 pyexcel-xls
 pyexcel-xlsx
@@ -10,4 +11,5 @@ pillow
 xlsxwriter
 boto
 django-storages==1.6
-openpyxl==2.4.1
+openpyxl==2.5.8
+social-auth-app-django==2.1.0
