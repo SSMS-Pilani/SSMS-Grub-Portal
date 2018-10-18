@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'ssms',
     'social.apps.django_app.default',
     'storages',
+    'social_django'
 ]
 
 MIDDLEWARE_CLASSES = [
