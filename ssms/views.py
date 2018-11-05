@@ -45,30 +45,23 @@ def contact(request):
     return render(request, 'ssms/contact.html')
 
 
-def send(request):
+def send(request):  # cancellation mail
     if request.user.is_superuser:
         grub = Grub.objects.filter(status="Active", mails="Not Sent")
         current_date = date.today()
         diff = timedelta(days=1)
         final = current_date + diff
-        b = []
+        sent_to_students = []
         for i in grub:
-
             diff = datetime.strptime(str(i.date), '%Y-%m-%d')
             e = date.strftime(diff, "%d %B %Y")
             v = datetime.strptime(str(i.deadline), '%Y-%m-%d')
             h = date.strftime(v, "%d %B %Y")
             if current_date == i.deadline2 or final == i.deadline2:
-                abcd = Grub_Student.objects.filter(gm_id=i.gm_id, status="Signed Up")
-                k = len(abcd) // 99
-                for q in range(k + 1):
-                    student_id_list = []
-                    students = abcd[q * 99:(q + 1) * 99]
-                    for j in students:
-                        student_id_list.append(str(j.user_id) + "@pilani.bits-pilani.ac.in")
-                        j.mail = "Sent"
-                        j.save()
-                    print(student_id_list)
+                all_students = Grub_Student.objects.filter(gm_id=i.gm_id, status="Signed Up")
+                for q in range(len(all_students) // 99 + 1):  # send mails in batches of 100
+                    students = all_students[q * 99:(q + 1) * 99]
+                    student_id_list = map(lambda x: str(x.user_id) + "@pilani.bits-pilani.ac.in", students)
                     subject, from_email = str(i.name), 'ssms.pilani@gmail.com'
                     text_content = 'This is an important message.'
                     html_content = "<body><p>This is to inform you that you have been signed up for the <strong> " \
@@ -85,14 +78,14 @@ def send(request):
                     )
                     msg.attach_alternative(html_content, "text/html")
                     msg.send(fail_silently=False)
-                    b.append("Sent mail for " + str(i.name) + " to " + str(len(student_id_list)) + str(student_id_list))
+                    sent_to_students.append("Sent mail for " + str(i.name) + " to " + str(len(student_id_list)) + str(student_id_list))
                     for j in students:
                         j.mail = "Sent"
                         j.save()
                 i.mails = "Sent"
                 i.save()
 
-        return HttpResponse("Sent python mail" + str(b))
+        return HttpResponse("Sent python mail" + str(sent_to_students))
     else:
         return HttpResponseRedirect("/ssms")
 
@@ -504,7 +497,7 @@ def index(request):
         return render(request, 'ssms/index.html', context_dict)
 
 
-def ssms_login(request):
+def ssms_login(request):  # admin login
     context_dict = {}
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -563,25 +556,25 @@ def ssms_register(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-def ssms_grubinfo(request, gmid):
+def ssms_grubinfo(request, gmid):  # grub info accessible to admin
     if request.user.is_superuser:
-        e = datechecker(gmid)
+        date_diff = datechecker(gmid)
         context_dict = {}
         try:
             grub = Grub.objects.get(gm_id=gmid)
-            if (grub.meal == 'Veg'):
-                b = Veg.objects.get(gm_id=gmid)
-                i = 0
-            elif (grub.meal == 'Non Veg'):
-                b = NonVeg.objects.get(gm_id=gmid)
-                i = 1
-            elif (grub.meal == 'Both'):
-                b = Both.objects.get(gm_id=gmid)
-                i = 2
+            if grub.meal == 'Veg':
+                grub_meal = Veg.objects.get(gm_id=gmid)
+                grub_type = 0
+            elif grub.meal == 'Non Veg':
+                grub_meal = NonVeg.objects.get(gm_id=gmid)
+                grub_type = 1
+            elif grub.meal == 'Both':
+                grub_meal = Both.objects.get(gm_id=gmid)
+                grub_type = 2
             context_dict['grub'] = grub
-            context_dict['meal'] = b
-            context_dict['i'] = i
-            context_dict['e'] = e
+            context_dict['meal'] = grub_meal
+            context_dict['grub_type'] = grub_type
+            context_dict['date_diff'] = date_diff
         except Grub.DoesNotExist:
             pass
         return render(request, 'ssms/ssms_grubinfo.html', context_dict)
@@ -589,7 +582,7 @@ def ssms_grubinfo(request, gmid):
         return HttpResponseRedirect('/ssms/ssms/login/')
 
 
-def ssms_grubeditdeadline(request, gmid):
+def ssms_grubeditdeadline(request, gmid):  # allows admin to edit deadline of grub
     if request.user.is_superuser:
         if request.method == 'POST':
             grub = Grub.objects.get(gm_id=gmid)
@@ -693,10 +686,10 @@ def ssms_coord_inactive(request, cgid):
         return HttpResponseRedirect('/ssms/ssms/login/')
 
 
-def ssms_grub_spot_signing(request, gmid):
+def ssms_grub_spot_signing(request, gmid):  # toggle grub spot signing setting
     if request.user.is_superuser:
         grub = Grub.objects.get(gm_id=gmid)
-        if (grub.spot_signing == "Yes"):
+        if grub.spot_signing == "Yes":
             grub.spot_signing = "No"
         else:
             grub.spot_signing = "Yes"
@@ -747,24 +740,27 @@ def export_data(request, gmid):
     if request.user.is_staff:
         if request.method == "POST":
             try:
-                grub = Grub.objects.get(gm_id=gmid)
-                bh = request.POST.get('bhawan')
-                if bh == "All":
-                    c = Grub_Student.objects.filter(gm_id=gmid, status="Signed Up")
+                bhawan = request.POST.get('bhawan')
+                if bhawan == "All":
+                    grub_students = Grub_Student.objects.filter(gm_id=gmid, status="Signed Up")
                 else:
-                    c = Grub_Student.objects.filter(gm_id=gmid, status="Signed Up", bhawan=bh)
-                a = Grub.objects.get(gm_id=gmid)
+                    grub_students = Grub_Student.objects.filter(gm_id=gmid, status="Signed Up", bhawan=bhawan)
 
-                b = []
-                for stu in c:
-                    if (stu.batch):
-                        b.append([stu.user_id, stu.name, stu.student_id, stu.meal,
-                                  stu.bhawan, stu.room, stu.batch.batch_name])
-                    else:
-                        b.append([stu.user_id, stu.name, stu.student_id,
-                                  stu.meal, stu.bhawan, stu.room, ""])
-                print(b)
-                workbook = xlsxwriter.Workbook('media/' + a.name + '_' + bh + '_grublist.xlsx')
+                grub = Grub.objects.get(gm_id=gmid)
+                data = [
+                    [
+                        student.user_id,
+                        student.name,
+                        student.student_id,
+                        student.meal,
+                        student.bhawan,
+                        student.room,
+                        student.batch.batch_name if student.batch else ""
+                    ]
+                    for student in grub_students
+                ]
+
+                workbook = xlsxwriter.Workbook('media/' + grub.name + '_' + bhawan + '_grublist.xlsx')
                 worksheet = workbook.add_worksheet()
                 worksheet.set_column('A:A', 15)
                 worksheet.set_column('B:B', 25)
@@ -783,7 +779,7 @@ def export_data(request, gmid):
                 worksheet.write('G1', 'Batch', bold)
                 row = 1
                 col = 0
-                for i in b:
+                for i in data:
                     worksheet.write_string(row, col, i[0])
                     worksheet.write_string(row, col + 1, i[1])
                     worksheet.write_string(row, col + 2, i[2])
@@ -793,7 +789,7 @@ def export_data(request, gmid):
                     worksheet.write_string(row, col + 6, i[6])
                     row += 1
                 workbook.close()
-                return HttpResponseRedirect('media/' + a.name + '_' + bh + '_grublist.xlsx')
+                return HttpResponseRedirect('media/' + grub.name + '_' + bhawan + '_grublist.xlsx')
             except Grub.DoesNotExist:
                 pass
                 return HttpResponseRedirect("/ssms")
