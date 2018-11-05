@@ -606,7 +606,23 @@ def ssms_grub_list(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def ssms_student_table(request, gmid):
-    if request.user.is_superuser:
+    try:
+        grub = Grub.objects.get(gm_id=gmid)
+
+        if request.user.is_staff:
+            coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
+            if request.user == coord.user:
+                return HttpResponseRedirect("/ssms")
+
+        elif request.user.is_superuser:
+            pass
+
+        else:
+            return HttpResponseRedirect("/ssms")
+        # in case a grub has both meals available -- only then will the number of veg
+        # and non veg students be displayed
+        # in case the grub has veg or non-veg status then only the registered number
+        # of students is displayed
         grub = Grub.objects.get(gm_id=gmid)
         stud = Grub_Student.objects.filter(gm_id=gmid)
         registered = len(stud.filter(status="Signed Up"))
@@ -618,29 +634,9 @@ def ssms_student_table(request, gmid):
         context_dict = {"stud": stud, "reg": registered, "out": out,
                         "gmid": gmid, "grub": grub, 'vegreg': vegreg, 'nonvegreg': nonvegreg}
         return render(request, 'ssms/dynamic_table.html', context_dict)
-    elif request.user.is_staff:
-        try:
-            grub = Grub.objects.get(gm_id=gmid)
-            coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
-            if request.user == coord.user:
-                grub = Grub.objects.get(gm_id=gmid)
-                stud = Grub_Student.objects.filter(gm_id=gmid)
-                registered = len(stud.filter(status="Signed Up"))
-                out = len(stud.filter(status="Opted Out"))
-                vegreg = nonvegreg = ""
-                if grub.meal == "Both":
-                    vegreg = len(stud.filter(status="Signed Up", meal="Veg"))
-                    nonvegreg = len(stud.filter(status="Signed Up", meal="Non Veg"))
-                context_dict = {"stud": stud, "reg": registered, "out": out,
-                                "gmid": gmid, "grub": grub, 'vegreg': vegreg, 'nonvegreg': nonvegreg}
-                return render(request, 'ssms/dynamic_table.html', context_dict)
-            else:
-                return HttpResponseRedirect("/ssms")
-        except Grub.DoesNotExist:
-            pass
-            return HttpResponseRedirect("/ssms")
-    else:
-        return HttpResponseRedirect('/ssms/ssms/login/')
+    except Grub.DoesNotExist:
+        pass
+    return HttpResponseRedirect("/ssms")
 
 
 def ssms_coord_active(request, cgid):
