@@ -1,43 +1,36 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.contrib.auth import authenticate, login
-from django.http import HttpResponseRedirect, HttpResponse
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
-from ssms.models import Grub, Grub_Coord, Grub_Student, Veg, NonVeg, Both, Student, DateMailStatus, Grub_Member, Grub_Invalid_Students, Batch, Meal, Feedback
-from ssms.forms import GrubForm, Grub_CoordUserForm, Grub_CoordUserProfileForm, GrubEditDeadlineForm, ExcelUpload, VegForm, NonVegForm, BothForm, CoordStudentRegForm, GrubFormEdit, UploadFileForm, FeedbackForm
-from django.conf import settings
-# addddddd
-from django import forms
-from django.shortcuts import render_to_response
-from django.http import HttpResponseBadRequest, JsonResponse, HttpResponse
-from django.template import RequestContext
-import django_excel as excel
-from datetime import datetime, date, timedelta
-from django.core.mail import send_mail, send_mass_mail
-from django.views.decorators.cache import cache_control
-import xlsxwriter
-import openpyxl
-from django.contrib.auth.models import User
-import os
 import math
-import traceback
-####
-#from django_cron import CronJobBase, Schedule
+from datetime import datetime, date, timedelta
+
+import openpyxl
+import xlsxwriter
+from django.contrib.auth import authenticate, login
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+# To be triggered
+from django.core.mail import EmailMultiAlternatives
+from django.http import HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render
+from django.views.decorators.cache import cache_control
+
+from ssms.forms import GrubForm, Grub_CoordUserForm, Grub_CoordUserProfileForm, ExcelUpload, VegForm, NonVegForm, \
+    BothForm, CoordStudentRegForm, GrubFormEdit, UploadFileForm, FeedbackForm
+from ssms.models import Grub, Grub_Coord, Grub_Student, Veg, NonVeg, Both, Student, DateMailStatus, Grub_Member, \
+    Grub_Invalid_Students, Batch, Meal
 
 
 def datechecker(gmid):
     grub = Grub.objects.get(gm_id=gmid)
-    c = date.today()
-    d = 0
-    if (grub.deadline2 > c):     # coord reg open
-        return 2
-    elif (grub.deadline >= c and grub.deadline2 <= c):  # student register/cancel  open, coord reg closed
-        return 1
-    elif (grub.deadline < c and grub.date >= c):  # student reg/cancel closed
-        return 3
-    elif (grub.date < c):    # coord spot signing upload
-        return 4
+    current_date = date.today()
+    if grub.deadline2 > current_date:
+        return 2  # coord reg open
+    elif grub.deadline2 <= current_date <= grub.deadline:
+        return 1  # student register/cancel  open, coord reg closed
+    elif grub.deadline < current_date <= grub.date:
+        return 3  # student reg/cancel closed
+    elif grub.date < current_date:
+        return 4  # coord spot signing upload
 
 
 def home(request):
@@ -52,55 +45,54 @@ def contact(request):
     return render(request, 'ssms/contact.html')
 
 
-# To be triggered
-from django.core.mail import EmailMultiAlternatives
-
-
 def send(request):
     if request.user.is_superuser:
         grub = Grub.objects.filter(status="Active", mails="Not Sent")
-        c = date.today()
-        d = timedelta(days=1)
-        f = c+d
+        current_date = date.today()
+        diff = timedelta(days=1)
+        final = current_date + diff
         b = []
         for i in grub:
 
-            d = datetime.strptime(str(i.date), '%Y-%m-%d')
-            e = date.strftime(d, "%d %B %Y")
+            diff = datetime.strptime(str(i.date), '%Y-%m-%d')
+            e = date.strftime(diff, "%d %B %Y")
             v = datetime.strptime(str(i.deadline), '%Y-%m-%d')
             h = date.strftime(v, "%d %B %Y")
-            if (c == i.deadline2 or f == i.deadline2):
+            if current_date == i.deadline2 or final == i.deadline2:
                 abcd = Grub_Student.objects.filter(gm_id=i.gm_id, status="Signed Up")
-                # return HttpResponse(abcd)
-                k = len(abcd)//99
-                # return HttpResponse(i.name,k)
-                for q in range(k+1):
-                    a = []
-                    students = abcd[q*99:(q+1)*99]
+                k = len(abcd) // 99
+                for q in range(k + 1):
+                    student_id_list = []
+                    students = abcd[q * 99:(q + 1) * 99]
                     for j in students:
-                        a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+                        student_id_list.append(str(j.user_id) + "@pilani.bits-pilani.ac.in")
                         j.mail = "Sent"
                         j.save()
-                    print(a)
+                    print(student_id_list)
                     subject, from_email = str(i.name), 'ssms.pilani@gmail.com'
                     text_content = 'This is an important message.'
-                    html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(i.name) +\
-                        "</strong> that is to take place on <strong>" + e + "</strong> </p> <p>In case you wish to cancel your signing,\
-					please visit <a href=http://www.ssms-pilani.org/ssms/student/grub/"+str(i.gm_id)+"/ >SSMS Grub Portal</a>, \
-					before 12 midnight,<strong>" + h + "</strong>. Any requests made after the deadline will not be entertained. \
-					</p> <p><strong> If the above url doesn't work, please click \
-					<a href=https://ssmsbitspilani.herokuapp.com/ssms/student/grub/"+str(i.gm_id)+"/ >here</a>\
-					</strong></p> <p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
-                    msg = EmailMultiAlternatives(subject, text_content, from_email, cc=a, bcc=[
-                                                 "f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
+                    html_content = "<body><p>This is to inform you that you have been signed up for the <strong> " \
+                                   + str(i.name) + "</strong> that is to take place on <strong>" + e + "</strong> </p> <p>In case you wish to cancel your signing,\
+					please visit <a href=http://www.ssms-pilani.org/ssms/student/grub/" + str(i.gm_id) + "/ >SSMS Grub Portal</a>, \
+					before 12 midnight,<strong>" + h + "</strong>. Any requests made after the deadline will not be entertained. </p> <p><strong> If the above url doesn't work, please click \
+					<a href=https://ssmsbitspilani.herokuapp.com/ssms/student/grub/" + str(i.gm_id) + "/ >here</a> </strong></p> <p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
+                    msg = EmailMultiAlternatives(
+                        subject,
+                        text_content,
+                        from_email,
+                        cc=student_id_list,
+                        bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"]
+                    )
                     msg.attach_alternative(html_content, "text/html")
                     msg.send(fail_silently=False)
-                    b.append("Sent mail for " + str(i.name) + " to " + str(len(a)) + str(a))
+                    b.append("Sent mail for " + str(i.name) + " to " + str(len(student_id_list)) + str(student_id_list))
+                    for j in students:
+                        j.mail = "Sent"
+                        j.save()
                 i.mails = "Sent"
                 i.save()
 
         return HttpResponse("Sent python mail" + str(b))
-        # return HttpResponseRedirect("/ssms")
     else:
         return HttpResponseRedirect("/ssms")
 
@@ -110,7 +102,7 @@ def send2(request):
         grub = Grub.objects.filter(status="Active", mails="Sent")
         c = date.today()
         d = timedelta(days=1)
-        f = c+d
+        f = c + d
         b = []
         for i in grub:
             if (i.meal == "Veg"):
@@ -127,24 +119,25 @@ def send2(request):
             e = date.strftime(d, "%d %B %Y")
             if (c == i.date or f == i.date):
                 abcd = Grub_Student.objects.filter(gm_id=i.gm_id, status="Signed Up")
-                k = len(abcd)//99
+                k = len(abcd) // 99
                 # return HttpResponse(len(abcd))
                 # return HttpResponse(i.name,k)
-                for q in range(k+1):
+                for q in range(k + 1):
                     a = []
-                    students = abcd[q*99:(q+1)*99]
+                    students = abcd[q * 99:(q + 1) * 99]
                     for j in students:
-                        a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+                        a.append(str(j.user_id) + "@pilani.bits-pilani.ac.in")
                         j.mail = "Sent"
                         j.save()
                     print(a)
                     subject, from_email = str(i.name) + " (Reminder)", 'ssms.pilani@gmail.com'
                     text_content = 'This is an important message.'
                     html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> " + \
-                        str(i.name)+"</strong> which will take place on <strong>" + e + "</strong> at the <strong>"+meal + \
-                        "</strong> Mess. </p> <p>Wristbands for the same are available at your mess counter, and you are requested to collect the same if you haven't already.</p><strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong><p>Limited on spot signings will be available. Please carry your ID cards for the same. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
+                                   str(
+                                       i.name) + "</strong> which will take place on <strong>" + e + "</strong> at the <strong>" + meal + \
+                                   "</strong> Mess. </p> <p>Wristbands for the same are available at your mess counter, and you are requested to collect the same if you haven't already.</p><strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong><p>Limited on spot signings will be available. Please carry your ID cards for the same. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
                     msg = EmailMultiAlternatives(subject, text_content, from_email, cc=a, bcc=[
-                                                 "f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
+                        "f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
                     msg.attach_alternative(html_content, "text/html")
                     msg.send(fail_silently=False)
                     b.append("Sent mail for " + str(i.name) + " to " + str(len(a)) + str(a))
@@ -168,35 +161,37 @@ def ssms_grub_sendmail1(request, gmid):
         h = date.strftime(v, "%d %B %Y")
         count = 0
         abcd = Grub_Student.objects.filter(gm_id=grub.gm_id, status="Signed Up", mail="Not Sent")
-        k = len(abcd)//99
-        for q in range(k+1):
+        k = len(abcd) // 99
+        for q in range(k + 1):
             a = []
-            students = abcd[q*99:(q+1)*99]
+            students = abcd[q * 99:(q + 1) * 99]
             for j in students:
-                a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+                a.append(str(j.user_id) + "@pilani.bits-pilani.ac.in")
                 j.mail = "Sent"
                 j.save()
             subject, from_email = str(grub.name) + " | " + e, 'ssms.pilani@gmail.com'
             text_content = 'This is an important message.'
-            html_content = "<body><p>This is to inform you that you have been signed up for the <strong> "+str(grub.name)+"</strong> that is to take place on <strong>" + e + "</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/"+str(
-                grub.gm_id)+"/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h + "</strong>. Any requests made after the deadline will not be entertained. </p><p><strong> If the above url doesn't work, please click <a href=https://ssmsbitspilani.herokuapp.com/ssms/student/grub/"+str(grub.gm_id)+"/ >here</a></strong></p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
+            html_content = "<body><p>This is to inform you that you have been signed up for the <strong> " + str(
+                grub.name) + "</strong> that is to take place on <strong>" + e + "</strong> </p> <p>In case you wish to cancel your signing, please visit <a href=http://grub.ssms-pilani.org/ssms/student/grub/" + str(
+                grub.gm_id) + "/ >SSMS Grub Portal</a>, before 12 midnight,<strong>" + h + "</strong>. Any requests made after the deadline will not be entertained. </p><p><strong> If the above url doesn't work, please click <a href=https://ssmsbitspilani.herokuapp.com/ssms/student/grub/" + str(
+                grub.gm_id) + "/ >here</a></strong></p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
             msg = EmailMultiAlternatives(subject, text_content, from_email, cc=a, bcc=[
-                                         "f2015040@pilani.bits-pilani.ac.in"])
+                "f2015040@pilani.bits-pilani.ac.in"])
             msg.attach_alternative(html_content, "text/html")
             print(a)
             try:
                 msg.send(fail_silently=False)
                 count = count + len(a)
-                datemail.mails = datemail.mails+len(a)
+                datemail.mails = datemail.mails + len(a)
                 datemail.save()
             except Exception as e:
                 print(e)
                 for j in students:
                     j.mail = "Not Sent"
                     j.save()
-                left = len(abcd)-count
-                data = {'is_taken': "Only "+str(count)+" mails were sent succesfully. " +
-                        str(left) + " mails are left to be send. Error " + str(e)}
+                left = len(abcd) - count
+                data = {'is_taken': "Only " + str(count) + " mails were sent succesfully. " +
+                                    str(left) + " mails are left to be send. Error " + str(e)}
                 return JsonResponse(data)
         grub.mails = "Sent"
         grub.save()
@@ -221,43 +216,44 @@ def ssms_grub_sendmail3(grub, forloop, datemail, d, e, getspotsigning):
                 veg = Both.objects.get(gm_id=grub)
                 venue = veg.veg_venue
             abcd = Grub_Student.objects.filter(gm_id=grub.gm_id, status="Signed Up", meal="Veg")
-            k = len(abcd)//99
-            for q in range(k+1):
+            k = len(abcd) // 99
+            for q in range(k + 1):
                 a = []
-                students = abcd[q*99:(q+1)*99]
+                students = abcd[q * 99:(q + 1) * 99]
                 for j in students:
                     if (j.mail != "Sent2"):
-                        a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+                        a.append(str(j.user_id) + "@pilani.bits-pilani.ac.in")
                         j.mail = "Sent2"
                         j.save()
                 if (len(a) > 0):
                     subject, from_email = str(grub.name) + " | " + e + \
-                        " | Veg | " + venue, 'ssms.pilani@gmail.com'
+                                          " | Veg | " + venue, 'ssms.pilani@gmail.com'
                     text_content = 'This is an important message.'
-                    html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> " +\
-                        str(grub.name)+"</strong> that is going to take place on <strong>" + e + "</strong> at the " + venue + ".\
+                    html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> " + \
+                                   str(
+                                       grub.name) + "</strong> that is going to take place on <strong>" + e + "</strong> at the " + venue + ".\
 					You are required \
 					to collect your stubs from the PitStop counter in your mess during meal timings today.</p>\
 	<strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong>\
-					<p>"+getspotsigning+" </p><p>Thank you.</p>\
+					<p>" + getspotsigning + " </p><p>Thank you.</p>\
 					<p>Regards,</p>\
 					<p>Grub Committee, SSMS</p></body>"
-                    #print a
+                    # print a
                     msg = EmailMultiAlternatives(subject, text_content, from_email, cc=a, bcc=[
-                                                 "f2015040@pilani.bits-pilani.ac.in"])
+                        "f2015040@pilani.bits-pilani.ac.in"])
                     msg.attach_alternative(html_content, "text/html")
                     try:
                         msg.send(fail_silently=False)
                         count = count + len(a)
-                        datemail.mails = datemail.mails+len(a)
+                        datemail.mails = datemail.mails + len(a)
                         datemail.save()
                     except Exception as e:
                         for j in students:
                             j.mail = "Sent"
                             j.save()
-                        left = len(allstu)-count
-                        data = "Only "+str(count)+" -Veg- mails were sent succesfully. " + \
-                            str(left) + " mails are left to be send. Error " + str(e)
+                        left = len(allstu) - count
+                        data = "Only " + str(count) + " -Veg- mails were sent succesfully. " + \
+                               str(left) + " mails are left to be send. Error " + str(e)
                         return data
         if (forloop == 2 or forloop == 3):
             if (forloop == 1):
@@ -267,43 +263,44 @@ def ssms_grub_sendmail3(grub, forloop, datemail, d, e, getspotsigning):
                 veg = Both.objects.get(gm_id=grub)
                 venue = veg.non_veg_venue
             abcd = Grub_Student.objects.filter(gm_id=grub.gm_id, status="Signed Up", meal="Non Veg")
-            k = len(abcd)//99
-            for q in range(k+1):
+            k = len(abcd) // 99
+            for q in range(k + 1):
                 a = []
-                students = abcd[q*99:(q+1)*99]
+                students = abcd[q * 99:(q + 1) * 99]
                 for j in students:
                     if (j.mail != "Sent2"):
-                        a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+                        a.append(str(j.user_id) + "@pilani.bits-pilani.ac.in")
                         j.mail = "Sent2"
                         j.save()
                 if (len(a) > 0):
                     subject, from_email = str(grub.name) + " | " + e + \
-                        " | Non Veg | " + venue, 'ssms.pilani@gmail.com'
+                                          " | Non Veg | " + venue, 'ssms.pilani@gmail.com'
                     text_content = 'This is an important message.'
-                    html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> " +\
-                        str(grub.name)+"</strong> that is going to take place on <strong>" + e + "</strong> at the " + venue + ".\
+                    html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> " + \
+                                   str(
+                                       grub.name) + "</strong> that is going to take place on <strong>" + e + "</strong> at the " + venue + ".\
 					You are required \
 					to collect your stubs from the PitStop counter in your mess during meal timings today.</p>\
 	<strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong>\
-					<p>"+getspotsigning+" </p><p>Thank you.</p>\
+					<p>" + getspotsigning + " </p><p>Thank you.</p>\
 					<p>Regards,</p>\
 					<p>Grub Committee, SSMS</p></body>"
-                    #print a
+                    # print a
                     msg = EmailMultiAlternatives(subject, text_content, from_email, cc=a, bcc=[
-                                                 "f2015040@pilani.bits-pilani.ac.in"])
+                        "f2015040@pilani.bits-pilani.ac.in"])
                     msg.attach_alternative(html_content, "text/html")
                     try:
                         msg.send(fail_silently=False)
                         count = count + len(a)
-                        datemail.mails = datemail.mails+len(a)
+                        datemail.mails = datemail.mails + len(a)
                         datemail.save()
                     except Exception as e:
                         for j in students:
                             j.mail = "Sent"
                             j.save()
-                        left = len(allstu)-count
-                        data = "Only "+str(count)+" -Non Veg- mails were sent succesfully. " + \
-                            str(left) + " mails are left to be send. Error " + str(e)
+                        left = len(allstu) - count
+                        data = "Only " + str(count) + " -Non Veg- mails were sent succesfully. " + \
+                               str(left) + " mails are left to be send. Error " + str(e)
                         return data
         grub.mails = "Sent2"
         grub.save()
@@ -353,21 +350,21 @@ def ssms_grub_sendmail2(request, gmid):
             print(all_batch)
             for i in all_batch:
                 abcd = Grub_Student.objects.filter(gm_id=grub.gm_id, status="Signed Up", batch=i)
-                k = len(abcd)//99
-                for q in range(k+1):
+                k = len(abcd) // 99
+                for q in range(k + 1):
                     a = []
-                    students = abcd[q*99:(q+1)*99]
+                    students = abcd[q * 99:(q + 1) * 99]
                     for j in students:
                         if (j.mail != "Sent2"):
-                            a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+                            a.append(str(j.user_id) + "@pilani.bits-pilani.ac.in")
                             j.mail = "Sent2"
                             j.save()
                     if (len(a) > 0):
                         subject, from_email = str(
                             grub.name) + " | " + e + " | Veg | " + "Batch " + str(i.batch_name), 'ssms.pilani@gmail.com'
                         text_content = 'This is an important message.'
-                        html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> " +\
-                            str(grub.name)+"</strong> that is going to take place on <strong>" + e + "</strong>. You are required \
+                        html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> " + \
+                                       str(grub.name) + "</strong> that is going to take place on <strong>" + e + "</strong>. You are required \
 						to collect your stubs from the PitStop counter in your mess during meal timings today.</p>\
 						<p>Also, please note the following details.</p>\
 						<p><strong>Batch: </strong>" + i.batch_name + "</p>\
@@ -375,24 +372,24 @@ def ssms_grub_sendmail2(request, gmid):
 						<p><strong>Timings: </strong>" + i.timing + "</p>\
 						<p><strong>Venue: </strong>" + venue + "</p>\
 		<strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong>\
-						<p>"+getspotsigning+" </p><p>Thank you.</p>\
+						<p>" + getspotsigning + " </p><p>Thank you.</p>\
 						<p>Regards,</p>\
 						<p>Grub Committee, SSMS</p></body>"
                         print(a)
                         msg = EmailMultiAlternatives(subject, text_content, from_email, cc=a, bcc=[
-                                                     "f2015040@pilani.bits-pilani.ac.in"])
+                            "f2015040@pilani.bits-pilani.ac.in"])
                         msg.attach_alternative(html_content, "text/html")
                         try:
                             msg.send(fail_silently=False)
                             count = count + len(a)
-                            datemail.mails = datemail.mails+len(a)
+                            datemail.mails = datemail.mails + len(a)
                             datemail.save()
                         except Exception as e:
                             for j in students:
                                 j.mail = "Sent"
                                 j.save()
-                            left = len(allstu)-count
-                            data = {'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(
+                            left = len(allstu) - count
+                            data = {'is_taken': "Only " + str(count) + " mails were sent succesfully. " + str(
                                 left) + " mails are left to be send. Error " + str(e)}
                             return JsonResponse(data)
         if (forloop == 2 or forloop == 3):
@@ -406,21 +403,22 @@ def ssms_grub_sendmail2(request, gmid):
             print(all_batch)
             for i in all_batch:
                 abcd = Grub_Student.objects.filter(gm_id=grub.gm_id, status="Signed Up", batch=i)
-                k = len(abcd)//99
-                for q in range(k+1):
+                k = len(abcd) // 99
+                for q in range(k + 1):
                     a = []
-                    students = abcd[q*99:(q+1)*99]
+                    students = abcd[q * 99:(q + 1) * 99]
                     for j in students:
                         if (j.mail != "Sent2"):
-                            a.append(str(j.user_id)+"@pilani.bits-pilani.ac.in")
+                            a.append(str(j.user_id) + "@pilani.bits-pilani.ac.in")
                             j.mail = "Sent2"
                             j.save()
                     if (len(a) > 0):
                         subject, from_email = str(
-                            grub.name) + " | " + e + " | Non Veg | " + "Batch " + str(i.batch_name), 'ssms.pilani@gmail.com'
+                            grub.name) + " | " + e + " | Non Veg | " + "Batch " + str(
+                            i.batch_name), 'ssms.pilani@gmail.com'
                         text_content = 'This is an important message.'
-                        html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> " +\
-                            str(grub.name)+"</strong> that is going to take place on <strong>" + e + "</strong>. You are required \
+                        html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> " + \
+                                       str(grub.name) + "</strong> that is going to take place on <strong>" + e + "</strong>. You are required \
 						to collect your stubs from the PitStop counter in your mess during meal timings today.</p>\
 						<p>Also, please note the following details.</p>\
 						<p><strong>Batch: </strong>" + i.batch_name + "</p>\
@@ -428,24 +426,24 @@ def ssms_grub_sendmail2(request, gmid):
 						<p><strong>Timings: </strong>" + i.timing + "</p>\
 						<p><strong>Venue: </strong>" + venue + "</p>\
 		<strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong>\
-						<p>"+getspotsigning+" </p><p>Thank you.</p>\
+						<p>" + getspotsigning + " </p><p>Thank you.</p>\
 						<p>Regards,</p>\
 						<p>Grub Committee, SSMS</p></body>"
                         print(a)
                         msg = EmailMultiAlternatives(subject, text_content, from_email, cc=a, bcc=[
-                                                     "f2015040@pilani.bits-pilani.ac.in"])
+                            "f2015040@pilani.bits-pilani.ac.in"])
                         msg.attach_alternative(html_content, "text/html")
                         try:
                             msg.send(fail_silently=False)
                             count = count + len(a)
-                            datemail.mails = datemail.mails+len(a)
+                            datemail.mails = datemail.mails + len(a)
                             datemail.save()
                         except Exception as e:
                             for j in students:
                                 j.mail = "Sent"
                                 j.save()
-                            left = len(allstu)-count
-                            data = {'is_taken': "Only "+str(count)+" mails were sent succesfully. " + str(
+                            left = len(allstu) - count
+                            data = {'is_taken': "Only " + str(count) + " mails were sent succesfully. " + str(
                                 left) + " mails are left to be send. Error " + str(e)}
                             return JsonResponse(data)
         grub.mails = "Sent2"
@@ -467,7 +465,7 @@ def ssms_grub_sendmail(request, gmid):
             stud = Grub_Student.objects.filter(gm_id=gmid, status="Signed Up")
             registered = len(stud)
             context_dict["registered"] = registered
-            if(DateMailStatus.objects.filter(date=datetime.now()).exists()):
+            if (DateMailStatus.objects.filter(date=datetime.now()).exists()):
                 datemail = DateMailStatus.objects.get(date=datetime.now())
                 context_dict["datemail"] = datemail
             else:
@@ -558,7 +556,8 @@ def ssms_register(request):
         else:
             user_form = Grub_CoordUserForm()
             profile_form = Grub_CoordUserProfileForm()
-        return render(request, 'ssms/ssms_register.html', {'user_form': user_form, 'profile_form': profile_form, 'registered': registered})
+        return render(request, 'ssms/ssms_register.html',
+                      {'user_form': user_form, 'profile_form': profile_form, 'registered': registered})
     else:
         return HttpResponseRedirect('/ssms/ssms/login/')
 
@@ -599,7 +598,7 @@ def ssms_grubeditdeadline(request, gmid):
             if (request.POST["deadline2"] != ""):
                 grub.deadline2 = request.POST["deadline2"]
             grub.save()
-            return HttpResponseRedirect('/ssms/ssms/grub/'+gmid)
+            return HttpResponseRedirect('/ssms/ssms/grub/' + gmid)
         else:
             grub = Grub.objects.get(gm_id=gmid)
         return render(request, 'ssms/ssms_grubeditdeadline.html', {'grub': grub})
@@ -702,7 +701,7 @@ def ssms_grub_spot_signing(request, gmid):
         else:
             grub.spot_signing = "Yes"
         grub.save()
-        return HttpResponseRedirect('/ssms/ssms/grub/'+gmid)
+        return HttpResponseRedirect('/ssms/ssms/grub/' + gmid)
     else:
         return HttpResponseRedirect('/ssms/ssms/login/')
 
@@ -758,14 +757,14 @@ def export_data(request, gmid):
 
                 b = []
                 for stu in c:
-                    if(stu.batch):
+                    if (stu.batch):
                         b.append([stu.user_id, stu.name, stu.student_id, stu.meal,
                                   stu.bhawan, stu.room, stu.batch.batch_name])
                     else:
                         b.append([stu.user_id, stu.name, stu.student_id,
                                   stu.meal, stu.bhawan, stu.room, ""])
                 print(b)
-                workbook = xlsxwriter.Workbook('media/'+a.name+'_'+bh+'_grublist.xlsx')
+                workbook = xlsxwriter.Workbook('media/' + a.name + '_' + bh + '_grublist.xlsx')
                 worksheet = workbook.add_worksheet()
                 worksheet.set_column('A:A', 15)
                 worksheet.set_column('B:B', 25)
@@ -788,13 +787,13 @@ def export_data(request, gmid):
                     worksheet.write_string(row, col, i[0])
                     worksheet.write_string(row, col + 1, i[1])
                     worksheet.write_string(row, col + 2, i[2])
-                    worksheet.write_string(row, col+3, i[3])
+                    worksheet.write_string(row, col + 3, i[3])
                     worksheet.write_string(row, col + 4, i[4])
                     worksheet.write_string(row, col + 5, i[5])
                     worksheet.write_string(row, col + 6, i[6])
                     row += 1
                 workbook.close()
-                return HttpResponseRedirect('media/'+a.name+'_'+bh+'_grublist.xlsx')
+                return HttpResponseRedirect('media/' + a.name + '_' + bh + '_grublist.xlsx')
             except Grub.DoesNotExist:
                 pass
                 return HttpResponseRedirect("/ssms")
@@ -848,8 +847,8 @@ def coord_grub_register(request):
                 b = qw.date
                 c = timedelta(days=2)
                 e = timedelta(days=4)
-                a.deadline = b-c
-                a.deadline2 = b-e
+                a.deadline = b - c
+                a.deadline2 = b - e
                 a.save()
                 photo = form1.save(commit=False)
                 photo.name = request.POST.get('name')
@@ -874,8 +873,8 @@ def coord_grub_register(request):
                 b = qw.date
                 c = timedelta(days=2)
                 e = timedelta(days=4)
-                a.deadline = b-c
-                a.deadline2 = b-e
+                a.deadline = b - c
+                a.deadline2 = b - e
                 a.save()
                 photo = form2.save(commit=False)
                 photo.veg_venue = request.POST.get('n_venue')
@@ -899,8 +898,8 @@ def coord_grub_register(request):
                 b = qw.date
                 c = timedelta(days=2)
                 e = timedelta(days=4)
-                a.deadline = b-c
-                a.deadline2 = b-e
+                a.deadline = b - c
+                a.deadline2 = b - e
                 a.save()
                 photo = form3.save(commit=False)
                 photo.veg_price = request.POST.get('veg_price')
@@ -923,11 +922,13 @@ def coord_grub_register(request):
             form1 = VegForm()
             form2 = NonVegForm()
             form3 = BothForm()
-        return render(request, 'ssms/coord_grub_register.html', {'form': form, 'form1': form1, 'form2': form2, 'form3': form3, 'done': done})
+        return render(request, 'ssms/coord_grub_register.html',
+                      {'form': form, 'form1': form1, 'form2': form2, 'form3': form3, 'done': done})
     else:
         return HttpResponseRedirect('/ssms/coord/login/')
 
-#invalidids = False
+
+# invalidids = False
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -948,8 +949,8 @@ def coord_upload(request, gmid):
                         if filename.endswith('.xls') or filename.endswith('.xlsx') or filename.endswith('.csv'):
                             a = Grub.objects.get(gm_id=gmid)
                             d = Grub.objects.filter(gm_id=gmid)[0]
-                            #global invalidids
-                            #invalidids = False
+                            # global invalidids
+                            # invalidids = False
                             form = ExcelUpload(request.POST, request.FILES, instance=grub)
                             if form.is_valid():
                                 photo = form.save(commit=False)
@@ -977,8 +978,8 @@ def coord_upload(request, gmid):
                                             row.append(sroom)
 
                                         except:
-                                            #global invalidids
-                                            #invalidids = True
+                                            # global invalidids
+                                            # invalidids = True
                                             invalid_grub = Grub_Invalid_Students.objects.get_or_create(
                                                 student_id=str(row[0]), gm_id=grub, meal=str(row[1]).lower()
                                             )
@@ -1009,6 +1010,7 @@ def coord_upload(request, gmid):
                                         row.append("Signed Up")
                                         row.append(d)
                                         return row
+
                                     files = request.FILES['excel']
                                     files.save_to_database(
                                         model=Grub_Student,
@@ -1020,19 +1022,22 @@ def coord_upload(request, gmid):
                                     photo.save()
                                     global invalidids
                                     if (len(Grub_Invalid_Students.objects.filter(gm_id=grub)) > 0):
-                                        return HttpResponseRedirect("/ssms/invalid_ids/"+gmid)
+                                        return HttpResponseRedirect("/ssms/invalid_ids/" + gmid)
                                     else:
-                                        return HttpResponseRedirect("/ssms/stats/"+gmid)
+                                        return HttpResponseRedirect("/ssms/stats/" + gmid)
                                 else:
                                     invalid = "No file uploaded."
-                                    return render(request, 'ssms/coord_upload.html', {'form': form, 'grub': grub, "e": e, "invalid": invalid})
+                                    return render(request, 'ssms/coord_upload.html',
+                                                  {'form': form, 'grub': grub, "e": e, "invalid": invalid})
                             else:
                                 print(form.errors)
                                 invalid = "Invalid File type."
-                                return render(request, 'ssms/coord_upload.html', {'form': form, 'grub': grub, "e": e, "invalid": invalid})
+                                return render(request, 'ssms/coord_upload.html',
+                                              {'form': form, 'grub': grub, "e": e, "invalid": invalid})
                         else:
                             invalid = "Unsupported File type."
-                            return render(request, 'ssms/coord_upload.html', {'form': form, 'grub': grub, "e": e, "invalid": invalid})
+                            return render(request, 'ssms/coord_upload.html',
+                                          {'form': form, 'grub': grub, "e": e, "invalid": invalid})
 
                     else:
 
@@ -1094,7 +1099,7 @@ def coord_mem_upload(request, gmid):  # rename it to ssms_mem_upload coz admin u
                                                 # print(a)
                                                 # print(grub)
                                                 stu = Grub_Student.objects.get(
-                                                    student_id=str(a)+"P", gm_id=gmid)
+                                                    student_id=str(a) + "P", gm_id=gmid)
                                                 # print(stu)
                                                 # print(a)
                                                 stu.status = "Member"
@@ -1107,6 +1112,7 @@ def coord_mem_upload(request, gmid):  # rename it to ssms_mem_upload coz admin u
                                                 return row
                                                 row.append(d)
                                                 return row
+
                                     files = request.FILES['excel']
                                     files.save_to_database(
                                         model=Grub_Member,
@@ -1117,14 +1123,17 @@ def coord_mem_upload(request, gmid):  # rename it to ssms_mem_upload coz admin u
                                     photo.save()
                                 else:
                                     invalid = "No file uploaded."
-                                    return render(request, 'ssms/coord_mem_upload.html', {'form': form, 'grub': grub, "e": e, "invalid": invalid})
+                                    return render(request, 'ssms/coord_mem_upload.html',
+                                                  {'form': form, 'grub': grub, "e": e, "invalid": invalid})
                             else:
                                 print(form.errors)
                                 invalid = "Invalid File type."
-                                return render(request, 'ssms/coord_mem_upload.html', {'form': form, 'grub': grub, "e": e, "invalid": invalid})
+                                return render(request, 'ssms/coord_mem_upload.html',
+                                              {'form': form, 'grub': grub, "e": e, "invalid": invalid})
                         else:
                             invalid = "Unsupported File type."
-                            return render(request, 'ssms/coord_mem_upload.html', {'form': form, 'grub': grub, "e": e, "invalid": invalid})
+                            return render(request, 'ssms/coord_mem_upload.html',
+                                          {'form': form, 'grub': grub, "e": e, "invalid": invalid})
 
                     else:
                         form = ExcelUpload(instance=grub)
@@ -1138,7 +1147,8 @@ def coord_mem_upload(request, gmid):  # rename it to ssms_mem_upload coz admin u
             return HttpResponseRedirect("/ssms")
         except Exception as e1:
             invalid = "The following error occured : \n" + str(e1)
-            return render(request, 'ssms/coord_mem_upload.html', {'form': form, 'grub': grub, "e": e, "invalid": invalid})
+            return render(request, 'ssms/coord_mem_upload.html',
+                          {'form': form, 'grub': grub, "e": e, "invalid": invalid})
     else:
         return HttpResponseRedirect('/ssms/ssms/login/')
 
@@ -1189,7 +1199,8 @@ def coord_student_register(request, gmid):
                                 gs = Grub_Student.objects.get(
                                     student_id=photo.student_id, gm_id=gmid)
                                 invalid = "Student already registered."
-                                return render(request, 'ssms/coord_student_register.html', {'form': form, 'done': done, 'grub': grub, 'e': e, "invalid": invalid})
+                                return render(request, 'ssms/coord_student_register.html',
+                                              {'form': form, 'done': done, 'grub': grub, 'e': e, "invalid": invalid})
                             except Grub_Student.DoesNotExist:
                                 pass
                             photo.status = "Signed Up"
@@ -1197,14 +1208,14 @@ def coord_student_register(request, gmid):
                             a = photo.student_id
                             if (a[4].upper() == "H" or a[4].upper() == "P"):
                                 if (int(a[0:4]) < 2017):
-                                    photo.user_id = a[4]+a[0:4]+a[9:12]
+                                    photo.user_id = a[4] + a[0:4] + a[9:12]
                                 else:
-                                    photo.user_id = a[4]+a[0:4]+a[8:12]
+                                    photo.user_id = a[4] + a[0:4] + a[8:12]
                             else:
                                 if (int(a[0:4]) < 2017):
-                                    photo.user_id = 'f'+a[0:4]+a[9:12]
+                                    photo.user_id = 'f' + a[0:4] + a[9:12]
                                 else:
-                                    photo.user_id = 'f'+a[0:4]+a[8:12]
+                                    photo.user_id = 'f' + a[0:4] + a[8:12]
                             photo.user_id = photo.user_id.lower()
                             print(photo.user_id)
                             try:
@@ -1219,7 +1230,8 @@ def coord_student_register(request, gmid):
                             except Student.DoesNotExist:
                                 pass
                                 invalid = "Invalid ID"
-                                return render(request, 'ssms/coord_student_register.html', {'form': form, 'done': done, 'grub': grub, 'e': e, "invalid": invalid})
+                                return render(request, 'ssms/coord_student_register.html',
+                                              {'form': form, 'done': done, 'grub': grub, 'e': e, "invalid": invalid})
 
                         else:
                             print(form.errors)
@@ -1227,7 +1239,8 @@ def coord_student_register(request, gmid):
                         form = CoordStudentRegForm()
                         grub = Grub.objects.get(gm_id=gmid)
 
-                    return render(request, 'ssms/coord_student_register.html', {'form': form, 'done': done, 'grub': grub, 'e': e})
+                    return render(request, 'ssms/coord_student_register.html',
+                                  {'form': form, 'done': done, 'grub': grub, 'e': e})
                 else:
                     return render(request, 'ssms/coord_student_register.html', {'grub': grub, 'e': e})
             else:
@@ -1307,6 +1320,7 @@ def coord_grub_edit(request, gmid):
     else:
         return HttpResponseRedirect('/ssms/coord/login/')
 
+
 # Coord do not have permission to cancel/activate grubs
 
 
@@ -1315,7 +1329,7 @@ def ssms_grub_inactive(request, gmid):
         a = Grub.objects.get(gm_id=gmid)
         a.status = "Inactive"
         a.save()
-        return HttpResponseRedirect("/ssms/ssms/grub/"+gmid)
+        return HttpResponseRedirect("/ssms/ssms/grub/" + gmid)
     else:
         return HttpResponseRedirect('/ssms/ssms/login/')
 
@@ -1325,7 +1339,7 @@ def ssms_grub_active(request, gmid):
         a = Grub.objects.get(gm_id=gmid)
         a.status = "Active"
         a.save()
-        return HttpResponseRedirect("/ssms/ssms/grub/"+gmid)
+        return HttpResponseRedirect("/ssms/ssms/grub/" + gmid)
     else:
         return HttpResponseRedirect('/ssms/ssms/login/')
 
@@ -1381,7 +1395,7 @@ def student_grub_register(request, gmid):
         return render(request, 'ssms/student_grubinfo.html', context_dict)
     else:
         return render(request, 'ssms/student_grubinfo.html', context_dict)
-        return HttpResponseRedirect("/soc/login/google-oauth2/?next=/ssms/student/grub/"+gmid)
+        return HttpResponseRedirect("/soc/login/google-oauth2/?next=/ssms/student/grub/" + gmid)
 
 
 def student_grub_register2(request, gmid):  # register for veg
@@ -1398,11 +1412,13 @@ def student_grub_register2(request, gmid):  # register for veg
                     b.status = "Signed Up"
                     b.save()
                 except Grub_Student.DoesNotExist:
-                    Grub_Student.objects.create(gm_id=a, user_id=str(request.user), student_id=str(d.bits_id), meal="Veg", status="Signed Up",
-                                                room=d.room_no, bhawan=d.bhawan, name=d.name)  # if +"P" here in str(d.bits_id)+"P" change the whole thing accordingly
-                return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
+                    Grub_Student.objects.create(gm_id=a, user_id=str(request.user), student_id=str(d.bits_id),
+                                                meal="Veg", status="Signed Up",
+                                                room=d.room_no, bhawan=d.bhawan,
+                                                name=d.name)  # if +"P" here in str(d.bits_id)+"P" change the whole thing accordingly
+                return HttpResponseRedirect("/ssms/student/grub/" + gmid + "/")
             else:
-                return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
+                return HttpResponseRedirect("/ssms/student/grub/" + gmid + "/")
         except Grub.DoesNotExist:
             pass
             return HttpResponseRedirect("/ssms/")
@@ -1424,12 +1440,14 @@ def student_grub_register3(request, gmid):  # register for non veg
                     b.status = "Signed Up"
                     b.save()
                 except Grub_Student.DoesNotExist:
-                    Grub_Student.objects.create(gm_id=a, user_id=str(request.user), student_id=str(d.bits_id), meal="Non Veg", status="Signed Up",
-                                                room=d.room_no, bhawan=d.bhawan, name=d.name)  # if +"P" here in str(d.bits_id)+"P" change the whole thing accordingly
+                    Grub_Student.objects.create(gm_id=a, user_id=str(request.user), student_id=str(d.bits_id),
+                                                meal="Non Veg", status="Signed Up",
+                                                room=d.room_no, bhawan=d.bhawan,
+                                                name=d.name)  # if +"P" here in str(d.bits_id)+"P" change the whole thing accordingly
 
-                return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
+                return HttpResponseRedirect("/ssms/student/grub/" + gmid + "/")
             else:
-                return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
+                return HttpResponseRedirect("/ssms/student/grub/" + gmid + "/")
         except Grub.DoesNotExist:
             pass
             return HttpResponseRedirect("/ssms/")
@@ -1449,9 +1467,9 @@ def student_grub_cancel(request, gmid):
                     a.save()
                 except Grub_Student.DoesNotExist:
                     pass
-                return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
+                return HttpResponseRedirect("/ssms/student/grub/" + gmid + "/")
             else:
-                return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
+                return HttpResponseRedirect("/ssms/student/grub/" + gmid + "/")
         except Grub.DoesNotExist:
             pass
             return HttpResponseRedirect("/ssms/")
@@ -1475,17 +1493,18 @@ def import_data(request):
                     a = row[0].upper()
                     if a[4] == "H" or a[4] == "P":
                         if (int(a[0:4]) < 2017):
-                            b = a[4]+a[0:4]+a[9:12]  # "P" and "0" Not included
+                            b = a[4] + a[0:4] + a[9:12]  # "P" and "0" Not included
                         else:
-                            b = a[4]+a[0:4]+a[8:12]  # "P" Not included , 0 included
+                            b = a[4] + a[0:4] + a[8:12]  # "P" Not included , 0 included
                     else:
                         if (int(a[0:4]) < 2017):
-                            b = 'f'+a[0:4]+a[9:12]  # "P" and "0" Not included
+                            b = 'f' + a[0:4] + a[9:12]  # "P" and "0" Not included
                         else:
-                            b = 'f'+a[0:4]+a[8:12]  # "P" Not included , 0 included
+                            b = 'f' + a[0:4] + a[8:12]  # "P" Not included , 0 included
                     row.append(b.lower())
                     row[0] = row[0].upper()
                     return row
+
                 request.FILES['file'].save_to_database(
                     model=Student,
                     initializer=choice_func,
@@ -1505,7 +1524,7 @@ def export(request):
     b = []
     for i in student:
         b.append(i.name)
-    workbook = xlsxwriter.Workbook('media/'+'uploaded_student_list.xlsx')
+    workbook = xlsxwriter.Workbook('media/' + 'uploaded_student_list.xlsx')
     worksheet = workbook.add_worksheet()
     worksheet.set_column('A:A', 20)
     bold = workbook.add_format({'bold': 1})
@@ -1517,7 +1536,8 @@ def export(request):
         row += 1
     workbook.close()
     return (b)
-    return HttpResponseRedirect('media/'+'uploaded_student_list.xlsx')
+    return HttpResponseRedirect('media/' + 'uploaded_student_list.xlsx')
+
 
 # def invalid(request,inv):
 #	return HttpResponse("done")
@@ -1525,7 +1545,7 @@ def export(request):
 
 def allocate(grub, grubstu, no, batchlist):
     lenstu = len(grubstu)
-    batchgroup = int(math.ceil(len(grubstu)/no))
+    batchgroup = int(math.ceil(len(grubstu) / no))
     count = 0
     j = 0
     for i in grubstu:
@@ -1533,7 +1553,7 @@ def allocate(grub, grubstu, no, batchlist):
         i.save()
         count = count + 1
         if (count > batchgroup):
-            j = j+1
+            j = j + 1
             count = 0
 
 
@@ -1984,8 +2004,8 @@ def ssms_grub_batchallocation(request, gmid):
                         nonveg.nonveg_batch_allocated = "Yes"
                         nonveg.save()
                         print(request.POST)
-                #students = Grub_Student.objects.filter().order_by('bhawan')
-                #count = len(students)
+                # students = Grub_Student.objects.filter().order_by('bhawan')
+                # count = len(students)
                 if grub.meal == "Both":
                     both = Both.objects.get(gm_id=grub)
                     context_dict["veg"] = both
@@ -1996,7 +2016,7 @@ def ssms_grub_batchallocation(request, gmid):
                     grub.batch_allocated = "Yes"
                 grub.save()
                 if grub.batch_allocated == "Yes":
-                    return HttpResponseRedirect("/ssms/stats/"+gmid)
+                    return HttpResponseRedirect("/ssms/stats/" + gmid)
                 context_dict["color"] = ["Pink", "Yellow", "Blue", "Green"]
                 context_dict["grub"] = grub
                 context_dict["time"] = ("8:00", "8:15", "8:30", "8:45", "9:00", "9:15",
@@ -2047,14 +2067,14 @@ def student_grub_feedback(request, gmid):
                             a.save()
                             return HttpResponse("here")
                         else:
-                            return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
+                            return HttpResponseRedirect("/ssms/student/grub/" + gmid + "/")
                     else:
                         fb_form = FeedbackForm()
                         return render(request, 'ssms/createfb.html', {'grub': grub, 'fb_form': fb_form, "grubstu": a})
                 except Grub_Student.DoesNotExist:
-                    return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
+                    return HttpResponseRedirect("/ssms/student/grub/" + gmid + "/")
             else:
-                return HttpResponseRedirect("/ssms/student/grub/"+gmid+"/")
+                return HttpResponseRedirect("/ssms/student/grub/" + gmid + "/")
         except Grub.DoesNotExist:
             pass
             return HttpResponseRedirect("/ssms/")
@@ -2143,8 +2163,8 @@ def menu_display(request):
         meal = Meal.objects.get(date=current_date)
         day = meal.day
         breakfast = str(meal.breakfast).split("###")[:-1]  # to cut the last "###"
-        lunch = str(meal.lunch).split("###")[:-1]			# to cut the last "###"
-        dinner = str(meal.dinner).split("###")[:-1]			# to cut the last "###"
+        lunch = str(meal.lunch).split("###")[:-1]  # to cut the last "###"
+        dinner = str(meal.dinner).split("###")[:-1]  # to cut the last "###"
         lunchgrub = meal.lunchgrub
         dinnergrub = meal.dinnergrub
         return render(request, 'ssms/menu.html', {'day': display_date, 'breakfast': breakfast, 'lunch': lunch,
