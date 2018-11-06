@@ -611,7 +611,7 @@ def ssms_student_table(request, gmid):
 
         if request.user.is_staff:
             coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
-            if request.user == coord.user:
+            if not request.user == coord.user:
                 return HttpResponseRedirect("/ssms")
 
         elif request.user.is_superuser:
@@ -889,131 +889,93 @@ def coord_grub_register(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@user_passes_test(lambda user: user.is_superuser or user.is_staff, login_url='ssms/coord/login')
 def coord_upload(request, gmid):
-    if request.user.is_staff or request.user.is_superuser:  # enabling admin access to coord upload
-        try:
-            grub = Grub.objects.get(gm_id=gmid)
-            form = ExcelUpload(instance=grub)
-            e = datechecker(gmid)
+
+    """
+    this function is used to validate the file input and upload it with details for the grub students
+    :param request:
+    :param gmid:
+    Validation process:
+    authenticate the user - grub coordinator or admin only
+    check for id if the user is a staff
+    checks for deadlines and provisions for on spot signings
+    checks if the method request is a POST and checks if a file has been passed
+    check if an excel file has been passed
+    checks if the file has a valid spreadsheet extension
+    check if the form is valid
+    if any of the above cases is not satisfied redirect and show an appropriate notice
+    :return:
+    """
+    try:
+        grub = Grub.objects.get(gm_id=gmid)
+        form = ExcelUpload(instance=grub)
+        grub_date = datechecker(gmid)
+        if request.user.is_staff:
             coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
-            if (request.user == coord.user) or request.user.is_superuser:  # enabling admin access to coord upload
-                if (e == 2 or (e == 4 and grub.spot_signing == "Yes")):
-                    if request.method == 'POST' and request.FILES:
-                        Grub_Invalid_Students.objects.all
-                        Grub_Invalid_Students.objects.filter(gm_id=gmid).delete()
-                        b = request.FILES['excel']
-                        filename = str(b.name)
-                        if filename.endswith('.xls') or filename.endswith('.xlsx') or filename.endswith('.csv'):
-                            a = Grub.objects.get(gm_id=gmid)
-                            d = Grub.objects.filter(gm_id=gmid)[0]
-                            # global invalidids
-                            # invalidids = False
-                            form = ExcelUpload(request.POST, request.FILES, instance=grub)
-                            if form.is_valid():
-                                photo = form.save(commit=False)
-                                if 'excel' in request.FILES:
-                                    def choice_func(row):
-                                        row[0] = row[0].upper()
-                                        a = row[0]
-                                        # Change to 13 if "P" is too be included
-                                        a = str(a).upper()[:12]
-                                        try:
-                                            b = Student.objects.get(bits_id=str(a))
-                                            smailid = b.user_id
-                                            sname = b.name
-                                            sbhawan = b.bhawan
-                                            sroom = b.room_no
-                                            try:
-                                                gs = Grub_Student.objects.get(
-                                                    student_id=str(a), gm_id=gmid)
-                                                return None
-                                            except:
-                                                pass
-                                            row.append(smailid)
-                                            row.append(sname)
-                                            row.append(sbhawan)
-                                            row.append(sroom)
-
-                                        except:
-                                            # global invalidids
-                                            # invalidids = True
-                                            invalid_grub = Grub_Invalid_Students.objects.get_or_create(
-                                                student_id=str(row[0]), gm_id=grub, meal=str(row[1]).lower()
-                                            )
-
-                                            return None
-                                            # if a[4]=="H" or a[4]=="P":
-                                            # 	smailid=a[4].lower()+a[0:4]+a[8:12]
-                                            # 	sname="User"
-                                            # 	sbhawan="Not Specified"
-                                            # 	sroom="Not Specified"
-                                            # 	row.append(smailid)
-                                            # 	row.append(sname)
-                                            # 	row.append(sbhawan)
-                                            # 	row.append(sroom)
-                                            # else :
-                                            # 	smailid="f"+a[0:4]+a[8:11]
-                                            # 	sname="User"
-                                            # 	sbhawan="Not Specified"
-                                            # 	sroom="Not Specified"
-                                            # 	row.append(smailid)
-                                            # 	row.append(sname)
-                                            # 	row.append(sbhawan)
-                                            # 	row.append(sroom)
-                                        if str(row[1]).lower() == "veg":
-                                            row[1] = "Veg"
-                                        elif str(row[1]).lower() == "non veg":
-                                            row[1] = "Non Veg"
-                                        row.append("Signed Up")
-                                        row.append(d)
-                                        return row
-
-                                    files = request.FILES['excel']
-                                    files.save_to_database(
-                                        model=Grub_Student,
-                                        initializer=choice_func,
-                                        mapdict=['student_id', 'meal', 'user_id',
-                                                 'name', 'bhawan', 'room', 'status', 'gm_id']
-                                    )
-                                    photo.excel = files
-                                    photo.save()
-                                    global invalidids
-                                    if (len(Grub_Invalid_Students.objects.filter(gm_id=grub)) > 0):
-                                        return HttpResponseRedirect("/ssms/invalid_ids/" + gmid)
-                                    else:
-                                        return HttpResponseRedirect("/ssms/stats/" + gmid)
-                                else:
-                                    invalid = "No file uploaded."
-                                    return render(request, 'ssms/coord_upload.html',
-                                                  {'form': form, 'grub': grub, "e": e, "invalid": invalid})
-                            else:
-                                print(form.errors)
-                                invalid = "Invalid File type."
-                                return render(request, 'ssms/coord_upload.html',
-                                              {'form': form, 'grub': grub, "e": e, "invalid": invalid})
-                        else:
-                            invalid = "Unsupported File type."
-                            return render(request, 'ssms/coord_upload.html',
-                                          {'form': form, 'grub': grub, "e": e, "invalid": invalid})
-
-                    else:
-
-                        form = ExcelUpload(instance=grub)
-
-                    return render(request, 'ssms/coord_upload.html', {'form': form, 'grub': grub, "e": e})
-                else:
-                    return render(request, 'ssms/coord_upload.html', {"e": e, 'grub': grub})
-            else:
+            if not request.user == coord.user
                 return HttpResponseRedirect("/ssms")
-        except Grub.DoesNotExist:
-            pass
-            return HttpResponseRedirect("/ssms")
-        except Exception as e1:
-            invalid = "The following error occured : \n" + str(e1)
-            return render(request, 'ssms/coord_upload.html', {'form': form, 'grub': grub, "e": e, "invalid": invalid})
-    else:
-        return HttpResponseRedirect('/ssms/coord/login/')
+        else:
+            return HttpResponseRedirect('/ssms/coord/login/')
 
+        if not (grub_date == 2 or (grub_date == 4 and grub.spot_signing == "Yes")):
+            return render(request, 'ssms/coord_upload.html', {"e": grub_date, 'grub': grub})
+        elif not (request.method == 'POST' and request.FILES):
+            form = ExcelUpload(instance=grub)
+        elif not ('excel' in request.FILES and (str(request.FILES['excel'].name).endswith(('.xls', '.xlsx', '.csv'))) and
+                                                ExcelUpload(request.POST, request.FILES, instance=grub).is_valid()):
+
+            context = {'form': form, 'grub': grub, "e": grub_date, "invalid": "No Spreadsheet Detected"}
+            return render(request, 'ssms/coord_upload.html', context)
+
+        Grub_Invalid_Students.objects.filter(gm_id=gmid).delete()
+        d = Grub.objects.filter(gm_id=gmid)[0]
+        form = ExcelUpload(request.POST, request.FILES, instance=grub)
+        photo = form.save(commit=False)
+
+        def choice_func(row):
+            row[0] = row[0].upper()
+            a = row[0]
+            # Change to 13 if "P" is too be included
+            a = str(a)[:12]
+            try:
+                student = Student.objects.get(bits_id=a)
+                row.append(student.user_id)
+                row.append(student.name)
+                row.append(student.bhawan)
+                row.append(student.room_no)
+
+            except:
+                return None
+            if str(row[1]).lower() == "veg":
+                row[1] = "Veg"
+            elif str(row[1]).lower() == "non veg":
+                row[1] = "Non Veg"
+            row.append("Signed Up")
+            row.append(d)
+            return row
+
+        files = request.FILES['excel']
+        files.save_to_database(
+            model=Grub_Student,
+            initializer=choice_func,
+            mapdict=['student_id', 'meal', 'user_id',
+                     'name', 'bhawan', 'room', 'status', 'gm_id']
+        )
+        photo.excel = files
+        photo.save()
+        if len(Grub_Invalid_Students.objects.filter(gm_id=grub)) > 0:
+            return HttpResponseRedirect("/ssms/invalid_ids/" + gmid)
+        else:
+            return HttpResponseRedirect("/ssms/stats/" + gmid)
+
+    except Grub.DoesNotExist:
+        return HttpResponseRedirect("/ssms")
+
+    except Exception as exception:
+        invalid = "The following error occured : \n" + str(exception)
+        return render(request, 'ssms/coord_upload.html',
+                      {'form': form, 'grub': grub, "e": grub_date, "invalid": invalid})
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @user_passes_test(lambda user: user.is_superuser, login_url='/ssms/ssms/login/')
@@ -1179,41 +1141,39 @@ def coord_student_register(request, gmid):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@user_passes_test(lambda user: user.is_superuser or user.is_staff, login_url='ssms/coord/login')
 def coord_view_grub(request, gmid):
-    if request.user.is_staff and not request.user.is_superuser:
+    try:
+        grub = Grub.objects.get(gm_id=gmid)
+        grub_date = datechecker(gmid)
+        if request.user.is_staff :
+            coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
+            if not request.user == coord.user:
+                return HttpResponseRedirect("/ssms")
+
+        context_dict = {}
         try:
             grub = Grub.objects.get(gm_id=gmid)
-            form = ExcelUpload(instance=grub)
-            e = datechecker(gmid)
-            coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
-            if request.user == coord.user:
-                context_dict = {}
-                try:
-                    grub = Grub.objects.get(gm_id=gmid)
-                    if (grub.meal == 'Veg'):
-                        b = Veg.objects.get(gm_id=gmid)
-                        i = 0
-                    elif (grub.meal == 'Non Veg'):
-                        b = NonVeg.objects.get(gm_id=gmid)
-                        i = 1
-                    elif (grub.meal == 'Both'):
-                        b = Both.objects.get(gm_id=gmid)
-                        i = 2
-                    context_dict['grub'] = grub
-                    context_dict['meal'] = b
-                    context_dict['i'] = i
-                    context_dict['e'] = e
-                except Grub.DoesNotExist:
-                    pass
-                return render(request, 'ssms/coord_grubinfo.html', context_dict)
-            else:
-                return HttpResponseRedirect("/ssms")
+            if grub.meal == 'Veg':
+                meal = Veg.objects.get(gm_id=gmid)
+                meal_type = 0
+            elif grub.meal == 'Non Veg':
+                meal = NonVeg.objects.get(gm_id=gmid)
+                meal_type = 1
+            elif grub.meal == 'Both':
+                meal = Both.objects.get(gm_id=gmid)
+                meal_type = 2
+            context_dict['grub'] = grub
+            context_dict['meal'] = meal
+            context_dict['i'] = meal_type
+            context_dict['e'] = grub_date
         except Grub.DoesNotExist:
             pass
-            return HttpResponseRedirect("/ssms")
-    else:
-        return HttpResponseRedirect('/ssms/coord/login/')
+        return render(request, 'ssms/coord_grubinfo.html', context_dict)
 
+    except Grub.DoesNotExist:
+        pass
+    return HttpResponseRedirect("/ssms")
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def coord_grub_edit(request, gmid):
