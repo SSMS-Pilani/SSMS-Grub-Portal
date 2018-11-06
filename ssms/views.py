@@ -1428,492 +1428,114 @@ def allocate(grub, grubstu, no, batchlist):
         if (count > batchgroup):
             j = j + 1
             count = 0
-
-
-def ssms_grub_batchallocation(request, gmid):
-    if request.user.is_superuser:
-        context_dict = {}
-        grub = Grub.objects.get(gm_id=gmid)
-        e = datechecker(gmid)
-        context_dict["e"] = e
-        if (e == 3):
-            if request.method == 'POST':
-                if grub.meal == "Veg":
-                    veg = Veg.objects.get(gm_id=grub)
-                    if "VegAllocate1" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up").order_by('bhawan')
-                        allocate(grub, grubstu, 1, [batch1])
-                        veg.batch_allocated = "Yes"
-                        veg.save()
-                        print(request.POST)
-                    elif "VegAllocate2" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch2 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="B",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up").order_by('bhawan')
-                        allocate(grub, grubstu, 2, [batch1, batch2])
-                        veg.batch_allocated = "Yes"
-                        veg.save()
-                        print(request.POST)
-                    elif "VegAllocate3" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch2 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="B",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch3 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="C",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up").order_by('bhawan')
-                        allocate(grub, grubstu, 3, [batch1, batch2, batch3])
-                        veg.batch_allocated = "Yes"
-                        veg.save()
-                        print(request.POST)
-                    elif "VegAllocate4" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch2 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="B",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch3 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="C",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch4 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="D",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up").order_by('bhawan')
-                        allocate(grub, grubstu, 3, [batch1, batch2, batch3, batch4])
-                        veg.batch_allocated = "Yes"
-                        veg.save()
-                        print(request.POST)
-                elif grub.meal == "Non Veg":
-                    nonveg = NonVeg.objects.get(gm_id=grub)
-                    if "NonVegAllocate1" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up").order_by('bhawan')
-                        allocate(grub, grubstu, 1, [batch1])
-                        nonveg.batch_allocated = "Yes"
-                        nonveg.save()
-                        print(request.POST)
-                    elif "NonVegAllocate2" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch2 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="B",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up").order_by('bhawan')
-                        allocate(grub, grubstu, 2, [batch1, batch2])
-                        nonveg.batch_allocated = "Yes"
-                        nonveg.save()
-                        print(request.POST)
-                    elif "NonVegAllocate3" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch2 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="B",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch3 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="C",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up").order_by('bhawan')
-                        allocate(grub, grubstu, 3, [batch1, batch2, batch3])
-                        nonveg.batch_allocated = "Yes"
-                        nonveg.save()
-                        print(request.POST)
-                    elif "NonVegAllocate4" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch2 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="B",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch3 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="C",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch4 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="D",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up").order_by('bhawan')
-                        allocate(grub, grubstu, 3, [batch1, batch2, batch3, batch4])
-                        nonveg.batch_allocated = "Yes"
-                        nonveg.save()
-                        print(request.POST)
-                elif grub.meal == "Both":
-                    veg = Both.objects.get(gm_id=grub)
-                    nonveg = veg
-                    if "VegAllocate1" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up", meal="Veg").order_by('bhawan')
-                        allocate(grub, grubstu, 1, [batch1])
-                        veg.veg_batch_allocated = "Yes"
-                        veg.save()
-                        print(request.POST)
-                    elif "VegAllocate2" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch2 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="B",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up", meal="Veg").order_by('bhawan')
-                        allocate(grub, grubstu, 2, [batch1, batch2])
-                        veg.veg_batch_allocated = "Yes"
-                        veg.save()
-                        print(request.POST)
-                    elif "VegAllocate3" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch2 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="B",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch3 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="C",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up", meal="Veg").order_by('bhawan')
-                        allocate(grub, grubstu, 3, [batch1, batch2, batch3])
-                        veg.veg_batch_allocated = "Yes"
-                        veg.save()
-                        print(request.POST)
-                    elif "VegAllocate4" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch2 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="B",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch3 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="C",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch4 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Veg",
-                            batch_name="D",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up", meal="Veg").order_by('bhawan')
-                        allocate(grub, grubstu, 3, [batch1, batch2, batch3, batch4])
-                        veg.veg_batch_allocated = "Yes"
-                        veg.save()
-                        print(request.POST)
-                    elif "NonVegAllocate1" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up", meal="Non Veg").order_by('bhawan')
-                        allocate(grub, grubstu, 1, [batch1])
-                        nonveg.nonveg_batch_allocated = "Yes"
-                        nonveg.save()
-                        print(request.POST)
-                    elif "NonVegAllocate2" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch2 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="B",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up", meal="Non Veg").order_by('bhawan')
-                        allocate(grub, grubstu, 2, [batch1, batch2])
-                        nonveg.nonveg_batch_allocated = "Yes"
-                        nonveg.save()
-                        print(request.POST)
-                    elif "NonVegAllocate3" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch2 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="B",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch3 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="C",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up", meal="Non Veg").order_by('bhawan')
-                        allocate(grub, grubstu, 3, [batch1, batch2, batch3])
-                        nonveg.nonveg_batch_allocated = "Yes"
-                        nonveg.save()
-                        print(request.POST)
-                    elif "NonVegAllocate4" in request.POST:
-                        time1 = request.POST["batch1time"]
-                        color1 = request.POST["batch1color"]
-                        batch1 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="A",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch2 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="B",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch3 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="C",
-                            color=color1,
-                            timing=time1)
-                        time1 = request.POST["batch2time"]
-                        color1 = request.POST["batch2color"]
-                        batch4 = Batch.objects.create(
-                            gm_id=grub,
-                            meal="Non Veg",
-                            batch_name="D",
-                            color=color1,
-                            timing=time1)
-                        grubstu = Grub_Student.objects.filter(
-                            gm_id=grub.gm_id, status="Signed Up", meal="Non Veg").order_by('bhawan')
-                        allocate(grub, grubstu, 3, [batch1, batch2, batch3, batch4])
-                        nonveg.nonveg_batch_allocated = "Yes"
-                        nonveg.save()
-                        print(request.POST)
-                # students = Grub_Student.objects.filter().order_by('bhawan')
-                # count = len(students)
-                if grub.meal == "Both":
-                    both = Both.objects.get(gm_id=grub)
-                    context_dict["veg"] = both
-                    context_dict["nonveg"] = both
-                    if both.veg_batch_allocated == "Yes" and both.nonveg_batch_allocated == "Yes":
-                        grub.batch_allocated = "Yes"
-                else:
-                    grub.batch_allocated = "Yes"
-                grub.save()
-                if grub.batch_allocated == "Yes":
-                    return HttpResponseRedirect("/ssms/stats/" + gmid)
-                context_dict["color"] = ["Pink", "Yellow", "Blue", "Green"]
-                context_dict["grub"] = grub
-                context_dict["time"] = ("8:00", "8:15", "8:30", "8:45", "9:00", "9:15",
-                                        "9:30", "9:45", "10:00", "10:15", "10:30", "10:45", "11:00")
-                return render(request, 'ssms/batch_allocation.html', context_dict)
-            else:
-                context_dict["color"] = ["Pink", "Yellow", "Blue", "Green"]
-                context_dict["grub"] = grub
-                if grub.meal == "Both":
-                    both = Both.objects.get(gm_id=grub)
-                    context_dict["veg"] = both
-                    context_dict["nonveg"] = both
-                context_dict["time"] = ("8:00", "8:15", "8:30", "8:45", "9:00", "9:15",
-                                        "9:30", "9:45", "10:00", "10:15", "10:30", "10:45", "11:00")
-                return render(request, 'ssms/batch_allocation.html', context_dict)
-        elif (e == 4):
-            context_dict["error"] = "Grub Over"
-            return render(request, 'ssms/batch_allocation.html', context_dict)
-        else:
-            context_dict["error"] = "Can Allocate Batches only after students cancellation deadline gets over"
-            return render(request, 'ssms/batch_allocation.html', context_dict)
+# helper function takes arguments as gmid, request and boolean meal_type. meal_type = true for VegAllocation
+# meal_type = false for NonVegAllocation
+def batch_allocate(gmid, request, meal_type):
+    grub = Grub.objects.get(gm_id=gmid)
+    batch_list = [] #generates a batch list to be passed onto allocate(grub, grubstu, no, batchlist)
+    name_list = {1: "A", 2: "B", 3: "C", 4: "D"}
+    if meal_type:
+        #change html page inorder to map VegAllocate1,2,3 in a dict and then access it
+        if "VegAllocate1" in request.POST:
+            n = 1
+        elif "VegAllocate2" in request.POST:
+            n = 2
+        elif "VegAllocate3" in request.POST:
+            n = 3
+        else :
+            n = 4
 
     else:
-        return HttpResponseRedirect("/ssms/ssms/login")
+        if "NonVegAllocate1" in request.POST:
+            n = 1
+        elif "NonVegAllocate2" in request.POST:
+            n = 2
+        elif "NonVegAllocate3" in request.POST:
+            n = 3
+        else :
+            n = 4
+
+    for i in range(1, n + 1):
+        batch = Batch.objects.create(
+            gm_id=grub,
+            meal="Veg" if meal_type else "Non Veg",
+            batch_name=name_list[i],
+            color=request.POST["batch{}color".format(i)],
+            timing=request.POST["batch{}time".format(i)],
+        )
+        batch_list.append(batch)
+
+    grubstu = Grub_Student.objects.filter(
+        gm_id=grub.gm_id, status="Signed Up").order_by('bhawan')
+    allocate(grub, grubstu, n, batch_list) #allocating the batches using the batchlist generated
+
+
+@user_passes_test(lambda user: user.is_superuser, login_url='ssms/coord/login')
+def ssms_grub_batchallocation(request, gmid):
+
+    # redundant veg and non veg references could not be referenced from a dict because of different varaible headers in
+    # case of grub.meal = "Both"
+
+    context_dict = {}
+    grub = Grub.objects.get(gm_id=gmid)
+    e = datechecker(gmid)
+    context_dict["e"] = e
+    if e == 4 :
+        context_dict["error"] = "Grub Over"
+        return render(request, 'ssms/batch_allocation.html', context_dict)
+    elif e < 3 :
+        context_dict["error"] = "Can Allocate Batches only after students cancellation deadline gets over"
+        return render(request, 'ssms/batch_allocation.html', context_dict)
+
+    if not request.method == 'POST' :
+        context_dict["color"] = ["Pink", "Yellow", "Blue", "Green"]
+        context_dict["grub"] = grub
+        if grub.meal == "Both":
+            both = Both.objects.get(gm_id=grub)
+            context_dict["veg"] = both
+            context_dict["nonveg"] = both
+        context_dict["time"] = ("8:00", "8:15", "8:30", "8:45", "9:00", "9:15",
+                                "9:30", "9:45", "10:00", "10:15", "10:30", "10:45", "11:00")
+        return render(request, 'ssms/batch_allocation.html', context_dict)
+
+
+    if grub.meal == "Veg" :
+        veg = Veg.objects.get(gm_id=grub)
+        batch_allocate(gmid, request, True)# calling batch_allocate with VegAllocate
+        veg.batch_allocated = "Yes"
+        veg.save()
+        grub.batch_allocated = "Yes"
+    elif grub.meal == "Non Veg" :
+        nonveg = NonVeg.objects.get(gm_id=grub)
+        batch_allocate(gmid, request, False)# calling batch_allocate with NonVegAllocate
+        nonveg.batch_allocated = "Yes"
+        nonveg.save()
+        grub.batch_allocated = "Yes"
+
+    else :
+        both_meals = Both.objects.get(gm_id=grub)
+        if "VegAllocate1" in request.POST or "VegAllocate2" in request.POST or "VegAllocate3" in request.POST or "VegAllocate4" in request.POST:
+            batch_allocate(gmid, request, True) # calling batch_allocate once with VegAllocate
+            both_meals.veg_batch_allocated = "Yes"
+        elif "NonVegAllocate1" in request.POST or "NonVegAllocate2" in request.POST or "NonVegAllocate3" in request.POST or "NonVegAllocate4" in request.POST:
+            batch_allocate(gmid, request, False) # calling batch_allocate once with NonVegAllocate
+            both_meals.nonveg_batch_allocated = "Yes"
+        both_meals.save()
+        context_dict["veg"] = both_meals
+        context_dict["nonveg"] = both_meals
+        if both_meals.veg_batch_allocated == "Yes" and both_meals.nonveg_batch_allocated == "Yes":
+            grub.batch_allocated = "Yes"
+
+    grub.save()
+    if grub.batch_allocated == "Yes":
+        return HttpResponseRedirect("/ssms/stats/" + gmid)
+    context_dict["color"] = ["Pink", "Yellow", "Blue", "Green"]
+    context_dict["grub"] = grub
+    context_dict["time"] = ("8:00", "8:15", "8:30", "8:45", "9:00", "9:15",
+                            "9:30", "9:45", "10:00", "10:15", "10:30", "10:45", "11:00")
+    return render(request, 'ssms/batch_allocation.html', context_dict)
+
+
 
 
 def student_grub_feedback(request, gmid):
