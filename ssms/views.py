@@ -913,7 +913,7 @@ def coord_upload(request, gmid):
         grub_date = datechecker(gmid)
         if request.user.is_staff:
             coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
-            if not request.user == coord.user
+            if not request.user == coord.user:
                 return HttpResponseRedirect("/ssms")
         else:
             return HttpResponseRedirect('/ssms/coord/login/')
@@ -1276,30 +1276,28 @@ def student_grub_register(request, gmid):
 
 
 def student_grub_register2(request, gmid):  # register for veg
-    if request.user.is_authenticated() and not request.user.is_staff:
-        try:
-            grub = Grub.objects.get(gm_id=gmid, status="Active")
-            d = datechecker(gmid)
-            if (d == 1 or d == 2):
-                a = Grub.objects.filter(gm_id=gmid)[0]
-                d = Student.objects.get(user_id=str(request.user))
-                try:
-                    b = Grub_Student.objects.get(gm_id=gmid, user_id=str(request.user))
-                    b.meal = "Veg"
-                    b.status = "Signed Up"
-                    b.save()
-                except Grub_Student.DoesNotExist:
-                    Grub_Student.objects.create(gm_id=a, user_id=str(request.user), student_id=str(d.bits_id),
-                                                meal="Veg", status="Signed Up",
-                                                room=d.room_no, bhawan=d.bhawan,
-                                                name=d.name)  # if +"P" here in str(d.bits_id)+"P" change the whole thing accordingly
-                return HttpResponseRedirect("/ssms/student/grub/" + gmid + "/")
-            else:
-                return HttpResponseRedirect("/ssms/student/grub/" + gmid + "/")
-        except Grub.DoesNotExist:
-            pass
-            return HttpResponseRedirect("/ssms/")
-    else:
+    if not (request.user.is_authenticated() and not request.user.is_staff):
+        return HttpResponseRedirect("/ssms/")
+    try:
+        grub = Grub.objects.get(gm_id=gmid, status="Active")
+        diff = datechecker(gmid)
+        if not (diff == 1 or diff == 2):  # register student for grub only within deadline
+            return HttpResponseRedirect("/ssms/student/grub/" + gmid + "/")
+
+        student = Student.objects.get(user_id=str(request.user))
+        try:  # if exists change Veg to signed up
+            grub_student = Grub_Student.objects.get(gm_id=gmid, user_id=str(request.user))
+            grub_student.meal = "Veg"
+            grub_student.status = "Signed Up"
+            grub_student.save()
+        except Grub_Student.DoesNotExist:  # if student is not registered create new object and register
+            Grub_Student.objects.create(gm_id=grub, user_id=str(request.user), student_id=str(student.bits_id),
+                                        meal="Veg", status="Signed Up",
+                                        room=student.room_no, bhawan=student.bhawan,
+                                        name=student.name)  # if +"P" here in str(d.bits_id)+"P" change the whole thing accordingly
+        return HttpResponseRedirect("/ssms/student/grub/" + gmid + "/")
+
+    except Grub.DoesNotExist:
         return HttpResponseRedirect("/ssms/")
 
 

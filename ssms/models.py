@@ -1,13 +1,13 @@
 from __future__ import unicode_literals
-from django.db import models
-import os
-from datetime import datetime, date
-from django import forms
-from django.contrib.auth.models import User
-from ssms import venue
-import uuid
-#from django.contrib.admin.widgets import AdminDateWidget
 
+import os
+import uuid
+from datetime import datetime
+
+from django.contrib.auth.models import User
+from django.db import models
+
+from ssms import venue
 
 def content_album_name(instance, filename):
     return os.path.join(instance.name, filename)
@@ -15,7 +15,6 @@ def content_album_name(instance, filename):
 
 def content_album_name2(instance, filename):
     return os.path.join(instance.gm_id.name, filename)
-# Use verbose name
 
 
 batch_allocation_choices = (('Yes', 'Yes'), ('No', 'No'))
@@ -26,7 +25,7 @@ class Grub_Coord(models.Model):
     user = models.OneToOneField(User)
     cg_id = models.UUIDField("Coordinator UUID", primary_key=True,
                              default=uuid.uuid4, editable=False)
-    cg_name = models.CharField("Coordinator Name", max_length=32, blank=False)
+    cg_name = models.CharField("Coordinator Name", max_length=64, blank=False)
     cg_bitsid = models.CharField("Coordinator Bits ID", max_length=32, unique=False)
     assoc_name = models.CharField("Association", max_length=64, blank=False)
     status = models.CharField(choices=stype, max_length=32, default='Active')
@@ -84,7 +83,7 @@ class Grub_Student(models.Model):
     stype = (('Signed Up', 'Signed Up'), ('Opted Out', 'Opted Out'), ('Member', 'Member'))
     mtype = (('Veg', 'Veg'), ('Non Veg', 'Non Veg'))
     emtype = (('Sent', 'Sent'), ('Not Sent', 'Not Sent'), ('Sent2', 'Sent2'))
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=64)
     student_id = models.CharField("Bits Id", max_length=32, blank=False)
     user_id = models.CharField("Bits Email Id", db_index=True, max_length=32, blank=False)
     gm_id = models.ForeignKey(Grub, default='1', verbose_name="Grub Id")
@@ -199,7 +198,7 @@ class Feedback(models.Model):
 
 
 class Meal(models.Model):
-    #meal_choices = (('grub','GRUB-LUNCH'),('lunch', 'LUNCH') , ('dinner','DINNER'), ('breakfast','BREAKFAST'))
+    # meal_choices = (('grub','GRUB-LUNCH'),('lunch', 'LUNCH') , ('dinner','DINNER'), ('breakfast','BREAKFAST'))
     date = models.DateField(null=False, blank=False)
     day = models.CharField(max_length=20, null=False, default="0")
     breakfast = models.CharField(max_length=512, blank=False, default="0")
