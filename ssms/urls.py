@@ -28,7 +28,7 @@ urlpatterns = [
 
 	url(r'^coord/register/$', views.coord_grub_register, name='grub_register'),  #coord register grubs
 	url(r'^coord/upload/(?P<gmid>[-\w]+)/$', views.coord_upload, name='upload'),#upload list and all list related updates here
-	url(r'^coord/memupload/(?P<gmid>[-\w]+)/$', views.coord_mem_upload, name='mem upload'),#upload list and all list related updates here
+	url(r'^coord/memupload/(?P<gmid>[-\w]+)/$', views.ssms_mem_upload, name='mem upload'),#upload list and all list related updates here
 	url(r'^coord/view/(?P<gmid>[-\w]+)/$',views.coord_view_grub,name="view registered grub"), 
 	url(r'^coord/login/$',views.coord_login,name='coord_login'), #coord login
 	url(r'^coord/register-students/(?P<gmid>[-\w]+)/$',views.coord_student_register,name='coord student register'),

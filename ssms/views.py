@@ -1028,98 +1028,75 @@ def coord_upload(request, gmid):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-def coord_mem_upload(request, gmid):  # rename it to ssms_mem_upload coz admin uploads it for now
-    if request.user.is_superuser:
-        try:
-            grub = Grub.objects.get(gm_id=gmid)
+@user_passes_test(lambda user: user.is_superuser, login_url='/ssms/ssms/login/')
+def ssms_mem_upload(request, gmid):
+    try:
+        grub = Grub.objects.get(gm_id=gmid)
+        form = ExcelUpload(instance=grub)
+        deadline_status = datechecker(gmid)
+        if deadline_status != 4:  # if grub is not over return
+            return render(request, 'ssms/coord_mem_upload.html', {"e": deadline_status, 'grub': grub})
+
+        if not (request.method == 'POST' and request.FILES):  # pass only if request is post and file is uploaded
             form = ExcelUpload(instance=grub)
-            e = datechecker(gmid)
-            coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
-            if request.user.is_superuser:  # upload by admin only
-                if (e == 4):  # after the grub gets over
-                    if request.method == 'POST' and request.FILES:
-                        b = request.FILES['excel']
-                        filename = str(b.name)
-                        if filename.endswith('.xls') or filename.endswith('.xlsx') or filename.endswith('.csv'):
-                            a = Grub.objects.get(gm_id=gmid)
-                            d = Grub.objects.filter(gm_id=gmid)[0]
-                            form = ExcelUpload(request.POST, request.FILES, instance=grub)
-                            if form.is_valid():
-                                photo = form.save(commit=False)
-                                if 'excel' in request.FILES:
-                                    def choice_func(row):
-                                        # Change to 13 if "P" is too be included
-                                        a = row[0].upper()[:12]
-                                        try:
-                                            # print(a)
-                                            # print(grub)
-                                            stu = Grub_Student.objects.get(
-                                                student_id=str(a), gm_id=gmid)
-                                            # print(stu)
-                                            # print(a)
-                                            stu.status = "Member"
-                                            stu.save()
-                                            # print(stu)
-                                            row.append(d)
-                                            return row
-                                        except Exception as e:
-                                            # print(e)
-                                            try:
-                                                # print(a)
-                                                # print(grub)
-                                                stu = Grub_Student.objects.get(
-                                                    student_id=str(a) + "P", gm_id=gmid)
-                                                # print(stu)
-                                                # print(a)
-                                                stu.status = "Member"
-                                                stu.save()
-                                                # print(stu)
-                                                row.append(d)
-                                                return row
-                                            except Exception as e:
-                                                # print(e)
-                                                return row
-                                                row.append(d)
-                                                return row
+            return render(request, 'ssms/coord_mem_upload.html', {'form': form, 'grub': grub, "e": deadline_status})
 
-                                    files = request.FILES['excel']
-                                    files.save_to_database(
-                                        model=Grub_Member,
-                                        initializer=choice_func,
-                                        mapdict=['student_id', 'meal', 'gm_id']
-                                    )
-                                    photo.excel = files
-                                    photo.save()
-                                else:
-                                    invalid = "No file uploaded."
-                                    return render(request, 'ssms/coord_mem_upload.html',
-                                                  {'form': form, 'grub': grub, "e": e, "invalid": invalid})
-                            else:
-                                print(form.errors)
-                                invalid = "Invalid File type."
-                                return render(request, 'ssms/coord_mem_upload.html',
-                                              {'form': form, 'grub': grub, "e": e, "invalid": invalid})
-                        else:
-                            invalid = "Unsupported File type."
-                            return render(request, 'ssms/coord_mem_upload.html',
-                                          {'form': form, 'grub': grub, "e": e, "invalid": invalid})
-
-                    else:
-                        form = ExcelUpload(instance=grub)
-                    return render(request, 'ssms/coord_mem_upload.html', {'form': form, 'grub': grub, "e": e})
-                else:
-                    return render(request, 'ssms/coord_mem_upload.html', {"e": e, 'grub': grub})
-            else:
-                return HttpResponseRedirect("/ssms")
-        except Grub.DoesNotExist:
-            pass
-            return HttpResponseRedirect("/ssms")
-        except Exception as e1:
-            invalid = "The following error occured : \n" + str(e1)
+        if 'excel' not in request.FILES:
+            invalid = "No file uploaded."
             return render(request, 'ssms/coord_mem_upload.html',
-                          {'form': form, 'grub': grub, "e": e, "invalid": invalid})
-    else:
-        return HttpResponseRedirect('/ssms/ssms/login/')
+                          {'form': form, 'grub': grub, "e": deadline_status, "invalid": invalid})
+
+        filename = str(request.FILES['excel'].name)
+        if not filename.endswith(('.xls', '.xlsx', '.csv')):
+            invalid = "Unsupported File type."
+            return render(request, 'ssms/coord_mem_upload.html',
+                          {'form': form, 'grub': grub, "e": deadline_status, "invalid": invalid})
+
+        grub = Grub.objects.filter(gm_id=gmid)[0]
+        form = ExcelUpload(request.POST, request.FILES, instance=grub)
+        if not form.is_valid():
+            invalid = "Invalid File type."
+            return render(request, 'ssms/coord_mem_upload.html',
+                          {'form': form, 'grub': grub, "e": deadline_status, "invalid": invalid})
+
+        photo = form.save(commit=False)
+
+        def choice_func(row):
+            # Change to 13 if "P" is too be included
+            a = row[0].upper()[:12]
+            try:
+                stu = Grub_Student.objects.get(
+                    student_id=str(a), gm_id=gmid)
+                stu.status = "Member"
+                stu.save()
+                row.append(grub)
+                return row
+            except Exception as e:
+                try:
+                    stu = Grub_Student.objects.get(
+                        student_id=str(a) + "P", gm_id=gmid)
+                    stu.status = "Member"
+                    stu.save()
+                    row.append(grub)
+                    return row
+                except Exception as e:
+                    return row
+
+        files = request.FILES['excel']
+        files.save_to_database(
+            model=Grub_Member,
+            initializer=choice_func,
+            mapdict=['student_id', 'meal', 'gm_id']
+        )
+        photo.excel = files
+        photo.save()
+
+    except Grub.DoesNotExist:
+        return HttpResponseRedirect("/ssms")
+
+    except Exception as e:
+        invalid = "The following error occured : \n" + str(e)
+        return render(request, 'ssms/coord_mem_upload.html', {'form': form, 'grub': grub, "e": deadline_status, "invalid": invalid})
 
 
 @user_passes_test(lambda user: user.is_staff or user.is_superuser, login_url='/ssms/coord/login/')
@@ -1305,17 +1282,9 @@ def ssms_grub_active(request, gmid):
         return HttpResponseRedirect('/ssms/ssms/login/')
 
 
-"""
-def student_login(request):
-	return HttpResponse("working")
-
-"""
-
-
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def student_upcoming_grubs(request):
     if request.user.is_authenticated() and not request.user.is_staff:
-        c = date.today()
         grub_list = Grub.objects.filter(status="Active").order_by('-date')[:]
         context_dict = {"grub": grub_list}
         return render(request, 'ssms/student_grublist.html', context_dict)
@@ -1325,32 +1294,31 @@ def student_upcoming_grubs(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def student_grub_register(request, gmid):
-    context_dict = {}
-    context_dict['gmid'] = gmid
+    context_dict = {'gmid': gmid}
     if request.user.is_authenticated() and not request.user.is_staff:
         try:
             grub = Grub.objects.get(gm_id=gmid, status="Active")
             grubcoord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
-            if (grub.meal == 'Veg'):
-                b = Veg.objects.get(gm_id=gmid)
-                i = 0
-            elif (grub.meal == 'Non Veg'):
-                b = NonVeg.objects.get(gm_id=gmid)
-                i = 1
-            elif (grub.meal == 'Both'):
-                b = Both.objects.get(gm_id=gmid)
-                i = 2
+            if grub.meal == 'Veg':
+                grub_meal = Veg.objects.get(gm_id=gmid)
+                meal_type = 0
+            elif grub.meal == 'Non Veg':
+                grub_meal = NonVeg.objects.get(gm_id=gmid)
+                meal_type = 1
+            elif grub.meal == 'Both':
+                grub_meal = Both.objects.get(gm_id=gmid)
+                meal_type = 2
             try:
                 a = Grub_Student.objects.get(gm_id=gmid, user_id=str(request.user))
                 context_dict['student'] = a
             except Grub_Student.DoesNotExist:
                 pass
-            e = datechecker(gmid)
+            date_status = datechecker(gmid)
             context_dict['grub'] = grub
             context_dict['grubcoord'] = grubcoord
-            context_dict['meal'] = b
-            context_dict['i'] = i
-            context_dict['e'] = e
+            context_dict['meal'] = grub_meal
+            context_dict['i'] = meal_type
+            context_dict['e'] = date_status
         except Grub.DoesNotExist:
             pass
         return render(request, 'ssms/student_grubinfo.html', context_dict)
@@ -1498,10 +1466,6 @@ def export(request):
     workbook.close()
     return (b)
     return HttpResponseRedirect('media/' + 'uploaded_student_list.xlsx')
-
-
-# def invalid(request,inv):
-#	return HttpResponse("done")
 
 
 def allocate(grub, grubstu, no, batchlist):
