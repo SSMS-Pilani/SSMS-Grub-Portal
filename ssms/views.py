@@ -90,50 +90,47 @@ def send(request):  # cancellation mail
     else:
         return HttpResponseRedirect("/ssms")
 
-
+@user_passes_test(lambda user: user.is_superuser or user.is_staff, login_url='ssms/ssms/login')
 def send2(request):
-    if request.user.is_superuser:
-        grubs = Grub.objects.filter(status="Active", mails="Sent")
-        today = date.today()
-        date_difference = timedelta(days=1)
-        next_day = today + date_difference
-        sent_to_students = []
-        for grub in grubs:
-            if grub.meal == "Veg":
-                veg = Veg.objects.get(gm_id=grub.gm_id)
-                meal = str(veg.v_venue)
-            elif grub.meal == "Non Veg":
-                non_veg = NonVeg.objects.get(gm_id=grub.gm_id)
-                meal = str(non_veg.n_venue)
-            else:
-                veg = Veg.objects.get(gm_id=grub.gm_id)
-                non_veg = NonVeg.objects.get(gm_id=grub.gm_id)
-                meal = str(veg.v_venue) + " and " + str(non_veg.n_venue)
-            grub_date = date.strftime(datetime.strptime(str(grub.date), '%Y-%m-%d'), "%d %B %Y")
-            if today == grub.date or next_day == grub.date:
-                all_students = Grub_Student.objects.filter(gm_id=grub.gm_id, status="Signed Up")
-                k = len(all_students) // 99
-                for q in range(k + 1):
-                    students = all_students[q * 99:(q + 1) * 99]
-                    students_id_list = map(lambda x: str(x.user_id) + "@pilani.bits-pilani.ac.in", students)
-                    subject, from_email = str(grub.name) + " (Reminder)", 'ssms.pilani@gmail.com'
-                    text_content = 'This is an important message.'
-                    html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> " + \
-                                   str(grub.name) + "</strong> which will take place on <strong>" + grub_date + "</strong> at the <strong>" + meal + \
-                                   "</strong> Mess. </p> <p>Wristbands for the same are available at your mess counter, and you are requested to collect the same if you haven't already.</p><strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong><p>Limited on spot signings will be available. Please carry your ID cards for the same. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
-                    msg = EmailMultiAlternatives(subject, text_content, from_email, cc=students_id_list, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
-                    msg.attach_alternative(html_content, "text/html")
-                    msg.send(fail_silently = False)
-                    sent_to_students.append("Sent mail for " + str(grub.name) + " to " + str(len(students_id_list)) + str(students_id_list))
-                    for j in students:
-                        j.mail = "Sent"
-                        j.save()
-                grub.mails = "Sent2"
-                grub.save()
+    grubs = Grub.objects.filter(status="Active", mails="Sent")
+    today = date.today()
+    date_difference = timedelta(days=1)
+    next_day = today + date_difference
+    sent_to_students = []
+    for grub in grubs:
+        if grub.meal == "Veg":
+            veg = Veg.objects.get(gm_id=grub.gm_id)
+            meal = str(veg.v_venue)
+        elif grub.meal == "Non Veg":
+            non_veg = NonVeg.objects.get(gm_id=grub.gm_id)
+            meal = str(non_veg.n_venue)
+        else:
+            veg = Veg.objects.get(gm_id=grub.gm_id)
+            non_veg = NonVeg.objects.get(gm_id=grub.gm_id)
+            meal = str(veg.v_venue) + " and " + str(non_veg.n_venue)
+        grub_date = date.strftime(datetime.strptime(str(grub.date), '%Y-%m-%d'), "%d %B %Y")
+        if today == grub.date or next_day == grub.date:
+            all_students = Grub_Student.objects.filter(gm_id=grub.gm_id, status="Signed Up")
+            k = len(all_students) // 99
+            for q in range(k + 1):
+                students = all_students[q * 99:(q + 1) * 99]
+                students_id_list = map(lambda x: str(x.user_id) + "@pilani.bits-pilani.ac.in", students)
+                subject, from_email = str(grub.name) + " (Reminder)", 'ssms.pilani@gmail.com'
+                text_content = 'This is an important message.'
+                html_content = "<body><p>This is to remind you that you that you have been signed up for <strong> " + \
+                               str(grub.name) + "</strong> which will take place on <strong>" + grub_date + "</strong> at the <strong>" + meal + \
+                               "</strong> Mess. </p> <p>Wristbands for the same are available at your mess counter, and you are requested to collect the same if you haven't already.</p><strong><p>Entry into the grub shall not be allowed if you are not wearing the wristband.</p></strong><p>Limited on spot signings will be available. Please carry your ID cards for the same. </p><p>Thank you.</p><p>Grub Committee, SSMS</p></body>"
+                msg = EmailMultiAlternatives(subject, text_content, from_email, cc=students_id_list, bcc=["f2014623@pilani.bits-pilani.ac.in", "f2015040@pilani.bits-pilani.ac.in"])
+                msg.attach_alternative(html_content, "text/html")
+                msg.send(fail_silently = False)
+                sent_to_students.append("Sent mail for " + str(grub.name) + " to " + str(len(students_id_list)) + str(students_id_list))
+                for j in students:
+                    j.mail = "Sent"
+                    j.save()
+            grub.mails = "Sent2"
+            grub.save()
 
-        return HttpResponse("Sent python mail" + str(sent_to_students))
-    else:
-        return HttpResponseRedirect("/ssms")
+    return HttpResponse("Sent python mail" + str(sent_to_students))
 
 
 def ssms_grub_sendmail1(request, gmid):
@@ -605,6 +602,7 @@ def ssms_grub_list(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@user_passes_test(lambda user: user.is_superuser or user.is_staff, login_url='ssms/coord/login')
 def ssms_student_table(request, gmid):
     try:
         grub = Grub.objects.get(gm_id=gmid)
@@ -614,11 +612,6 @@ def ssms_student_table(request, gmid):
             if not request.user == coord.user:
                 return HttpResponseRedirect("/ssms")
 
-        elif request.user.is_superuser:
-            pass
-
-        else:
-            return HttpResponseRedirect("/ssms")
         # in case a grub has both meals available -- only then will the number of veg
         # and non veg students be displayed
         # in case the grub has veg or non-veg status then only the registered number
