@@ -13,6 +13,7 @@ from django.http import HttpResponseRedirect
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.cache import cache_control
+from django.contrib.auth.decorators import user_passes_test
 
 from ssms.forms import GrubForm, Grub_CoordUserForm, Grub_CoordUserProfileForm, ExcelUpload, VegForm, NonVegForm, \
     BothForm, CoordStudentRegForm, GrubFormEdit, UploadFileForm, FeedbackForm
@@ -61,7 +62,7 @@ def send(request):  # cancellation mail
                 all_students = Grub_Student.objects.filter(gm_id=i.gm_id, status="Signed Up")
                 for q in range(len(all_students) // 99 + 1):  # send mails in batches of 100
                     students = all_students[q * 99:(q + 1) * 99]
-                    student_id_list = map(lambda x: str(x.user_id) + "@pilani.bits-pilani.ac.in", students)
+                    student_id_list = [str(student.user_id) + "@pilani.bits-pilani.ac.in" for student in students]
                     subject, from_email = str(i.name), 'ssms.pilani@gmail.com'
                     text_content = 'This is an important message.'
                     html_content = "<body><p>This is to inform you that you have been signed up for the <strong> " \
@@ -823,108 +824,80 @@ def coord_login(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@user_passes_test(lambda user: user.is_staff or user.is_superuser, login_url='/ssms/coord/login/')
 def coord_grub_register(request):
-    if request.user.is_staff and not request.user.is_superuser:
-        done = 0
-        if request.method == 'POST':
-            form = GrubForm(request.POST, request.FILES)
-            form1 = VegForm(request.POST, request.FILES)
-            form2 = NonVegForm(request.POST, request.FILES)
-            form3 = BothForm(request.POST, request.FILES)
-            if form.is_valid() and form1.is_valid():
-                a = form.save(commit=False)
-                a.meal = request.POST.get('mealtype')
-                a.date = request.POST.get('grubdate')
-                a.reg_date = datetime.now()
-                d = Grub_Coord.objects.get(user=request.user)
-                a.cg_id = d
-                a.save()
-                qw = Grub.objects.get(gm_id=a.gm_id)
-                b = qw.date
-                c = timedelta(days=2)
-                e = timedelta(days=4)
-                a.deadline = b - c
-                a.deadline2 = b - e
-                a.save()
-                photo = form1.save(commit=False)
+    """registers a new grub or returns errors in the form"""
+    if request.method == 'POST':
+        grub_form = GrubForm(request.POST, request.FILES)
+        veg_form = VegForm(request.POST, request.FILES)
+        non_veg_form = NonVegForm(request.POST, request.FILES)
+        both_form = BothForm(request.POST, request.FILES)
+        done = False
+
+        if grub_form.is_valid():
+            grub = grub_form.save(commit=False)
+            grub.meal = request.POST.get('mealtype')
+            grub.date = request.POST.get('grubdate')
+            grub.reg_date = datetime.now()
+            grub.cg_id = Grub_Coord.objects.get(user=request.user)
+            grub.save()
+            grub.deadline = grub.date - timedelta(days=2)
+            grub.deadline2 = grub.date - timedelta(days=4)
+            grub.save()
+
+            if veg_form.is_valid():
+                photo = veg_form.save(commit=False)
                 photo.name = request.POST.get('name')
                 photo.veg_price = request.POST.get('v_price')
                 photo.veg_venue = request.POST.get('v_venue')
-                d = Grub.objects.get(gm_id=a.gm_id)
-                photo.gm_id = d
+                grub_coord = Grub.objects.get(gm_id=grub.gm_id)
+                photo.gm_id = grub_coord
                 if 'v_images' in request.FILES:
                     photo.v_images = request.FILES['v_images']
                     photo.save()
-                    done = 1
-
-            elif form.is_valid() and form2.is_valid():
-                a = form.save(commit=False)
-                a.meal = request.POST.get('mealtype')
-                a.date = request.POST.get('grubdate')
-                a.reg_date = datetime.now()
-                d = Grub_Coord.objects.get(user=request.user)
-                a.cg_id = d
-                a.save()
-                qw = Grub.objects.get(gm_id=a.gm_id)
-                b = qw.date
-                c = timedelta(days=2)
-                e = timedelta(days=4)
-                a.deadline = b - c
-                a.deadline2 = b - e
-                a.save()
-                photo = form2.save(commit=False)
+                    done = True
+            elif non_veg_form.is_valid():
+                photo = non_veg_form.save(commit=False)
                 photo.veg_venue = request.POST.get('n_venue')
                 photo.non_veg_venue = request.POST.get('n_venue')
-                d = Grub.objects.get(gm_id=a.gm_id)
-                photo.gm_id = d
+                grub_coord = Grub.objects.get(gm_id=grub.gm_id)
+                photo.gm_id = grub_coord
                 if 'n_images' in request.FILES:
                     photo.n_images = request.FILES['n_images']
                     photo.save()
-                    done = 1
-
-            elif form.is_valid() and form3.is_valid():
-                a = form.save(commit=False)
-                a.meal = request.POST.get('mealtype')
-                a.date = request.POST.get('grubdate')
-                a.reg_date = datetime.now()
-                d = Grub_Coord.objects.get(user=request.user)
-                a.cg_id = d
-                a.save()
-                qw = Grub.objects.get(gm_id=a.gm_id)
-                b = qw.date
-                c = timedelta(days=2)
-                e = timedelta(days=4)
-                a.deadline = b - c
-                a.deadline2 = b - e
-                a.save()
-                photo = form3.save(commit=False)
+                    done = True
+            elif both_form.is_valid():
+                photo = both_form.save(commit=False)
                 photo.veg_price = request.POST.get('veg_price')
                 photo.non_veg_price = request.POST.get('non_veg_price')
                 photo.veg_venue = request.POST.get('veg_venue')
                 photo.non_veg_venue = request.POST.get('non_veg_venue')
-                d = Grub.objects.get(gm_id=a.gm_id)
-                photo.gm_id = d
+                grub_coord = Grub.objects.get(gm_id=grub.gm_id)
+                photo.gm_id = grub_coord
                 if 'veg_images' in request.FILES and 'non_veg_images' in request.FILES:
                     photo.veg_images = request.FILES['veg_images']
                     photo.non_veg_images = request.FILES['non_veg_images']
                     photo.save()
-                    done = 1
+                    done = True
 
-            else:
-                print(form.errors)
+        context = {
+            'form': grub_form,
+            'form1': veg_form,
+            'form2': non_veg_form,
+            'form3': both_form,
+            'done': done,
+        }
 
-        else:
-            form = GrubForm()
-            form1 = VegForm()
-            form2 = NonVegForm()
-            form3 = BothForm()
-        return render(request, 'ssms/coord_grub_register.html',
-                      {'form': form, 'form1': form1, 'form2': form2, 'form3': form3, 'done': done})
     else:
-        return HttpResponseRedirect('/ssms/coord/login/')
+        context = {
+            'form': GrubForm(),
+            'form1': VegForm(),
+            'form2': NonVegForm(),
+            'form3': BothForm(),
+            'done': False
+        }
 
-
-# invalidids = False
+    return render(request, 'ssms/coord_grub_register.html', context)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -1149,30 +1122,22 @@ def coord_mem_upload(request, gmid):  # rename it to ssms_mem_upload coz admin u
         return HttpResponseRedirect('/ssms/ssms/login/')
 
 
+@user_passes_test(lambda user: user.is_staff or user.is_superuser, login_url='/ssms/coord/login/')
 def coord_invalid_ids(request, gmid):
-    if request.user.is_superuser:
-        grub = Grub.objects.get(gm_id=gmid)
-        invalidstud = Grub_Invalid_Students.objects.filter(gm_id=gmid)
-        invalidno = len(invalidstud)
-        context_dict = {"stud": invalidstud, "invalidno": invalidno, "gmid": gmid, "grub": grub}
-        return render(request, 'ssms/invalid_student_table.html', context_dict)
-    elif request.user.is_staff:
-        try:
+    try:
+        # grub coord can only view stats of their registered grub
+        if request.user.is_staff:
             grub = Grub.objects.get(gm_id=gmid)
             coord = Grub_Coord.objects.get(cg_id=grub.cg_id.cg_id)
-            if request.user == coord.user:
-                invalidstud = Grub_Invalid_Students.objects.filter(gm_id=gmid)
-                invalidno = len(invalidstud)
-                context_dict = {"stud": invalidstud,
-                                "invalidno": invalidno, "gmid": gmid, "grub": grub}
-                return render(request, 'ssms/invalid_student_table.html', context_dict)
-            else:
+            if request.user != coord.user:
                 return HttpResponseRedirect("/ssms")
-        except Grub.DoesNotExist:
-            pass
-            return HttpResponseRedirect("/ssms")
-    else:
-        return HttpResponseRedirect('/ssms/ssms/login/')
+
+        invalid_stud = Grub_Invalid_Students.objects.filter(gm_id=gmid)
+        context_dict = {"stud": invalid_stud, "invalidno": len(invalid_stud), "gmid": gmid, "grub": grub}
+        return render(request, 'ssms/invalid_student_table.html', context_dict)
+
+    except Grub.DoesNotExist:
+        return HttpResponseRedirect("/ssms")
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
